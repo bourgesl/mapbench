@@ -65,15 +65,37 @@
 		    <descriptor>assembly.xml</descriptor>
 		  </descriptors>
 		</configuration>
-		<executions>
-		  <execution>
-		    <id>make-assembly</id> <!-- this is used for inheritance merges -->
-		    <phase>package</phase> <!-- bind to the packaging phase -->
-		    <goals>
-		      <goal>single</goal>
-		    </goals>
-		  </execution>
-		</executions>
+
+		   <executions>
+			<execution>
+			    <id>build-release</id>
+			    <configuration>
+				<appendAssemblyId>false</appendAssemblyId>
+				  <descriptors>
+				    <descriptor>assembly-release.xml</descriptor>
+				  </descriptors>
+				<finalName>${project.artifactId}-${project.version}-release</finalName>
+			    </configuration>
+			    <phase>package</phase>
+			    <goals>
+				<goal>single</goal>
+			    </goals>
+			</execution>
+			<execution>
+			    <id>build-map</id>
+			    <configuration>
+				<appendAssemblyId>false</appendAssemblyId>
+				  <descriptors>
+				    <descriptor>assembly-maps.xml</descriptor>
+				  </descriptors>
+				<finalName>${project.artifactId}-maps</finalName>
+			    </configuration>
+			    <phase>package</phase>
+			    <goals>
+				<goal>single</goal>
+			    </goals>
+			</execution>
+		    </executions>
 	      </plugin>
 
         </plugins>

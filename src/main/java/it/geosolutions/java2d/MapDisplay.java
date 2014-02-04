@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class MapDisplay implements MapConst {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -50,9 +51,9 @@ public final class MapDisplay implements MapConst {
             System.out.println("Loading DrawingCommands: " + file);
             DrawingCommands commands = DrawingCommands.load(file);
 
-            for (int i = 0, len = (useAffineTransform) ? scales.length : 1; i < len; i++) {
+            for (int i = 0, len = (doScale) ? scales.length : 1; i < len; i++) {
                 double scale = 1d;
-                if (useAffineTransform) {
+                if (doScale) {
                     // Affine transform:
                     scale = scales[i];
                     if (Math.abs(scale - 1d) < 1e-3d) {

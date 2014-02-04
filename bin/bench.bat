@@ -16,8 +16,6 @@ SET CLASSPATH=%MAP_BENCH_JAR%
 
 SET BOOTCLASSPATH=
 
-REM SET DURATION=20000
-
 echo "CP:      %CLASSPATH%"
 echo "Boot CP: %BOOTCLASSPATH%"
 
@@ -27,5 +25,5 @@ REM which java
 echo "Java version"
 java -version
 
-java %BOOTCLASSPATH% %JAVA_OPTS% %JAVA_TUNING% -cp %CLASSPATH% it.geosolutions.java2d.MapBench %DURATION%
+java -Dmapbench.profile=%PROFILE% %BOOTCLASSPATH% %JAVA_OPTS% %JAVA_TUNING% -cp %CLASSPATH% it.geosolutions.java2d.MapBench 
 

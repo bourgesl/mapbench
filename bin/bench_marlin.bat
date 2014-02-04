@@ -1,8 +1,6 @@
 REM get paths
 CALL env.bat
 
-echo %MAP_BENCH_JAR%
-
 REM server or client JVM:
 SET JAVA_OPTS=-server -XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal
 REM SET JAVA_OPTS=-client -d32 -XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal
@@ -43,4 +41,4 @@ REM which java
 echo "Java version"
 java -version
 
-java %BOOTCLASSPATH% %JAVA_OPTS% %JAVA_TUNING% -cp %CLASSPATH% it.geosolutions.java2d.MapBench %DURATION%
+java -Dmapbench.profile=%PROFILE% %BOOTCLASSPATH% %JAVA_OPTS% %JAVA_TUNING% -cp %CLASSPATH% it.geosolutions.java2d.MapBench

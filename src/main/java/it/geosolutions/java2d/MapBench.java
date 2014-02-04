@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -18,57 +17,49 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+/**
+ * Map benchmark 
+ *
+ * TODO: save results (images) ...
+ *
+ * @author bourgesl
+ */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class MapBench implements MapConst {
 
+    /* profile settings */
     final static boolean showImage = false;
 
     /* use shared image for all iterations or create 1 image per iteration */
-    final static boolean useSharedImage = false;
+    final static boolean useSharedImage = Profile.getBoolean(Profile.KEY_USE_SHARED_IMAGE);
 
-    // TODO: save results (images) ...
-    final static double atScale = scales[0]; /* large image [width = 9001, height = 5401] */
-
-    // 2 real cores on my cpu / 4 virtual cpus:
-    static final Runtime runtime = Runtime.getRuntime();
     // constants:
-    static final int PASS = 1;
-    static final int LOOPS = 25;
+    static final int PASS = Profile.getInteger(Profile.KEY_PASS);
+    static final int MIN_LOOPS = Profile.getInteger(Profile.KEY_MIN_LOOPS);
+
+    static final int MAX_THREADS = Profile.getInteger(Profile.KEY_MAX_THREADS);
+
+    /** benchmark min duration per test */
+    static double MIN_DURATION = Profile.getDouble(Profile.KEY_MIN_DURATION);
+
+    /* constants */
+    final static double atScale = scales[0];
+
     static final boolean doWarmup = true;
     static final boolean doGCBeforeTest = true;
-//    static final int LOOPS = 2;    
-//    static final boolean doWarmup = false;
+
     static final int WARMUP_LOOPS_MIN = 200;
     static final int WARMUP_LOOPS_MAX = 200;
-    /*    
-     static final int N_WARMUP = 1;
-     static final int WARMUP_LOOPS = 200;
-     */
-    static final int N_THREAD_PER_CORE = 1;
-    static final int MAX_THREADS = runtime.availableProcessors() * N_THREAD_PER_CORE;
-    static final double DEFAULT_MIN_DURATION = 5000d;
-    /** benchmark min duration per test */
-    static double MIN_DURATION = DEFAULT_MIN_DURATION;
-    /*
-     // Regression test / Profiler
-     static final int PASS = 1;
-     static final int LOOPS = 1;
-     static final int MAX_THREADS = 1; // 2 cores on my cpu
-     */
+
+    static final Runtime runtime = Runtime.getRuntime();
 
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
 
-        if (args != null && args.length > 0) {
-            System.out.println("# Parsing min duration = " + args[0] + " (ms)");
-            MIN_DURATION = Double.parseDouble(args[0]);
-        }
-
         final AffineTransform at;
-        if (useAffineTransform) {
+        if (doScale) {
             // Affine transform:
             at = AffineTransform.getScaleInstance(atScale, atScale);
-
-            System.out.println("Using AffineTransform at scale = " + atScale + "...");
         } else {
             at = null;
         }
@@ -115,7 +106,7 @@ public final class MapBench implements MapConst {
                     System.out.println("Loading drawing commands from file: " + file.getAbsolutePath());
                     commands = DrawingCommands.load(file);
 
-                    if (useAffineTransform) {
+                    if (doScale) {
                         // apply affine transform:
                         commands.setAt(at);
                     }
@@ -149,7 +140,7 @@ public final class MapBench implements MapConst {
 
                     System.out.println("Initial test: " + initialTime + " ms.");
 
-                    testLoops = Math.max(LOOPS, (int) (MIN_DURATION / initialTime));
+                    testLoops = Math.max(MIN_LOOPS, (int) (MIN_DURATION / initialTime));
 
                     System.out.println("Testing file " + file.getAbsolutePath() + " for " + testLoops + " loops ...");
 
@@ -469,12 +460,6 @@ public final class MapBench implements MapConst {
     }
 
     public static void startTests() {
-        System.out.printf("##############################################################\n");
-        System.out.printf("# Java: %s\n", System.getProperty("java.runtime.version"));
-        System.out.printf("#   VM: %s %s (%s)\n", System.getProperty("java.vm.name"), System.getProperty("java.vm.version"), System.getProperty("java.vm.info"));
-        System.out.printf("#   OS: %s %s (%s)\n", System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"));
-        System.out.printf("# CPUs: %d (virtual)\n", Runtime.getRuntime().availableProcessors());
-        System.out.printf("#\n");
         System.out.println("# Min duration per test = " + MIN_DURATION + " ms.");
         System.out.printf("##############################################################\n");
     }

@@ -11,8 +11,8 @@ REM SET JAVA_TUNING= -Xms128m  -Xmx128m -XX:-TieredCompilation
 REM SET JAVA_TUNING= -Xms128m  -Xmx128m -XX:+TieredCompilation
 REM SET JAVA_TUNING= -Xms128m  -Xmx128m -XX:+AggressiveOpts -XX:CompileThreshold=1000
 
-SET JAVA_TUNING= -Xms2048m  -Xmx2048m
-REM -ea -XX:+AggressiveOpts -XX:+UseConcMarkSweepGC
+SET JAVA_TUNING= -Xms2048m  -Xmx2048m -XX:+UseConcMarkSweepGC
+REM SET JAVA_TUNING= -Xms2048m  -Xmx2048m -ea -XX:+AggressiveOpts -XX:+UseConcMarkSweepGC
 
 REM MapBench:
 SET CLASSPATH=%MAP_BENCH_JAR%

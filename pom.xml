@@ -8,8 +8,10 @@
     <groupId>org.mapbench</groupId>
     <artifactId>mapbench</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.1</version>
+    <version>0.2</version>
     <name>MapBench java2d benchmark</name>
+
+    <url>https://github.com/bourgesl/mapbench</url>
 
     <description>
         MapBench is an open source (GPL2+CP) Java2d benchmark (multi-thread) and regression tests based on geoserver's maps.
@@ -58,45 +60,45 @@
             </plugin>
 
             <plugin>
-		<artifactId>maven-assembly-plugin</artifactId>
-		<version>2.4</version>
-		<configuration>
-		  <descriptors>
-		    <descriptor>assembly.xml</descriptor>
-		  </descriptors>
-		</configuration>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
 
-		   <executions>
-			<execution>
-			    <id>build-release</id>
-			    <configuration>
-				<appendAssemblyId>false</appendAssemblyId>
-				  <descriptors>
-				    <descriptor>assembly-release.xml</descriptor>
-				  </descriptors>
-				<finalName>${project.artifactId}-${project.version}-release</finalName>
-			    </configuration>
-			    <phase>package</phase>
-			    <goals>
-				<goal>single</goal>
-			    </goals>
-			</execution>
-			<execution>
-			    <id>build-map</id>
-			    <configuration>
-				<appendAssemblyId>false</appendAssemblyId>
-				  <descriptors>
-				    <descriptor>assembly-maps.xml</descriptor>
-				  </descriptors>
-				<finalName>${project.artifactId}-maps</finalName>
-			    </configuration>
-			    <phase>package</phase>
-			    <goals>
-				<goal>single</goal>
-			    </goals>
-			</execution>
-		    </executions>
-	      </plugin>
+                <executions>
+                    <execution>
+                        <id>build-release</id>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>assembly-release.xml</descriptor>
+                            </descriptors>
+                            <finalName>${project.artifactId}-${project.version}-release</finalName>
+                        </configuration>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>build-map</id>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>assembly-maps.xml</descriptor>
+                            </descriptors>
+                            <finalName>${project.artifactId}-maps</finalName>
+                        </configuration>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
     </build>

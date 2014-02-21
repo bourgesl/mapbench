@@ -17,20 +17,19 @@ REM SET JAVA_TUNING= -Xms2048m  -Xmx2048m -ea -XX:+AggressiveOpts -XX:+UseConcMa
 REM MapBench:
 SET CLASSPATH=%MAP_BENCH_JAR%
 
-REM Marlin 0.3 in lib folder:
+REM Marlin renderer in lib folder:
 SET BOOTCLASSPATH=-Xbootclasspath/a:%MARLIN_JAR_PREFIX%.jar
 
-REM Optional Marlin 0.3 java2d patch in lib folder:
+REM Optional Marlin java2d patch in lib folder:
 SET BOOTCLASSPATH=-Xbootclasspath/p:%MARLIN_JAR_PREFIX%-sun-java2d.jar %BOOTCLASSPATH%
 
 REM Marlin tuning options:
 SET USE_TL=true
-REM SET SIZE=4096
 SET SIZE=2048
+REM larger pixelsize best for images ~ 8192x8192
+REM SET SIZE=8192
 
 SET JAVA_OPTS=-Dsun.java2d.renderer.useThreadLocal=%USE_TL% -Dsun.java2d.renderer.pixelsize=%SIZE% -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine %JAVA_OPTS%
-
-REM SET DURATION=20000
 
 echo "CP:      %CLASSPATH%"
 echo "Boot CP: %BOOTCLASSPATH%"

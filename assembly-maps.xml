@@ -11,9 +11,11 @@
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>maps/*</include>
+        <include>maps/discarded/*</include>
         <include>results/**</include>
       </includes>
       <excludes>
+        <exclude>results/test/*.png</exclude>
         <exclude>results/test/insane/**</exclude>
       </excludes>
     </fileSet>

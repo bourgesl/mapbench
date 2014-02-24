@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class ShapeDumpingGraphics2D extends Graphics2D {

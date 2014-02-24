@@ -22,8 +22,8 @@
         <include>License*</include>
         <include>bin/*</include>
         <include>lib/*</include>
+        <include>maps/README.txt</include>
         <include>profiles/*</include>
-        <include>results/*</include>
         <include>results/ref/README.txt</include>
         <include>results/test/README.txt</include>
       </includes>

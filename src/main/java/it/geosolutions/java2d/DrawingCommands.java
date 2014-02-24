@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import org.gui.ImageUtils;
 
 public final class DrawingCommands implements Serializable {
 
@@ -84,7 +85,8 @@ public final class DrawingCommands implements Serializable {
     }
 
     public BufferedImage prepareImage() {
-        return new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+//        return new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        return ImageUtils.newImage(getWidth(), getHeight());
     }
 
     public Graphics2D prepareGraphics(BufferedImage image) {

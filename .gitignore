@@ -1,1 +1,7 @@
+/nb*
 /target/
+/maps/discarded/
+/maps/insane/
+/results/test/*.png
+/results/test/insane/
+

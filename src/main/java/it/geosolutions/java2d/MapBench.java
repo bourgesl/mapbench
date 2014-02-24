@@ -8,6 +8,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -16,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import org.gui.ImageUtils;
 
 /**
  * Map benchmark 
@@ -52,6 +54,8 @@ public final class MapBench implements MapConst {
     static final int WARMUP_LOOPS_MAX = 200;
 
     static final Runtime runtime = Runtime.getRuntime();
+
+    private static File cmdFile;
 
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
@@ -105,6 +109,8 @@ public final class MapBench implements MapConst {
                 for (File file : files) {
                     System.out.println("Loading drawing commands from file: " + file.getAbsolutePath());
                     commands = DrawingCommands.load(file);
+
+                    cmdFile = file;
 
                     if (doScale) {
                         // apply affine transform:
@@ -185,7 +191,7 @@ public final class MapBench implements MapConst {
         this.executor = executor;
     }
 
-    public Result timedExecute() throws InterruptedException, ExecutionException {
+    public Result timedExecute() throws InterruptedException, ExecutionException, IOException {
         if (doGCBeforeTest) {
             cleanup();
         }
@@ -202,7 +208,7 @@ public final class MapBench implements MapConst {
         return res;
     }
 
-    public void execute(final long[] opss, final long[] nanoss) throws InterruptedException, ExecutionException {
+    public void execute(final long[] opss, final long[] nanoss) throws InterruptedException, ExecutionException, IOException {
 
         final int _numThreads = numThreads;
         final ExecutorService _executor = executor;
@@ -226,7 +232,7 @@ public final class MapBench implements MapConst {
             final BufferedImage image = futures.get(i).get();
 
             if (showImage) {
-                MapDisplay.showImage("TH" + i + " " + commands.fileName, image); // no copy
+                MapDisplay.showImage("TH" + i + " " + commands.fileName, cmdFile, image, false); // do not copy
             }
         }
 
@@ -295,7 +301,7 @@ public final class MapBench implements MapConst {
 
                 if (showImage) {
                     if ((i == 0) && (_nThread == _numThreads >> 1)) {
-                        MapDisplay.showImage("TH" + _nThread + " " + _commands.fileName, MapDisplay.deepCopyImage(_image));
+                        MapDisplay.showImage("TH" + _nThread + " " + _commands.fileName, cmdFile, _image, true); // do copy
                     }
                 }
 

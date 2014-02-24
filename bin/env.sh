@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # set profile
-PROFILE=
+PROFILE=default.properties
 
 # use shared image (less gc overhead but less realistic)
 #PROFILE=sharedImage.properties
@@ -11,7 +11,7 @@ PROFILE=
 
 # set paths
 # MapBench jar:
-MAP_BENCH_JAR=../lib/mapbench-0.2.jar
+MAP_BENCH_JAR=../lib/mapbench-0.3.jar
 
 # Marlin jar prefix:
 MARLIN_JAR_PREFIX=../lib/marlin-0.4

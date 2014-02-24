@@ -19,6 +19,8 @@ public class BigImagePanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
+    private static final boolean doMonitorTime = false;
+
     /* members */
     /** 
      * Interpolation method among:
@@ -39,7 +41,7 @@ public class BigImagePanel extends JPanel {
     /* source rectangle : coords on image */
     private Rectangle srcRect;
     /* destination rectangle : coords on frame */
-    private Rectangle dstRect;
+    private final Rectangle dstRect;
 
     /**
      * Protected constructor
@@ -57,20 +59,13 @@ public class BigImagePanel extends JPanel {
 
         imgRect.setSize(this.iw, this.ih);
 
-//        System.out.println("image : " + imgRect);
         updatePreferredSize();
+        // force repaint:
+        repaint();
     }
 
     protected void setScale(final float factor) {
-        /* TODO: adjust frame center */
-        // use standard position to adjust center window :
-/*        
-        float cx = this.srcRect.x + 0.5f * this.srcRect.width;
-        float cy = this.srcRect.y + 0.5f * this.srcRect.height;
-        System.out.println("center : " + cx + ", " + cy);
-*/        
         this.scale = factor;
-
         updatePreferredSize();
     }
 
@@ -111,12 +106,12 @@ public class BigImagePanel extends JPanel {
             // Set chosen interpolation method:
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
 
-//            final long start = System.nanoTime();
+            final long start = (doMonitorTime) ? System.nanoTime() : 0l;
             int dx, dy, dx2, dy2;
             int sx, sy, sx2, sy2;
 
             // multiple scrolls can call multiple times this method :
-            dstRect = g2.getClipBounds(dstRect);
+            g2.getClipBounds(dstRect);
 
             // convert clip coordinates to image coordinates            
             srcRect.x = Math.round(dstRect.x / scale);
@@ -147,13 +142,14 @@ public class BigImagePanel extends JPanel {
             sx2 = srcRect.x + srcRect.width;
             sy2 = srcRect.y + srcRect.height;
 
-            // Interet : back buffer par Swing => paintComponent appellé sur zone modifiée : all si rescale : 
+            // back buffer in Swing => paintComponent called on clipped area only needing repaint:
             g2.drawImage(image, dx, dy, dx2, dy2, sx, sy, sx2, sy2, null);
-            /*
-             final long time = System.nanoTime() - start;
-             System.out.println("paint : [" + srcRect.width + " x " + srcRect.height + "] => ["
-             + dstRect.width + " x " + dstRect.height + "] : " + (time / 1000000l) + " ms.");
-             */
+
+            if (doMonitorTime) {
+                final long time = System.nanoTime() - start;
+                System.out.println("paint: [" + srcRect.width + " x " + srcRect.height + "] => ["
+                        + dstRect.width + " x " + dstRect.height + "] : " + (time / 1000000l) + " ms.");
+            }
         }
     }
 

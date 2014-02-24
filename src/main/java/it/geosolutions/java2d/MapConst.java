@@ -22,11 +22,13 @@ public interface MapConst {
     /** input directory */
     static File inputDirectory = new File("../maps");
 
-    /** result directory */
+    /** reference results directory */
+    static File refResultDirectory = new File("../results/ref");
+
+    /** test results directory */
     static File resultDirectory = new File("../results/test");
 
     /** test file match */
     static final String testMatcher = ".*\\.ser";
-//    static final String testMatcher = "dc_shp_alllayers_2013-00-30-07-00-47.ser";
 
 }

@@ -2,6 +2,7 @@
 /target/
 /maps/discarded/
 /maps/insane/
+/results/ref/*.png
 /results/test/*.png
 /results/test/insane/
 

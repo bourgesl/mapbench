@@ -15,6 +15,7 @@
         <include>results/**</include>
       </includes>
       <excludes>
+        <exclude>results/ref/*.png</exclude>
         <exclude>results/test/*.png</exclude>
         <exclude>results/test/insane/**</exclude>
       </excludes>

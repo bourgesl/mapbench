@@ -1,0 +1,94 @@
+##############################################################
+# Java: 1.8.0-b128
+#   VM: Java HotSpot(TM) 64-Bit Server VM 25.0-b69 (mixed mode)
+#   OS: Linux 2.6.35.14-106.fc14.x86_64 (amd64)
+# CPUs: 4 (virtual)
+##############################################################
+Loading profile file: /home/bourgesl/libs/marlin/mapbench/bin/../profiles/insane_1T.properties
+Profile properties (merged with defaults):
+  doClip=false
+  doScale=false
+  maxThreads=1
+  minDuration=90000.0
+  minLoops=5
+  pass=1
+  scale=4.0
+  useSharedImage=true
+##############################################################
+# Min duration per test = 90000.0 ms.
+##############################################################
+Loading maps from = /home/bourgesl/libs/marlin/mapbench/bin/../maps
+Results format: 
+test	threads	ops	Tavg	Tmed	stdDev	rms	Med+Stddev	min	max	TotalOps	[ms/op]
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser
+Loaded DrawingCommands: DrawingCommands{width=1400, height=800, commands=4398}
+drawing[dc_boulder_2013-13-30-06-13-17.ser][width = 1400, height = 800] ...
+
+Warming up with 1 threads and 200 loops on  /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser
+cleanup (explicit Full GC): 2,095,867,296 / 2,104,458,872 bytes free.
+INFO: ===============================================================================
+INFO: Marlin software rasterizer           = ENABLED
+INFO: Version                              = [marlin-0.5A-Unsafe]
+INFO: sun.java2d.renderer                  = org.marlin.pisces.PiscesRenderingEngine
+INFO: sun.java2d.renderer.useThreadLocal   = false
+INFO: sun.java2d.renderer.useRef           = soft
+INFO: sun.java2d.renderer.pixelsize        = 2048
+INFO: sun.java2d.renderer.subPixel_log2_X  = 3
+INFO: sun.java2d.renderer.subPixel_log2_Y  = 3
+INFO: sun.java2d.renderer.tileSize_log2    = 5
+INFO: sun.java2d.renderer.useFastMath      = true
+INFO: sun.java2d.renderer.doStats          = false
+INFO: sun.java2d.renderer.doMonitors       = false
+INFO: sun.java2d.renderer.doChecks         = false
+INFO: sun.java2d.renderer.useJul           = false
+INFO: sun.java2d.renderer.logCreateContext = false
+INFO: sun.java2d.renderer.logUnsafeMalloc  = false
+INFO: ===============================================================================
+INFO: AAShapePipe: overriding JDK implementation: marlin-renderer TILE patch enabled.
+INFO: ===============================================================================
+INFO:  Using sun.misc.Unsafe: No warranty (may crash your JVM) !
+INFO:  USE IT AT YOUR OWN RISKS = do not use in production (ALPHA Release).
+INFO: ===============================================================================
+Warm up took 17927.975455 ms
+dc_boulder_2013-13-30-06-13-17.ser	1	200	89.266	87.422	13.153	88.406	100.576	85.398	458.240	200
+cleanup (explicit Full GC): 2,045,829,768 / 2,109,142,504 bytes free.
+Initial test: 81.43899984999999 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser for 1105 loops ...
+cleanup (explicit Full GC): 2,100,766,952 / 2,109,156,888 bytes free.
+1 threads and 1105 loops per thread, time: 94268.266855 ms
+dc_boulder_2013-13-30-06-13-17.ser	1	1105	85.304	85.290	0.406	85.291	85.696	84.754	101.748	1105
+
+
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/isolines_pg:contour_2014-24-23-12-24-41.ser
+Loaded DrawingCommands: DrawingCommands{width=8192, height=4667, commands=1063949}
+drawing[isolines_pg:contour_2014-24-23-12-24-41.ser][width = 8192, height = 4667] ...
+cleanup (explicit Full GC): 1,560,631,992 / 1,754,678,104 bytes free.
+Initial test: 11983.648136999998 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/isolines_pg:contour_2014-24-23-12-24-41.ser for 7 loops ...
+cleanup (explicit Full GC): 1,449,584,928 / 1,711,593,472 bytes free.
+1 threads and 7 loops per thread, time: 88192.884285 ms
+isolines_pg:contour_2014-24-23-12-24-41.ser	1	7	12588.699	12579.873	3.627	12579.873	12583.500	12573.354	12648.175	7
+
+
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/texas_roads_2014-44-23-02-44-48.ser
+Loaded DrawingCommands: DrawingCommands{width=4096, height=3324, commands=2891957}
+drawing[texas_roads_2014-44-23-02-44-48.ser][width = 4096, height = 3324] ...
+cleanup (explicit Full GC): 795,216,048 / 1,311,626,096 bytes free.
+Initial test: 6365.8914439 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/texas_roads_2014-44-23-02-44-48.ser for 14 loops ...
+cleanup (explicit Full GC): 1,009,133,984 / 1,195,947,616 bytes free.
+1 threads and 14 loops per thread, time: 90126.072362 ms
+texas_roads_2014-44-23-02-44-48.ser	1	14	6429.233	6425.360	11.178	6425.370	6436.538	6416.348	6488.594	14
+
+
+done: score = 6368.577708391141 (3 tests)
+Complete results:
+test	threads	ops	Tavg	Tmed	stdDev	rms	Med+Stddev	min	max	TotalOps	[ms/op]
+<<< Warmup 0
+dc_boulder_2013-13-30-06-13-17.ser	1	200	89.266	87.422	13.153	88.406	100.576	85.398	458.240	200
+>>> Warmup 0
+dc_boulder_2013-13-30-06-13-17.ser	1	1105	85.304	85.290	0.406	85.291	85.696	84.754	101.748	1105
+isolines_pg:contour_2014-24-23-12-24-41.ser	1	7	12588.699	12579.873	3.627	12579.873	12583.500	12573.354	12648.175	7
+texas_roads_2014-44-23-02-44-48.ser	1	14	6429.233	6425.360	11.178	6425.370	6436.538	6416.348	6488.594	14
+
+

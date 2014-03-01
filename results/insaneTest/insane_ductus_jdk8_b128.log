@@ -1,0 +1,71 @@
+##############################################################
+# Java: 1.8.0-b128
+#   VM: Java HotSpot(TM) 64-Bit Server VM 25.0-b69 (mixed mode)
+#   OS: Linux 2.6.35.14-106.fc14.x86_64 (amd64)
+# CPUs: 4 (virtual)
+##############################################################
+Loading profile file: /home/bourgesl/libs/marlin/mapbench/bin/../profiles/insane_1T.properties
+Profile properties (merged with defaults):
+  doClip=false
+  doScale=false
+  maxThreads=1
+  minDuration=90000.0
+  minLoops=5
+  pass=1
+  scale=4.0
+  useSharedImage=true
+##############################################################
+# Min duration per test = 90000.0 ms.
+##############################################################
+Loading maps from = /home/bourgesl/libs/marlin/mapbench/bin/../maps
+Results format: 
+test	threads	ops	Tavg	Tmed	stdDev	rms	Med+Stddev	min	max	TotalOps	[ms/op]
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser
+Loaded DrawingCommands: DrawingCommands{width=1400, height=800, commands=4398}
+drawing[dc_boulder_2013-13-30-06-13-17.ser][width = 1400, height = 800] ...
+
+Warming up with 1 threads and 200 loops on  /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser
+cleanup (explicit Full GC): 2,095,867,296 / 2,098,836,848 bytes free.
+Warm up took 15512.45614 ms
+dc_boulder_2013-13-30-06-13-17.ser	1	200	77.099	76.567	4.018	76.673	80.585	75.589	183.846	200
+cleanup (explicit Full GC): 1,945,283,576 / 2,106,885,536 bytes free.
+Initial test: 71.69596325 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser for 1255 loops ...
+cleanup (explicit Full GC): 2,095,662,528 / 2,109,689,968 bytes free.
+1 threads and 1255 loops per thread, time: 93710.410192 ms
+dc_boulder_2013-13-30-06-13-17.ser	1	1255	74.664	74.651	0.754	74.654	75.405	74.041	91.824	1255
+
+
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/isolines_pg:contour_2014-24-23-12-24-41.ser
+Loaded DrawingCommands: DrawingCommands{width=8192, height=4667, commands=1063949}
+drawing[isolines_pg:contour_2014-24-23-12-24-41.ser][width = 8192, height = 4667] ...
+cleanup (explicit Full GC): 1,676,588,944 / 1,755,211,192 bytes free.
+Initial test: 16608.649247899997 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/isolines_pg:contour_2014-24-23-12-24-41.ser for 5 loops ...
+cleanup (explicit Full GC): 1,366,999,088 / 1,712,652,568 bytes free.
+1 threads and 5 loops per thread, time: 86727.935082 ms
+isolines_pg:contour_2014-24-23-12-24-41.ser	1	5	17332.125	17324.986	7.824	17324.988	17332.810	17307.503	17378.164	5
+
+
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/texas_roads_2014-44-23-02-44-48.ser
+Loaded DrawingCommands: DrawingCommands{width=4096, height=3324, commands=2891957}
+drawing[texas_roads_2014-44-23-02-44-48.ser][width = 4096, height = 3324] ...
+cleanup (explicit Full GC): 900,401,224 / 1,312,685,192 bytes free.
+Initial test: 13828.54605555 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/texas_roads_2014-44-23-02-44-48.ser for 6 loops ...
+cleanup (explicit Full GC): 888,656,904 / 1,197,006,712 bytes free.
+1 threads and 6 loops per thread, time: 85827.715209 ms
+texas_roads_2014-44-23-02-44-48.ser	1	6	14284.975	14285.511	21.216	14285.527	14306.727	14245.808	14321.994	6
+
+
+done: score = 10571.6472925822 (3 tests)
+Complete results:
+test	threads	ops	Tavg	Tmed	stdDev	rms	Med+Stddev	min	max	TotalOps	[ms/op]
+<<< Warmup 0
+dc_boulder_2013-13-30-06-13-17.ser	1	200	77.099	76.567	4.018	76.673	80.585	75.589	183.846	200
+>>> Warmup 0
+dc_boulder_2013-13-30-06-13-17.ser	1	1255	74.664	74.651	0.754	74.654	75.405	74.041	91.824	1255
+isolines_pg:contour_2014-24-23-12-24-41.ser	1	5	17332.125	17324.986	7.824	17324.988	17332.810	17307.503	17378.164	5
+texas_roads_2014-44-23-02-44-48.ser	1	6	14284.975	14285.511	21.216	14285.527	14306.727	14245.808	14321.994	6
+
+

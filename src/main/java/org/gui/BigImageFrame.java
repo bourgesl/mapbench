@@ -32,13 +32,12 @@ public class BigImageFrame extends JFrame implements ChangeListener, ItemListene
      * Create a new BigImageFrame with the given image displayed to 100%
      * @param title frame's title
      * @param image image to show
-     * @param refImage reference image to show or compare
+     * @param refImage reference image to show
+     * @param diffImage difference image to show
      * @return created BigImageFrame instance
      */
-    public static BigImageFrame createAndShow(final String title, final BufferedImage image, final BufferedImage refImage) {
-        /* compute image difference if possible */
-        final BufferedImage diffImage = ImageUtils.computeDiffImage(title, image, refImage);
-
+    public static BigImageFrame createAndShow(final String title, final BufferedImage image,
+                                              final BufferedImage refImage, final BufferedImage diffImage) {
         final BigImageFrame frame = new BigImageFrame(title);
         frame.image = image;
         frame.refImage = refImage;

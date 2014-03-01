@@ -89,7 +89,15 @@ public final class MapDisplay implements MapConst {
         // Use image copies:
         final BufferedImage refImage = ImageUtils.loadImage(getImageFileName(dataFile));
         final BufferedImage tstImage = (doCopy) ? ImageUtils.copyImage(image) : image;
-        final BigImageFrame frame = BigImageFrame.createAndShow(title, tstImage, refImage);
+
+        /* compute image difference if possible */
+        final BufferedImage diffImage = ImageUtils.computeDiffImage(title, image, refImage);
+
+        if (diffImage != null) {
+            ImageUtils.saveImage(diffImage, "diff_" + getImageFileName(dataFile));
+        }
+
+        final BigImageFrame frame = BigImageFrame.createAndShow(title, tstImage, refImage, diffImage);
         frame.setInterpolation(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);

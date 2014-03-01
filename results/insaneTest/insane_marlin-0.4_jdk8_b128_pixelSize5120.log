@@ -1,0 +1,74 @@
+##############################################################
+# Java: 1.8.0-b128
+#   VM: Java HotSpot(TM) 64-Bit Server VM 25.0-b69 (mixed mode)
+#   OS: Linux 2.6.35.14-106.fc14.x86_64 (amd64)
+# CPUs: 4 (virtual)
+##############################################################
+Loading profile file: /home/bourgesl/libs/marlin/mapbench/bin/../profiles/insane_1T.properties
+Profile properties (merged with defaults):
+  doClip=false
+  doScale=false
+  maxThreads=1
+  minDuration=90000.0
+  minLoops=5
+  pass=1
+  scale=4.0
+  useSharedImage=true
+##############################################################
+# Min duration per test = 90000.0 ms.
+##############################################################
+Loading maps from = /home/bourgesl/libs/marlin/mapbench/bin/../maps
+Results format: 
+test	threads	ops	Tavg	Tmed	stdDev	rms	Med+Stddev	min	max	TotalOps	[ms/op]
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser
+Loaded DrawingCommands: DrawingCommands{width=1400, height=800, commands=4398}
+drawing[dc_boulder_2013-13-30-06-13-17.ser][width = 1400, height = 800] ...
+
+Warming up with 1 threads and 200 loops on  /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser
+cleanup (explicit Full GC): 2,095,867,296 / 2,104,413,560 bytes free.
+INFO: sun.java2d.renderer = org.marlin.pisces.PiscesRenderingEngine
+INFO: PiscesRenderingEngine: sun.java2d.renderer.useThreadLocal = false
+INFO: AAShapePipe: overriding JDK implementation: marlin-renderer TILE patch enabled.
+INFO: PiscesRenderingEngine: sun.java2d.renderer.pixelsize = 5120
+Warm up took 20274.694683 ms
+dc_boulder_2013-13-30-06-13-17.ser	1	200	101.024	99.680	14.493	100.728	114.173	96.231	371.784	200
+cleanup (explicit Full GC): 2,009,490,224 / 2,105,489,872 bytes free.
+Initial test: 95.02703795 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/dc_boulder_2013-13-30-06-13-17.ser for 947 loops ...
+cleanup (explicit Full GC): 2,097,114,320 / 2,108,294,936 bytes free.
+1 threads and 947 loops per thread, time: 82040.508343 ms
+dc_boulder_2013-13-30-06-13-17.ser	1	947	86.626	86.606	1.035	86.612	87.641	85.746	106.662	947
+
+
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/isolines_pg:contour_2014-24-23-12-24-41.ser
+Loaded DrawingCommands: DrawingCommands{width=8192, height=4667, commands=1063949}
+drawing[isolines_pg:contour_2014-24-23-12-24-41.ser][width = 8192, height = 4667] ...
+cleanup (explicit Full GC): 1,640,487,784 / 1,753,816,264 bytes free.
+Initial test: 12196.87598945 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/isolines_pg:contour_2014-24-23-12-24-41.ser for 7 loops ...
+cleanup (explicit Full GC): 1,325,222,936 / 1,711,257,640 bytes free.
+1 threads and 7 loops per thread, time: 89588.822284 ms
+isolines_pg:contour_2014-24-23-12-24-41.ser	1	7	12788.418	12779.497	1.423	12779.497	12780.920	12775.496	12845.944	7
+
+
+Loading drawing commands from file: /home/bourgesl/libs/marlin/mapbench/bin/../maps/texas_roads_2014-44-23-02-44-48.ser
+Loaded DrawingCommands: DrawingCommands{width=4096, height=3324, commands=2891957}
+drawing[texas_roads_2014-44-23-02-44-48.ser][width = 4096, height = 3324] ...
+cleanup (explicit Full GC): 794,839,656 / 1,311,290,264 bytes free.
+Initial test: 6174.3811329499995 ms.
+Testing file /home/bourgesl/libs/marlin/mapbench/bin/../maps/texas_roads_2014-44-23-02-44-48.ser for 14 loops ...
+cleanup (explicit Full GC): 946,218,768 / 1,195,611,760 bytes free.
+1 threads and 14 loops per thread, time: 89064.901993 ms
+texas_roads_2014-44-23-02-44-48.ser	1	14	6353.434	6351.587	5.269	6351.589	6356.855	6344.484	6384.559	14
+
+
+done: score = 6408.472142088183 (3 tests)
+Complete results:
+test	threads	ops	Tavg	Tmed	stdDev	rms	Med+Stddev	min	max	TotalOps	[ms/op]
+<<< Warmup 0
+dc_boulder_2013-13-30-06-13-17.ser	1	200	101.024	99.680	14.493	100.728	114.173	96.231	371.784	200
+>>> Warmup 0
+dc_boulder_2013-13-30-06-13-17.ser	1	947	86.626	86.606	1.035	86.612	87.641	85.746	106.662	947
+isolines_pg:contour_2014-24-23-12-24-41.ser	1	7	12788.418	12779.497	1.423	12779.497	12780.920	12775.496	12845.944	7
+texas_roads_2014-44-23-02-44-48.ser	1	14	6353.434	6351.587	5.269	6351.589	6356.855	6344.484	6384.559	14
+

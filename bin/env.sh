@@ -17,4 +17,5 @@ PROFILE=default.properties
 MAP_BENCH_JAR=../lib/mapbench-0.3.jar
 
 # Marlin jar prefix:
+#MARLIN_JAR_PREFIX=../lib/marlin-0.4.1
 MARLIN_JAR_PREFIX=../lib/marlin-0.5A-Unsafe

@@ -10,12 +10,12 @@
       <directory>${project.basedir}</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>maps/*</include>
-        <include>maps/discarded/*</include>
+        <include>results/ref/README.txt</include>
+        <include>results/ref/ductus/*</include>
+        <include>results/ref/pisces/*</include>
+        <include>results/test/README.txt</include>
+        <include>results/test/diff_ductus/*</include>
       </includes>
-      <excludes>
-        <exclude>maps/discarded/dc*</exclude>
-      </excludes>
     </fileSet>
   </fileSets>
 </assembly>

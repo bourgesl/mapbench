@@ -24,13 +24,20 @@
         <include>lib/*</include>
         <include>maps/README.txt</include>
         <include>profiles/*</include>
+        <include>results/**</include>
+      </includes>
+      <excludes>
+        <exclude>results/ref/**</exclude>
+        <exclude>results/test/**</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
         <include>results/ref/README.txt</include>
         <include>results/test/README.txt</include>
       </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/site</directory>
-      <outputDirectory>docs</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

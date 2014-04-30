@@ -6,6 +6,7 @@ package it.geosolutions.java2d;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -48,21 +49,45 @@ public final class MapDisplay implements MapConst {
             System.out.println("Loading DrawingCommands: " + dataFile);
             DrawingCommands commands = DrawingCommands.load(dataFile);
 
-            for (int i = 0, len = (doScale) ? scales.length : 1; i < len; i++) {
-                double scale = 1d;
+            for (int i = 0, len = (doScale) ? scales_X.length : 1; i < len; i++) {
                 if (doScale) {
+                    double scaleX = scales_X[i];
+                    double scaleY = scales_Y[i];
                     // Affine transform:
-                    scale = scales[i];
-                    if (Math.abs(scale - 1d) < 1e-3d) {
-                        commands.setAt(null);
-                    } else {
-                        commands.setAt(AffineTransform.getScaleInstance(scale, scale));
+                    if (!((Math.abs(scaleX - 1d) < 1e-3d) && (Math.abs(scaleY - 1d) < 1e-3d))) {
+                        commands.setAt(AffineTransform.getScaleInstance(scaleX, scaleY));
+                        System.out.println("scaling[" + scaleX + " x " + scaleY + "]");
+                    }
+                }
+                if (doShear) {
+                    double shearX = shear_X;
+                    double shearY = shear_Y;
+                    // Affine transform:
+                    if (!((Math.abs(shearX - 1d) < 1e-3d) && (Math.abs(shearY - 1d) < 1e-3d))) {
+                        final AffineTransform shearAt = AffineTransform.getScaleInstance(shearX, shearY);
+                        if (commands.getAt() != null) {
+                            shearAt.concatenate(commands.getAt());
+                        }
+                        commands.setAt(shearAt);
+                        System.out.println("shearing[" + shearX + " x " + shearY + "]");
+                    }
+                }
+                if (doRotate) {
+                    double angle = rotationAngle;
+                    // Affine transform:
+                    if (!(Math.abs(angle) < 1e-3d)) {
+                        final AffineTransform rotateAt = AffineTransform.getRotateInstance(Math.toRadians(angle));
+                        if (commands.getAt() != null) {
+                            rotateAt.concatenate(commands.getAt());
+                        }
+                        commands.setAt(rotateAt);
+                        System.out.println("rotating[" + angle + " deg]");
                     }
                 }
                 System.out.println("drawing[" + dataFile.getName() + "][width = " + commands.getWidth()
-                        + ", height = " + commands.getHeight() + "] at scale = " + scale + "...");
+                        + ", height = " + commands.getHeight() + "] ...");
 
-                commands.prepareCommands(doClip);
+                commands.prepareCommands(doClip, doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
 
                 BufferedImage image = commands.prepareImage();
                 Graphics2D graphics = commands.prepareGraphics(image);

@@ -135,13 +135,35 @@ public final class ImageUtils {
 
             final Histogram h = new Histogram("diff[" + imageFileName + "]");
 
-            int dr, dg, db;
+            final boolean useGrayScale = true;
+
+            int dr, dg, db, v, max = 0;
             for (int i = 0, len = aRefPix.length; i < len; i++) {
                 dr = r(aRefPix[i]) - r(aTstPix[i]);
                 dg = g(aRefPix[i]) - g(aTstPix[i]);
                 db = b(aRefPix[i]) - b(aTstPix[i]);
-                aDifPix[i] = toInt(clamp127(dr), clamp127(dg), clamp127(db));
 
+                /* put condition out of loop */
+                if (useGrayScale) {
+                    v = (Math.abs(dr) + Math.abs(dg) + Math.abs(db)) / 3;
+                    if (v > max) {
+                        max = v;
+                    }
+                    aDifPix[i] = toInt(v, v, v);
+                } else {
+                    if (dr > max) {
+                        max = v;
+                    }
+                    if (dg > max) {
+                        max = v;
+                    }
+                    if (db > max) {
+                        max = v;
+                    }
+                    aDifPix[i] = toInt(clamp127(dr), clamp127(dg), clamp127(db));
+                }
+
+                // residuals:
                 h.add((dr * dr + dg * dg + db * db) / 3);
             }
 
@@ -152,6 +174,21 @@ public final class ImageUtils {
                 System.out.println("computeDiffImage: No difference for images: " + imageFileName);
                 return null;
             }
+            System.out.println("computeDiffImage: max delta: " + max);
+
+            /* normalize diff image vs mean(diff) */
+            if ((max > 0) && (max < 255)) {
+                if (useGrayScale) {
+                    final float factor = 255f / max;
+                    for (int i = 0, len = aDifPix.length; i < len; i++) {
+                        v = Math.round(factor * b(aDifPix[i]));
+                        aDifPix[i] = toInt(v, v, v);
+                    }
+                } else {
+                    System.out.println("TODO: normalize color image");
+                }
+            }
+
             System.out.println("computeDiffImage: Histogram:\n" + h);
 
             return diffImage;

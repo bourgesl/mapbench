@@ -5,6 +5,7 @@ package it.geosolutions.java2d;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -17,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.gui.ImageUtils;
 
 /**
  * Map benchmark 
@@ -45,15 +45,11 @@ public final class MapBench implements MapConst {
     static double MIN_DURATION = Profile.getDouble(Profile.KEY_MIN_DURATION);
 
     /* constants */
-    final static double atScale = scales[0];
-
     static final boolean doWarmup = true;
     static final boolean doGCBeforeTest = true;
 
     static final int WARMUP_LOOPS_MIN = 200;
     static final int WARMUP_LOOPS_MAX = 200;
-
-    static final Runtime runtime = Runtime.getRuntime();
 
     private static File cmdFile;
 
@@ -63,7 +59,7 @@ public final class MapBench implements MapConst {
         final AffineTransform at;
         if (doScale) {
             // Affine transform:
-            at = AffineTransform.getScaleInstance(atScale, atScale);
+            at = AffineTransform.getScaleInstance(scales_X[0], scales_Y[0]);
         } else {
             at = null;
         }
@@ -213,7 +209,7 @@ public final class MapBench implements MapConst {
         final int _numThreads = numThreads;
         final ExecutorService _executor = executor;
 
-        commands.prepareCommands(doClip);
+        commands.prepareCommands(doClip, doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
 
         final ArrayList<Callable<BufferedImage>> jobs = new ArrayList<Callable<BufferedImage>>(_numThreads);
         final ArrayList<Future<BufferedImage>> futures = new ArrayList<Future<BufferedImage>>(_numThreads);
@@ -320,7 +316,7 @@ public final class MapBench implements MapConst {
      * Cleanup (GC + pause)
      */
     private static void cleanup() {
-        final long freeBefore = runtime.freeMemory();
+        final long freeBefore = Runtime.getRuntime().freeMemory();
         // Perform GC:
         System.gc();
         System.gc();
@@ -332,7 +328,7 @@ public final class MapBench implements MapConst {
         } catch (InterruptedException ie) {
             System.out.println("thread interrupted");
         }
-        final long freeAfter = runtime.freeMemory();
+        final long freeAfter = Runtime.getRuntime().freeMemory();
         System.out.println(String.format("cleanup (explicit Full GC): %,d / %,d bytes free.", freeBefore, freeAfter));
     }
 

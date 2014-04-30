@@ -12,6 +12,8 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.IdentityHashMap;
@@ -19,10 +21,11 @@ import java.util.Map;
 
 public final class DrawingCommand implements Serializable {
 
+    private static final boolean USE_CREATE_STROKED_SHAPE = MapConst.doCreateStrokedShape;
     private static final boolean HIDE_CLIPPED_SHAPE = true;
 
     private static final long serialVersionUID = -6164586104804552649L;
-    private static final BasicStroke defaultStroke = new BasicStroke(1);
+    private static final BasicStroke defaultStroke = new BasicStroke(1f);
     private static Map<BasicStroke, SerializableBasicStroke> mapStrokes = new IdentityHashMap<>();
     private static Map<AlphaComposite, SerializableAlphaComposite> mapComposites = new IdentityHashMap<>();
 
@@ -128,6 +131,18 @@ public final class DrawingCommand implements Serializable {
         }
     }
 
+    public void setWindingRule(final int windingRule) {
+        if (shape instanceof GeneralPath) {
+            final GeneralPath path = (GeneralPath) shape;
+            path.setWindingRule(windingRule);
+        } else {
+            System.out.println("Unsupported shape [" + shape.getClass().getName() + "] for setWindingRule(int) !");
+        }
+        if ((windingRule == PathIterator.WIND_EVEN_ODD) && (stroke != null)) {
+            this.stroke = null;
+        }
+    }
+
     public void execute(Graphics2D g2d, final AffineTransform graphicsTx) {
         if (!visible) {
             if (HIDE_CLIPPED_SHAPE) {
@@ -157,9 +172,16 @@ public final class DrawingCommand implements Serializable {
                 g2d.setTransform(transform);
             }
         }
+
         if (stroke != null) {
-            g2d.setStroke(stroke.toStroke());
-            g2d.draw(shape);
+            if (USE_CREATE_STROKED_SHAPE) {
+                final Shape strokedShape = stroke.toStroke().createStrokedShape(shape);
+//                g2d.setPaint(Color.GREEN);
+                g2d.fill(strokedShape);
+            } else {
+                g2d.setStroke(stroke.toStroke());
+                g2d.draw(shape);
+            }
         } else {
             g2d.fill(shape);
         }

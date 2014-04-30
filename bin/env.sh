@@ -17,7 +17,7 @@ PROFILE=sharedImage.properties
 
 # set paths
 # MapBench jar:
-MAP_BENCH_JAR=../lib/mapbench-0.3.1.jar
+MAP_BENCH_JAR=../lib/mapbench-0.4.0.jar
 
 
 # server jvm

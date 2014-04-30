@@ -56,9 +56,8 @@ public final class DrawingCommands implements Serializable {
         if (at != null && !at.isIdentity()) {
             this.at = at;
         } else {
-            this.at = new AffineTransform();
+            this.at = AffineTransform.getTranslateInstance(margin, margin);
         }
-        this.at.translate(margin, margin);
     }
 
     public int getWidth() {
@@ -69,7 +68,7 @@ public final class DrawingCommands implements Serializable {
         return (at != null) ? 1 + (int) (at.getScaleY() * height + 2d * at.getTranslateX()) : height;
     }
 
-    public void prepareCommands(final boolean doClip) {
+    public void prepareCommands(final boolean doClip, final boolean doOverrideWindingRule, final int windingRule) {
         if (!clipped) {
             clipped = true;
 
@@ -80,6 +79,15 @@ public final class DrawingCommands implements Serializable {
 
             for (int i = 0, len = _commands.size(); i < len; i++) {
                 _commands.get(i).clip(clip);
+            }
+        }
+
+        if (doOverrideWindingRule) {
+            // Update winding Rule:
+            final ArrayList<DrawingCommand> _commands = commands;
+
+            for (int i = 0, len = _commands.size(); i < len; i++) {
+                _commands.get(i).setWindingRule(windingRule);
             }
         }
     }
@@ -94,18 +102,19 @@ public final class DrawingCommands implements Serializable {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setClip(new Rectangle2D.Double(0d, 0d, getWidth(), getHeight()));
 
-        if (at != null) {
-            graphics.setTransform(at);
-        }
-
         return graphics;
     }
 
     public void execute(final Graphics2D graphics) {
         graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, width, height);
+        graphics.fillRect(0, 0, getWidth(), getHeight());
 
         final AffineTransform _at = at;
+        if (_at != null) {
+            graphics.setTransform(_at);
+            graphics.setColor(Color.gray);
+            graphics.drawRect(0, 0, getWidth(), getHeight());
+        }
         final ArrayList<DrawingCommand> _commands = commands;
 
         for (int i = 0, len = _commands.size(); i < len; i++) {

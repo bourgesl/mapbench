@@ -16,9 +16,26 @@ import java.util.TreeSet;
 public final class Profile {
     /* MapConst settings (shared) */
 
+    /* do create stroked shape instead of draw(shape) and then fill(strokedShape) */
+    public final static String KEY_DO_CREATE_STROKED_SHAPE = "doCreateStrokedShape";
+
+    /* winding rule (even odd or non zero) */
+    public final static String KEY_DO_WINDING_RULE_EVEN_ODD = "doUseWingRuleEvenOdd";
+
+    /* do clipping before rendering ? */
     public final static String KEY_DO_CLIP = "doClip";
+
+    /* scale affine transform */
     public final static String KEY_DO_SCALE = "doScale";
-    public final static String KEY_SCALE = "scale";
+    public final static String KEY_SCALE_X = "scaleX";
+    public final static String KEY_SCALE_Y = "scaleY";
+    /* shear affine transform */
+    public final static String KEY_DO_SHEAR = "doShear";
+    public final static String KEY_SHEAR_X = "shearX";
+    public final static String KEY_SHEAR_Y = "shearY";
+    /* rotation affine transform */
+    public final static String KEY_DO_ROTATE = "doRotate";
+    public final static String KEY_ROTATE_ANGLE = "rotateAngle";
 
     /* MapBench settings */
     public final static String KEY_USE_SHARED_IMAGE = "useSharedImage";
@@ -39,13 +56,31 @@ public final class Profile {
 
     static {
         /* MapConst settings (shared) */
+        /* true to create stroked shape instead of draw(shape) and then fill(strokedShape) */
+        defProps.setProperty(KEY_DO_CREATE_STROKED_SHAPE, "false");
+
+        /* true to use the even-odd winding rule */
+        defProps.setProperty(KEY_DO_WINDING_RULE_EVEN_ODD, "false");
+
         /* true to enable shape clipping before benchmark to render only visible (even partially) shapes */
         defProps.setProperty(KEY_DO_CLIP, "false");
+
         /* true to perform shape scaling */
         defProps.setProperty(KEY_DO_SCALE, "false");
-
         /* scaling factors (only first one is used by MapBench) */
-        defProps.setProperty(KEY_SCALE, "4.0");
+        defProps.setProperty(KEY_SCALE_X, "4.0");
+        defProps.setProperty(KEY_SCALE_Y, "4.0");
+
+        /* true to perform shape shearing */
+        defProps.setProperty(KEY_DO_SHEAR, "false");
+        /* shearing factor */
+        defProps.setProperty(KEY_SHEAR_X, "2.0");
+        defProps.setProperty(KEY_SHEAR_Y, "2.0");
+
+        /* true to perform shape rotation */
+        defProps.setProperty(KEY_DO_ROTATE, "false");
+        /* rotating factor */
+        defProps.setProperty(KEY_ROTATE_ANGLE, "17.333");
 
         /* MapBench settings */
         /* use shared image for all iterations or create 1 image per iteration */
@@ -78,7 +113,7 @@ public final class Profile {
         /* load properties at the first time */
         if (!resolved) {
             resolved = true;
-            
+
             startup();
 
             final String profile = System.getProperty("mapbench.profile");
@@ -121,7 +156,7 @@ public final class Profile {
         System.out.printf("# CPUs: %d (virtual)\n", Runtime.getRuntime().availableProcessors());
         System.out.printf("##############################################################\n");
     }
-    
+
     private static void dump() {
         System.out.println("Profile properties (merged with defaults):");
 

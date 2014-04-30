@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * MapBench project (GPLv2 + CP)
+ ******************************************************************************/
 package org.gui;
 
 import static it.geosolutions.java2d.MapConst.refResultDirectory;

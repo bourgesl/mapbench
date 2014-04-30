@@ -6,7 +6,8 @@ source ./env.sh
 source ./env_marlin.sh
 
 # Enable stats
-JAVA_OPTS="-Dsun.java2d.renderer.doStats=true $JAVA_OPTS"
+STATS=false
+JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"

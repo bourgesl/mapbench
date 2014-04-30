@@ -10,6 +10,7 @@ import java.io.File;
  */
 public interface MapConst {
 
+    /** true to create stroked shape instead of draw(shape) and then fill(strokedShape) */
     final static boolean doCreateStrokedShape = Profile.getBoolean(Profile.KEY_DO_CREATE_STROKED_SHAPE);
     
     /** true to use the even-odd winding rule */

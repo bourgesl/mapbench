@@ -21,7 +21,6 @@ import java.util.Map;
 
 public final class DrawingCommand implements Serializable {
 
-    private static final boolean USE_CREATE_STROKED_SHAPE = MapConst.doCreateStrokedShape;
     private static final boolean HIDE_CLIPPED_SHAPE = true;
 
     private static final long serialVersionUID = -6164586104804552649L;
@@ -174,7 +173,7 @@ public final class DrawingCommand implements Serializable {
         }
 
         if (stroke != null) {
-            if (USE_CREATE_STROKED_SHAPE) {
+            if (MapConst.doCreateStrokedShape) {
                 final Shape strokedShape = stroke.toStroke().createStrokedShape(shape);
 //                g2d.setPaint(Color.GREEN);
                 g2d.fill(strokedShape);

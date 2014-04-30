@@ -4,13 +4,19 @@
 PROFILE=default.properties
 
 # use shared image (less gc overhead but less realistic)
-PROFILE=sharedImage.properties
+#PROFILE=sharedImage.properties
 
 # use shared image but single thread only
 #PROFILE=shared_1T.properties
 
 # scaling test (1T but image x4):
 #PROFILE=scaleTest.properties
+
+# even_odd winding rule test:
+#PROFILE=evenOddWindingRule.properties
+
+# complex affine transform test:
+#PROFILE=cpxTransform.properties
 
 # use shared image and only 1 thread for insane maps:
 #PROFILE=insane_1T.properties

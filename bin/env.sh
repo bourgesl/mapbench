@@ -4,7 +4,10 @@
 PROFILE=default.properties
 
 # use shared image (less gc overhead but less realistic)
-#PROFILE=sharedImage.properties
+PROFILE=sharedImage.properties
+
+# longer (shared 2T) test:
+#PROFILE=longer_shared.properties
 
 # use shared image but single thread only
 #PROFILE=shared_1T.properties
@@ -17,6 +20,9 @@ PROFILE=default.properties
 
 # complex affine transform test:
 #PROFILE=cpxTransform.properties
+
+# use createStrokedShape() + fill() test:
+#PROFILE=strokedShape.properties
 
 # use shared image and only 1 thread for insane maps:
 #PROFILE=insane_1T.properties

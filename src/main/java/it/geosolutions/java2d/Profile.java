@@ -19,15 +19,22 @@ import java.util.TreeSet;
 public final class Profile {
     /* MapConst settings (shared) */
 
-    /* do create stroked shape instead of draw(shape) and then fill(strokedShape) */
+    /* create stroked shape instead of draw(shape) and then fill(strokedShape) */
     public final static String KEY_DO_CREATE_STROKED_SHAPE = "doCreateStrokedShape";
 
     /* winding rule (even odd or non zero) */
     public final static String KEY_DO_WINDING_RULE_EVEN_ODD = "doUseWingRuleEvenOdd";
 
+    /* use dashed stroke instead of shape's stroke */
+    public final static String KEY_DO_USE_DASHED_STROKE = "doUseDashedStroke";
+
     /* do clipping before rendering ? */
     public final static String KEY_DO_CLIP = "doClip";
 
+    /* translate affine transform */
+    public final static String KEY_DO_TRANSLATE = "doTranslate";
+    public final static String KEY_TRANSLATE_X = "translateX";
+    public final static String KEY_TRANSLATE_Y = "translateY";
     /* scale affine transform */
     public final static String KEY_DO_SCALE = "doScale";
     public final static String KEY_SCALE_X = "scaleX";
@@ -64,6 +71,9 @@ public final class Profile {
 
         /* true to use the even-odd winding rule */
         defProps.setProperty(KEY_DO_WINDING_RULE_EVEN_ODD, "false");
+        
+        /* true to use dashed stroke */
+        defProps.setProperty(KEY_DO_USE_DASHED_STROKE, "false");
 
         /* true to enable shape clipping before benchmark to render only visible (even partially) shapes */
         defProps.setProperty(KEY_DO_CLIP, "false");
@@ -74,6 +84,12 @@ public final class Profile {
         defProps.setProperty(KEY_SCALE_X, "4.0");
         defProps.setProperty(KEY_SCALE_Y, "4.0");
 
+        /* true to perform shape scaling */
+        defProps.setProperty(KEY_DO_TRANSLATE, "false");
+        /* translation factors */
+        defProps.setProperty(KEY_TRANSLATE_X, "0.0");
+        defProps.setProperty(KEY_TRANSLATE_Y, "0.0");
+        
         /* true to perform shape shearing */
         defProps.setProperty(KEY_DO_SHEAR, "false");
         /* shearing factor */

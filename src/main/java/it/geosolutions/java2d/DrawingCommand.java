@@ -98,21 +98,21 @@ public final class DrawingCommand implements Serializable {
         return shape;
     }
     // transient combined transform:
-    private transient AffineTransform combinedTransform = null;
+    private transient AffineTransform effectiveTransform = null;
     /** clip test */
     private transient boolean visible = true;
 
     public void dispose() {
-        combinedTransform = null;
+        effectiveTransform = null;
         visible = true;
     }
 
-    public void clip(final Rectangle2D clip) {
+    public boolean clip(final Rectangle2D clip) {
         visible = true;
         if (clip != null) {
             if (transform != null && !transform.isIdentity()) {
                 // TODO: bounds = transform.createTransformedShape(bounds);
-                return;
+                return false;
             }
 
             final Rectangle2D bounds = shape.getBounds2D();
@@ -123,10 +123,28 @@ public final class DrawingCommand implements Serializable {
                 double lw = bs.getLineWidth();
 
                 bounds.setRect(bounds.getX() - lw, bounds.getY() - lw,
-                        bounds.getWidth() + 2d * lw, lw + 2d * lw);
+                        bounds.getWidth() + 2d * lw, bounds.getHeight() + 2d * lw);
             }
 
             visible = clip.intersects(bounds);
+            // TODO: use clipper ?
+        }
+        return !visible;
+    }
+
+    public void prepareTransform(final AffineTransform graphicsTx) {
+        if (transform != null && !transform.isIdentity()) {
+            if (graphicsTx != null) {
+                // combine transform with one coming from graphics:
+                // cached until explicit cleanup
+                effectiveTransform = new AffineTransform(graphicsTx);
+                effectiveTransform.concatenate(transform);
+            } else {
+                effectiveTransform = transform;
+            }
+        } else {
+            // no custom transform:
+            effectiveTransform = null;
         }
     }
 
@@ -142,11 +160,12 @@ public final class DrawingCommand implements Serializable {
         }
     }
 
-    public void execute(Graphics2D g2d, final AffineTransform graphicsTx) {
+    public void execute(final Graphics2D g2d, final AffineTransform graphicsTx) {
         if (!visible) {
             if (HIDE_CLIPPED_SHAPE) {
                 return;
             }
+// TEST:            
 //            System.out.println("shape invisible = " + shape);
             g2d.setPaint(Color.ORANGE);
         } else {
@@ -154,35 +173,34 @@ public final class DrawingCommand implements Serializable {
         }
         if (composite != null) {
             g2d.setComposite(composite.toAlphaComposite());
-        } else {
-            g2d.setComposite(null);
         }
-        if (transform != null && !transform.isIdentity()) {
-            if (graphicsTx != null) {
-                if (combinedTransform == null) {
-                    /* TODO: prepare combined transform once before tests */
-                    // combine transform with one coming from graphics:
-                    // cached until explicit cleanup
-                    combinedTransform = new AffineTransform(graphicsTx);
-                    combinedTransform.concatenate(transform);
-                }
-                g2d.setTransform(combinedTransform);
-            } else {
-                g2d.setTransform(transform);
-            }
+        if (effectiveTransform != null) {
+            g2d.setTransform(effectiveTransform);
+// TEST:            
+//            g2d.setPaint(Color.GREEN);
         }
 
+        // Draw / Fill command:
         if (stroke != null) {
             if (MapConst.doCreateStrokedShape) {
                 final Shape strokedShape = stroke.toStroke().createStrokedShape(shape);
-//                g2d.setPaint(Color.GREEN);
+// TEST:            
+//            g2d.setPaint(Color.GREEN);
                 g2d.fill(strokedShape);
             } else {
-                g2d.setStroke(stroke.toStroke());
+                g2d.setStroke( (MapConst.doUseDashedStroke) ? MapConst.STROKE_DOTTED : stroke.toStroke());
                 g2d.draw(shape);
             }
         } else {
             g2d.fill(shape);
+        }
+
+        // finally restore state:
+        if (effectiveTransform != null) {
+            g2d.setTransform(graphicsTx);
+        }
+        if (composite != null) {
+            g2d.setComposite(AlphaComposite.SrcOver);
         }
     }
 }

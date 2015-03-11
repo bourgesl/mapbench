@@ -27,10 +27,11 @@ import java.util.concurrent.Future;
  * @author bourgesl
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-public final class MapBench implements MapConst {
+public final class MapBench extends BaseTest {
 
     /* profile settings */
     final static boolean showImage = false;
+    final static boolean showImageIntermediate = false;
 
     /* use shared image for all iterations or create 1 image per iteration */
     final static boolean useSharedImage = Profile.getBoolean(Profile.KEY_USE_SHARED_IMAGE);
@@ -46,23 +47,26 @@ public final class MapBench implements MapConst {
 
     /* constants */
     static final boolean doWarmup = true;
+    static final boolean doWarmupEachTest = true;
     static final boolean doGCBeforeTest = true;
 
-    static final int WARMUP_LOOPS_MIN = 200;
-    static final int WARMUP_LOOPS_MAX = 200;
+    // before 200/200
+    static final int WARMUP_LOOPS_MIN = 80;
+    static final int WARMUP_LOOPS_MAX = 2 * WARMUP_LOOPS_MIN;
+
+    static final int WARMUP_BEFORE_TEST_THREADS = 2;
+    static final int WARMUP_BEFORE_TEST_MIN_LOOPS = 10;
+    static final int WARMUP_BEFORE_TEST_MIN_DURATION = 3000;
+
+    static final int CALIBRATE_LOOPS = 3000;
 
     private static File cmdFile;
 
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
 
-        final AffineTransform at;
-        if (doScale) {
-            // Affine transform:
-            at = AffineTransform.getScaleInstance(scales_X[0], scales_Y[0]);
-        } else {
-            at = null;
-        }
+        // Prepare view transformation:
+        final AffineTransform viewAT = getViewTransform();
 
         startTests();
 
@@ -73,7 +77,7 @@ public final class MapBench implements MapConst {
 
         System.out.println("Loading maps from = " + inputDirectory.getAbsolutePath());
 
-        File[] files = inputDirectory.listFiles(new FilenameFilter() {
+        final File[] dataFiles = inputDirectory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.matches(testMatcher);
@@ -81,37 +85,70 @@ public final class MapBench implements MapConst {
         });
 
         // Sort file names:
-        Arrays.sort(files);
+        Arrays.sort(dataFiles);
 
-        final StringBuilder sbResults = new StringBuilder(128 * 1024);
-        sbResults.append(Result.toStringHeader()).append('\n');
+        final StringBuilder sbWarm = new StringBuilder(8 * 1024);
+        sbWarm.append(Result.toStringHeader()).append('\n');
+
+        final StringBuilder sbRes = new StringBuilder(16 * 1024);
+        sbRes.append(Result.toStringHeader()).append('\n');
+
+        final StringBuilder sbScore = new StringBuilder(1024);
 
         System.out.println("Results format: \n" + Result.toStringHeader());
 
+        // global score:
         int nTest = 0;
         double totalTest = 0d;
+        // thread score:
+        int nThPass = 0;
+        int threads = 1;
+        while (threads <= MAX_THREADS) {
+            threads *= 2;
+            nThPass++;
+        }
+        final int nThScores = nThPass;
+        final int[] nThTest = new int[nThScores];
+        final double[] nThTotal = new double[nThScores];
+
         double initialTime;
         int testLoops;
 
         ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
         try {
-            DrawingCommands commands;
             Result res;
             String sRes;
             boolean first = true;
+            DrawingCommands commands;
+
+            if (doWarmup) {
+                commands = new DrawingCommands(800, 600, new ArrayList<DrawingCommand>(0));
+                commands.fileName = "[calibration]";
+
+                System.out.println("\nCalibrating up with " + MAX_THREADS + " threads and " + CALIBRATE_LOOPS + " loops");
+                res = new MapBench(executor, commands, MAX_THREADS, CALIBRATE_LOOPS).timedExecute();
+                System.out.println("Calibration up took " + res.totalTime + " ms");
+                sRes = res.toString();
+
+                System.out.println(sRes);
+                sbWarm.append("<<< Calib 1\n");
+                sbWarm.append(sRes).append('\n');
+                sbWarm.append(">>> Calib 1\n");
+
+                // Marlin stats:
+                dumpRendererStats();
+            }
 
             for (int n = 0; n < PASS; n++) {
 
-                for (File file : files) {
+                for (File file : dataFiles) {
                     System.out.println("Loading drawing commands from file: " + file.getAbsolutePath());
                     commands = DrawingCommands.load(file);
 
-                    cmdFile = file;
+                    // set view transform once:
+                    commands.setAt(viewAT);
 
-                    if (doScale) {
-                        // apply affine transform:
-                        commands.setAt(at);
-                    }
+                    cmdFile = file;
 
                     System.out.println("drawing[" + file.getName() + "][width = " + commands.getWidth()
                             + ", height = " + commands.getHeight() + "] ...");
@@ -120,54 +157,124 @@ public final class MapBench implements MapConst {
                     if (doWarmup && first) {
                         first = false;
 
-                        for (int nWarmup = WARMUP_LOOPS_MIN, i = 0; nWarmup <= WARMUP_LOOPS_MAX; nWarmup *= 2, i++) {
-                            System.out.println("\nWarming up with " + MAX_THREADS + " threads and " + nWarmup + " loops on  " + file.getAbsolutePath());
+                        for (int nWarmup = WARMUP_LOOPS_MIN, i = 1; nWarmup <= WARMUP_LOOPS_MAX; nWarmup *= 2, i++) {
+                            System.out.println("\nWarming up with " + MAX_THREADS + " threads and " + nWarmup + " loops on " + file.getAbsolutePath());
                             res = new MapBench(executor, commands, MAX_THREADS, nWarmup).timedExecute();
                             System.out.println("Warm up took " + res.totalTime + " ms");
                             sRes = res.toString();
 
                             System.out.println(sRes);
-                            sbResults.append("<<< Warmup ").append(i).append("\n");
-                            sbResults.append(sRes).append('\n');
-                            sbResults.append(">>> Warmup ").append(i).append("\n");
+                            sbWarm.append("<<< Warmup ").append(i).append("\n");
+                            sbWarm.append(sRes).append('\n');
+                            sbWarm.append(">>> Warmup ").append(i).append("\n");
                         }
 
-                        // Pisces stats:
-//                        sun.java2d.pisces.ArrayCache.dumpStats();
+                        // Marlin stats:
+                        dumpRendererStats();
+                    }
+
+                    // Warmup
+                    if (doWarmupEachTest) {
+                        // Estimate number of loops based on median time given by 3 loops:
+                        res = new MapBench(executor, commands, 1, 3).timedExecute();
+                        initialTime = Result.toMillis(res.nsPerOpMed);
+
+                        System.out.println("Initial test: " + initialTime + " ms.");
+
+                        initialTime *= 0.95d; // 5% margin
+                        testLoops = Math.max(WARMUP_BEFORE_TEST_MIN_LOOPS, (int) (WARMUP_BEFORE_TEST_MIN_DURATION / initialTime));
+
+                        System.out.println("\nWarming up with " + WARMUP_BEFORE_TEST_THREADS + " threads and "
+                                + testLoops + " loops on " + file.getAbsolutePath());
+                        res = new MapBench(executor, commands, WARMUP_BEFORE_TEST_THREADS, testLoops).timedExecute();
+                        System.out.println("Warm up took " + res.totalTime + " ms");
+                        sRes = res.toString();
+
+                        System.out.println(sRes);
+                        sbWarm.append(sRes).append('\n');
+
+                        // Marlin stats:
+                        dumpRendererStats();
                     }
 
                     // Estimate number of loops based on median time given by 3 loops:
                     res = new MapBench(executor, commands, 1, 3).timedExecute();
-                    initialTime = Result.toMillis(res.nsPerOpMed) * 0.95d; // 5% margin
+                    initialTime = Result.toMillis(res.nsPerOpMed);
 
                     System.out.println("Initial test: " + initialTime + " ms.");
 
+                    initialTime *= 0.95d; // 5% margin
                     testLoops = Math.max(MIN_LOOPS, (int) (MIN_DURATION / initialTime));
 
                     System.out.println("Testing file " + file.getAbsolutePath() + " for " + testLoops + " loops ...");
 
-                    int threads = 1;
+                    nThPass = 0;
+                    threads = 1;
                     while (threads <= MAX_THREADS) {
                         res = new MapBench(executor, commands, threads, testLoops).timedExecute();
                         System.out.println(threads + " threads and " + testLoops + " loops per thread, time: " + res.totalTime + " ms");
                         sRes = res.toString();
 
                         nTest++;
-                        totalTest += res.nsPerOpMedStdDev;
+                        totalTest += res.nsPerOpMed95;
+
+                        nThTest[nThPass]++;
+                        nThTotal[nThPass] += res.nsPerOpMed95;
 
                         System.out.println(sRes);
-                        sbResults.append(sRes).append('\n');
+                        sbRes.append(sRes).append('\n');
+
                         threads *= 2;
+                        nThPass++;
                     }
 
                     System.out.println("\n");
 
-                    // Pisces stats:
-//                        sun.java2d.pisces.ArrayCache.dumpStats();
                 } // files
 
-                System.out.println("done: score = " + Result.toMillis(totalTest / (double) nTest) + " (" + nTest + " tests)");
-                System.out.println("Complete results:\n" + sbResults.toString());
+                System.out.println("WARMUP results:");
+                System.out.println(sbWarm.toString());
+                System.out.println("TEST results:");
+                System.out.println(sbRes.toString());
+
+                sbScore.append("Tests\t");
+                sbScore.append(nTest).append('\t');
+
+                nThPass = 0;
+                threads = 1;
+                while (threads <= MAX_THREADS) {
+                    sbScore.append(nThTest[nThPass]).append('\t');
+                    threads *= 2;
+                    nThPass++;
+                }
+
+                sbScore.append("\nThreads\t");
+                sbScore.append(MAX_THREADS).append('\t');
+
+                nThPass = 0;
+                threads = 1;
+                while (threads <= MAX_THREADS) {
+                    sbScore.append(threads).append('\t');
+                    threads *= 2;
+                    nThPass++;
+                }
+
+                sbScore.append("\nPct95\t");
+                sbScore.append(String.format("%.3f",
+                        Result.toMillis(totalTest / (double) nTest))).append('\t');
+
+                nThPass = 0;
+                threads = 1;
+                while (threads <= MAX_THREADS) {
+                    sbScore.append(String.format("%.3f",
+                            Result.toMillis(nThTotal[nThPass] / (double) nThTest[nThPass]))).append('\t');
+                    threads *= 2;
+                    nThPass++;
+                }
+                sbScore.append('\n');
+
+                System.out.println("Scores:");
+                System.out.println(sbScore.toString());
 
             } // PASS
 
@@ -209,7 +316,7 @@ public final class MapBench implements MapConst {
         final int _numThreads = numThreads;
         final ExecutorService _executor = executor;
 
-        commands.prepareCommands(doClip, doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
+        commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
 
         final ArrayList<Callable<BufferedImage>> jobs = new ArrayList<Callable<BufferedImage>>(_numThreads);
         final ArrayList<Future<BufferedImage>> futures = new ArrayList<Future<BufferedImage>>(_numThreads);
@@ -232,9 +339,10 @@ public final class MapBench implements MapConst {
             }
         }
 
-        // Pisces stats:
-//        sun.java2d.pisces.ArrayCache.dumpStats();
         commands.dispose();
+
+        // Marlin stats:
+        dumpRendererStats();
     }
 
     final static class Test implements Callable<BufferedImage> {
@@ -267,7 +375,6 @@ public final class MapBench implements MapConst {
             final long[] _opss = opss;
             final long[] _nanoss = nanoss;
             final int _nThread = nThread;
-            final int _numThreads = numThreads;
             final int _loops = loops;
             final DrawingCommands _commands = commands;
             BufferedImage _image = image;
@@ -295,9 +402,9 @@ public final class MapBench implements MapConst {
 
                 end = System.nanoTime();
 
-                if (showImage) {
-                    if ((i == 0) && (_nThread == _numThreads >> 1)) {
-                        MapDisplay.showImage("TH" + _nThread + " " + _commands.fileName, cmdFile, _image, true); // do copy
+                if (showImageIntermediate) {
+                    if ((i % 10) == 1) {
+                        MapDisplay.showImage("Int. TH" + _nThread + " " + _commands.fileName, cmdFile, _image, true); // do copy
                     }
                 }
 
@@ -340,26 +447,25 @@ public final class MapBench implements MapConst {
         double totalTime = 0d;
         public final String testName;
         public final int param;
-        public final int threads;
-        public final double nsPerOpAvg, nsPerOpMed, nsPerOpSigma, nsPerOpRms, nsPerOpMedStdDev;
+        public final int nOps;
+        public final double nsPerOpAvg, nsPerOpSigma, nsPerOpMed, nsPerOpMed95;
         public final double nsPerOpMin, nsPerOpMax;
-        private final long[] opss, nanoss;
+        private final long[] opss;
         private final double nsPerOps[];
         private final long opsSum;
 
         // TODO: rename threads to N or N elements:
-        public Result(String testName, int param, int threads, long[] opss, long[] nanoss) {
+        public Result(String testName, int param, int nops, long[] opss, long[] nanoss) {
             this.testName = testName;
             this.param = param;
-            this.threads = threads;
+            this.nOps = nops;
             this.opss = opss;
-            this.nanoss = nanoss;
 
             long _opsSum = 0L;
             long _nanosSum = 0L;
-            final double[] _nsPerOps = new double[threads];
+            final double[] _nsPerOps = new double[nops];
 
-            for (int i = 0; i < threads; i++) {
+            for (int i = 0; i < nops; i++) {
                 _nsPerOps[i] = ((double) nanoss[i]) / (double) opss[i];
                 _opsSum += opss[i];
                 _nanosSum += nanoss[i];
@@ -370,11 +476,23 @@ public final class MapBench implements MapConst {
             final double _nsPerOpAvg = ((double) _nanosSum) / (double) _opsSum;
             this.nsPerOpAvg = _nsPerOpAvg;
 
+            // stddev:
+            double nsPerOpVar = 0d;
+            double nsPerOpDiff;
+
+            for (int i = 0; i < nops; i++) {
+                nsPerOpDiff = _nsPerOpAvg - _nsPerOps[i]; // distance to mean
+                nsPerOpVar += nsPerOpDiff * nsPerOpDiff;
+            }
+
+            nsPerOpVar /= (double) nops;
+            this.nsPerOpSigma = Math.sqrt(nsPerOpVar);
+
             // extrema (outliers):
             double _nsPerOpMin = Double.MAX_VALUE;
             double _nsPerOpMax = -0d;
 
-            for (int i = 0; i < threads; i++) {
+            for (int i = 0; i < nops; i++) {
                 if (_nsPerOpMin > _nsPerOps[i]) {
                     _nsPerOpMin = _nsPerOps[i];
                 }
@@ -385,42 +503,20 @@ public final class MapBench implements MapConst {
             this.nsPerOpMin = _nsPerOpMin;
             this.nsPerOpMax = _nsPerOpMax;
 
-            // median:
-            long nsPerOpValid = 0L;
-            double nsPerOpSum = 0d;
+            // percentiles (median & 95% ie 2 sigma) :
+            Arrays.sort(_nsPerOps);
+            this.nsPerOpMed = percentile(0.5, nops, _nsPerOps); // 50%
+            this.nsPerOpMed95 = percentile(0.95, nops, _nsPerOps); // 95%
+        }
 
-            for (int i = 0; i < threads; i++) {
-                if ((_nsPerOps[i] != _nsPerOpMin) && (_nsPerOps[i] != _nsPerOpMax)) {
-                    nsPerOpSum += _nsPerOps[i];
-                    nsPerOpValid++;
-                }
+        private static double percentile(final double percent, final int nops, final double[] nsPerOps) {
+            final double idx = Math.max(percent * (nops - 1), 0);
+            final int low = (int) Math.floor(idx);
+            final int high = (int) Math.ceil(idx);
+            if (low == high) {
+                return nsPerOps[low];
             }
-            final double _nsPerOpMed = (nsPerOpValid != 0L) ? (nsPerOpSum / (double) nsPerOpValid) : Double.NaN;
-            this.nsPerOpMed = _nsPerOpMed;
-
-            // stddev % median:
-            if (Double.isNaN(_nsPerOpMed)) {
-                this.nsPerOpSigma = this.nsPerOpRms = this.nsPerOpMedStdDev = Double.NaN;
-            } else {
-                double nsPerOpVar = 0d;
-                double nsPerOpDiff;
-
-                for (int i = 0; i < threads; i++) {
-                    if ((_nsPerOps[i] != _nsPerOpMin) && (_nsPerOps[i] != _nsPerOpMax)) {
-                        nsPerOpDiff = _nsPerOpMed - _nsPerOps[i]; // distance to median
-                        nsPerOpVar += nsPerOpDiff * nsPerOpDiff;
-                    }
-                }
-
-                nsPerOpVar /= (double) nsPerOpValid;
-                this.nsPerOpSigma = Math.sqrt(nsPerOpVar);
-
-                // median + stddev = 90% events:
-                this.nsPerOpMedStdDev = _nsPerOpMed + this.nsPerOpSigma;
-
-                // RMS see https://en.wikipedia.org/wiki/Root_mean_square:
-                this.nsPerOpRms = Math.sqrt(_nsPerOpMed * _nsPerOpMed + nsPerOpVar);
-            }
+            return nsPerOps[low] * (high - idx) + nsPerOps[high] * (idx - low);
         }
 
         @Override
@@ -430,15 +526,17 @@ public final class MapBench implements MapConst {
         private final static String separator = "\t";
 
         public static String toStringHeader() {
-            return String.format("test%sthreads%sops%sTavg%sTmed%sstdDev%srms%sMed+Stddev%smin%smax%sTotalOps%s[ms/op]",
+            return String.format("%-45s%sThreads%sOps%sMed%sPct95%sAvg%sStdDev%sMin%sMax%sTotalOps%s[ms/op]",
+                    "Test",
                     separator, separator, separator, separator, separator, separator, separator, separator, separator, separator, separator);
         }
 
         public String toString(boolean dumpIndividualThreads) {
             StringBuilder sb = new StringBuilder(256);
-            sb.append(String.format("%s%s%d%s%d%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%d",
-                    testName, separator, param, separator, threads, separator, toMillis(nsPerOpAvg), separator, toMillis(nsPerOpMed), separator,
-                    toMillis(nsPerOpSigma), separator, toMillis(nsPerOpRms), separator, toMillis(nsPerOpMedStdDev), separator,
+            sb.append(String.format("%-45s%s%d%s%d%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%d",
+                    testName, separator, param, separator, nOps, separator,
+                    toMillis(nsPerOpMed), separator, toMillis(nsPerOpMed95), separator,
+                    toMillis(nsPerOpAvg), separator, toMillis(nsPerOpSigma), separator,
                     toMillis(nsPerOpMin), separator, toMillis(nsPerOpMax), separator,
                     opsSum));
 

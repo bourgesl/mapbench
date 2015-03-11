@@ -21,7 +21,6 @@ import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
@@ -30,94 +29,26 @@ import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
-public class StatsDumpingGraphics2D extends Graphics2D {
-    
+public class NullGraphics2D extends Graphics2D {
+
     Graphics2D delegate;
-    int shapeCount;
-    int totalCount;
-    int minSegments;
-    int maxSegments;
-    float totalMin;
-    float totalMax;
-    double totalSum;
-    
-    public StatsDumpingGraphics2D(Graphics2D graphic) {
+
+    public NullGraphics2D(Graphics2D graphic) {
         this.delegate = graphic;
     }
 
     @Override
     public void draw(Shape s) {
-        dumpStats(s, false);
-        delegate.draw(s);
     }
 
     @Override
     public void fill(Shape s) {
-        dumpStats(s, true);
-        delegate.fill(s);
-    }
-    
-    void dumpStats(Shape s, boolean fill) {
-        shapeCount++;
-        PathIterator pi = s.getPathIterator(new AffineTransform());
-        float[] curr = new float[6];
-        float[] prev = new float[6];
-        int count = 0;
-        double distanceSum = 0;
-        float minDistance = Float.MAX_VALUE;
-        float maxDistance = 0;
-        while(!pi.isDone()) {
-            int move = pi.currentSegment(curr);
-            pi.next();
-            if(move == PathIterator.SEG_LINETO) {
-                count++;
-                float dx = curr[0] - prev[0];
-                float dy = curr[1] - prev[1];
-                float d = (float) Math.sqrt(dx * dx + dy * dy);
-                distanceSum += d;
-                if(d < minDistance) {
-                    minDistance = d;
-                } else if (d > maxDistance) {
-                    maxDistance = d;
-                }
-            }
-            System.arraycopy(curr, 0, prev, 0, 2);
-        }
-        
-        if(count > 0) {
-            System.out.println((fill ? "polygon" : "line") + ", " + count + " segments, min distance " + minDistance + ", max distance " + maxDistance + ", average distance " + (distanceSum / count));
-            totalCount += count;
-            if(count < minSegments) {
-                minSegments = count;
-            }
-            if(count > maxSegments) {
-                maxSegments = count;
-            }
-            if(minDistance < totalMin) {
-                totalMin = minDistance;
-            }
-            if(maxDistance > totalMax) {
-                totalMax = maxDistance;
-            }
-            totalSum += distanceSum;
-        }
-    }
-    
-    @Override
-    public void dispose() {
-        System.out.println("TOTAL SUMMARY:");
-        System.out.println("Number of shapes " + shapeCount);
-        System.out.println("Min segments " + minSegments);
-        System.out.println("Max segments " + maxSegments);
-        System.out.println("Avg segments " + (totalCount / (1d * shapeCount)));
-        System.out.println("Total segments " + totalCount);
-        System.out.println("Overall min distance: " + totalMin);
-        System.out.println("Overall max distance: " + totalMax);
-        System.out.println("Overall avg distance: " + (totalSum / totalCount));
-        
-        delegate.dispose();
     }
 
+    @Override
+    public void dispose() {
+        delegate.dispose();
+    }
 
     @Override
     public Graphics create() {
@@ -196,137 +127,111 @@ public class StatsDumpingGraphics2D extends Graphics2D {
 
     @Override
     public void copyArea(int x, int y, int width, int height, int dx, int dy) {
-        delegate.copyArea(x, y, width, height, dx, dy);
     }
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
-        delegate.drawLine(x1, y1, x2, y2);
     }
 
     @Override
     public void fillRect(int x, int y, int width, int height) {
-        delegate.fillRect(x, y, width, height);
     }
 
     @Override
     public void drawRect(int x, int y, int width, int height) {
-        delegate.drawRect(x, y, width, height);
     }
 
     @Override
     public void clearRect(int x, int y, int width, int height) {
-        delegate.clearRect(x, y, width, height);
     }
 
     @Override
     public void draw3DRect(int x, int y, int width, int height, boolean raised) {
-        delegate.draw3DRect(x, y, width, height, raised);
     }
 
     @Override
     public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        delegate.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
     }
 
     @Override
     public void fill3DRect(int x, int y, int width, int height, boolean raised) {
-        delegate.fill3DRect(x, y, width, height, raised);
     }
 
     @Override
     public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        delegate.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
     }
 
     @Override
     public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
-        return delegate.drawImage(img, xform, obs);
+        return true;
     }
 
     @Override
     public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
-        delegate.drawImage(img, op, x, y);
     }
 
     @Override
     public void drawOval(int x, int y, int width, int height) {
-        delegate.drawOval(x, y, width, height);
     }
 
     @Override
     public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
-        delegate.drawRenderedImage(img, xform);
     }
 
     @Override
     public void fillOval(int x, int y, int width, int height) {
-        delegate.fillOval(x, y, width, height);
     }
 
     @Override
     public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        delegate.drawArc(x, y, width, height, startAngle, arcAngle);
     }
 
     @Override
     public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
-        delegate.drawRenderableImage(img, xform);
     }
 
     @Override
     public void drawString(String str, int x, int y) {
-        delegate.drawString(str, x, y);
     }
 
     @Override
     public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        delegate.fillArc(x, y, width, height, startAngle, arcAngle);
     }
 
     @Override
     public void drawString(String str, float x, float y) {
-        delegate.drawString(str, x, y);
     }
 
     @Override
     public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-        delegate.drawPolyline(xPoints, yPoints, nPoints);
     }
 
     @Override
     public void drawString(AttributedCharacterIterator iterator, int x, int y) {
-        delegate.drawString(iterator, x, y);
     }
 
     @Override
     public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-        delegate.drawPolygon(xPoints, yPoints, nPoints);
     }
 
     @Override
     public void drawString(AttributedCharacterIterator iterator, float x, float y) {
-        delegate.drawString(iterator, x, y);
     }
 
     @Override
     public void drawPolygon(Polygon p) {
-        delegate.drawPolygon(p);
     }
 
     @Override
     public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-        delegate.fillPolygon(xPoints, yPoints, nPoints);
     }
 
     @Override
     public void drawGlyphVector(GlyphVector g, float x, float y) {
-        delegate.drawGlyphVector(g, x, y);
     }
 
     @Override
     public void fillPolygon(Polygon p) {
-        delegate.fillPolygon(p);
     }
 
     @Override
@@ -336,7 +241,6 @@ public class StatsDumpingGraphics2D extends Graphics2D {
 
     @Override
     public void drawChars(char[] data, int offset, int length, int x, int y) {
-        delegate.drawChars(data, offset, length, x, y);
     }
 
     @Override
@@ -351,7 +255,6 @@ public class StatsDumpingGraphics2D extends Graphics2D {
 
     @Override
     public void drawBytes(byte[] data, int offset, int length, int x, int y) {
-        delegate.drawBytes(data, offset, length, x, y);
     }
 
     @Override
@@ -361,7 +264,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-        return delegate.drawImage(img, x, y, observer);
+        return true;
     }
 
     @Override
@@ -381,7 +284,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) {
-        return delegate.drawImage(img, x, y, width, height, observer);
+        return true;
     }
 
     @Override
@@ -401,65 +304,57 @@ public class StatsDumpingGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer) {
-        return delegate.drawImage(img, x, y, bgcolor, observer);
+        return true;
     }
 
     @Override
     public void translate(int x, int y) {
-        delegate.translate(x, y);
     }
 
     @Override
     public void translate(double tx, double ty) {
-        delegate.translate(tx, ty);
     }
 
     @Override
     public void rotate(double theta) {
-        delegate.rotate(theta);
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height, Color bgcolor,
-            ImageObserver observer) {
-        return delegate.drawImage(img, x, y, width, height, bgcolor, observer);
+                             ImageObserver observer) {
+        return true;
     }
 
     @Override
     public void rotate(double theta, double x, double y) {
-        delegate.rotate(theta, x, y);
     }
 
     @Override
     public void scale(double sx, double sy) {
-        delegate.scale(sx, sy);
     }
 
     @Override
     public void shear(double shx, double shy) {
-        delegate.shear(shx, shy);
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1,
-            int sx2, int sy2, ImageObserver observer) {
-        return delegate.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
+                             int sx2, int sy2, ImageObserver observer) {
+        return true;
     }
 
     @Override
     public void transform(AffineTransform Tx) {
-        delegate.transform(Tx);
     }
 
     @Override
     public void setTransform(AffineTransform Tx) {
-        delegate.setTransform(Tx);
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1,
-            int sx2, int sy2, Color bgcolor, ImageObserver observer) {
-        return delegate.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
+                             int sx2, int sy2, Color bgcolor, ImageObserver observer) {
+        return true;
     }
 
     @Override
@@ -526,7 +421,4 @@ public class StatsDumpingGraphics2D extends Graphics2D {
     public Rectangle getClipBounds(Rectangle r) {
         return delegate.getClipBounds(r);
     }
-    
-    
-
 }

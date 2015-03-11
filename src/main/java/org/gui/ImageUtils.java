@@ -30,13 +30,19 @@ public final class ImageUtils {
 
     public static final int DCM_ALPHA_MASK = 0xff000000;
 
-    private final static GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+    private static final boolean USE_GRAPHICS_ACCELERATION = false;
+
+    private final static GraphicsConfiguration gc = (USE_GRAPHICS_ACCELERATION)
+            ? GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration() : null;
 
     private ImageUtils() {
     }
 
     public static BufferedImage newImage(final int w, final int h) {
-        return gc.createCompatibleImage(w, h);
+        if (USE_GRAPHICS_ACCELERATION) {
+            return gc.createCompatibleImage(w, h);
+        }
+        return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
     }
 
     public static BufferedImage copyImage(final BufferedImage srcImage) {

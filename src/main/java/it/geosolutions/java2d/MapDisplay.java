@@ -12,15 +12,20 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Locale;
 
 import javax.swing.JFrame;
 import org.gui.BigImageFrame;
 import org.gui.ImageUtils;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-public final class MapDisplay implements MapConst {
+public final class MapDisplay extends BaseTest {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+        Locale.setDefault(Locale.US);
+        
+        // Prepare view transformation:
+        final AffineTransform viewAT = getViewTransform();
 
         if (!inputDirectory.exists()) {
             System.out.println("Invalid input directory  = " + inputDirectory);
@@ -49,64 +54,32 @@ public final class MapDisplay implements MapConst {
             System.out.println("Loading DrawingCommands: " + dataFile);
             DrawingCommands commands = DrawingCommands.load(dataFile);
 
-            for (int i = 0, len = (doScale) ? scales_X.length : 1; i < len; i++) {
-                if (doScale) {
-                    double scaleX = scales_X[i];
-                    double scaleY = scales_Y[i];
-                    // Affine transform:
-                    if (!((Math.abs(scaleX - 1d) < 1e-3d) && (Math.abs(scaleY - 1d) < 1e-3d))) {
-                        commands.setAt(AffineTransform.getScaleInstance(scaleX, scaleY));
-                        System.out.println("scaling[" + scaleX + " x " + scaleY + "]");
-                    }
-                }
-                if (doShear) {
-                    double shearX = shear_X;
-                    double shearY = shear_Y;
-                    // Affine transform:
-                    if (!((Math.abs(shearX - 1d) < 1e-3d) && (Math.abs(shearY - 1d) < 1e-3d))) {
-                        final AffineTransform shearAt = AffineTransform.getScaleInstance(shearX, shearY);
-                        if (commands.getAt() != null) {
-                            shearAt.concatenate(commands.getAt());
-                        }
-                        commands.setAt(shearAt);
-                        System.out.println("shearing[" + shearX + " x " + shearY + "]");
-                    }
-                }
-                if (doRotate) {
-                    double angle = rotationAngle;
-                    // Affine transform:
-                    if (!(Math.abs(angle) < 1e-3d)) {
-                        final AffineTransform rotateAt = AffineTransform.getRotateInstance(Math.toRadians(angle));
-                        if (commands.getAt() != null) {
-                            rotateAt.concatenate(commands.getAt());
-                        }
-                        commands.setAt(rotateAt);
-                        System.out.println("rotating[" + angle + " deg]");
-                    }
-                }
-                System.out.println("drawing[" + dataFile.getName() + "][width = " + commands.getWidth()
-                        + ", height = " + commands.getHeight() + "] ...");
+            // set view transform once:
+            commands.setAt(viewAT);
 
-                commands.prepareCommands(doClip, doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
+            System.out.println("drawing[" + dataFile.getName() + "][width = " + commands.getWidth()
+                    + ", height = " + commands.getHeight() + "] ...");
 
-                BufferedImage image = commands.prepareImage();
-                Graphics2D graphics = commands.prepareGraphics(image);
+            commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
 
-                start = System.nanoTime();
-                commands.execute(graphics);
-                start = System.nanoTime() - start;
+            BufferedImage image = commands.prepareImage();
+            Graphics2D graphics = commands.prepareGraphics(image);
 
-                graphics.dispose();
-                commands.dispose();
+            start = System.nanoTime();
+            commands.execute(graphics);
+            start = System.nanoTime() - start;
 
-                // Pisces stats:
-//                sun.java2d.pisces.ArrayCache.dumpStats();
-                System.out.println("duration[" + dataFile.getName() + "] = " + (start / 1e6d) + " ms.");
+            graphics.dispose();
+            commands.dispose();
 
-                ImageUtils.saveImage(image, getImageFileName(dataFile));
+            System.out.println("duration[" + dataFile.getName() + "] = " + (start / 1e6d) + " ms.");
 
-                showImage(dataFile.getName(), dataFile, image, false);
-            }
+            // Marlin stats:
+            dumpRendererStats();
+
+            ImageUtils.saveImage(image, getImageFileName(dataFile));
+
+            showImage(dataFile.getName(), dataFile, image, false);
         }
     }
 

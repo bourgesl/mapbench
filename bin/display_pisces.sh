@@ -2,7 +2,11 @@
 # get paths and jvm settings:
 source ./env.sh
 
-BOOTCLASSPATH=""
+# Pisces renderer in lib folder:
+BOOTCLASSPATH="-Xbootclasspath/a:../lib/openjdk8-pisces.jar"
+
+# Update Java options:
+JAVA_OPTS="-Dsun.java2d.renderer=sun.java2d.pisces.PiscesRenderingEngine $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"

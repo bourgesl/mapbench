@@ -2,11 +2,12 @@
 # get paths and jvm settings:
 source ./env.sh
 
-# Pisces renderer in lib folder:
-BOOTCLASSPATH="-Xbootclasspath/a:../lib/openjdk8-pisces.jar"
+# get marlin settings and boot class path:
+source ./env_marlin_ojdk.sh
 
-# Update Java options:
-JAVA_OPTS="-Dsun.java2d.renderer=sun.java2d.pisces.PiscesRenderingEngine $JAVA_OPTS"
+# Enable stats
+STATS=true
+JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"
@@ -20,4 +21,3 @@ echo "Java version"
 java -version
 
 java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay
-

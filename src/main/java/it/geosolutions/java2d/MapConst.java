@@ -47,11 +47,11 @@ public interface MapConst {
     /** input directory */
     static File inputDirectory = new File("../maps");
 
-    /** reference results directory */
-    static File refResultDirectory = new File("../results/ref");
+    /** base reference results directory */
+    static File baseRefResultDirectory = new File("../results/ref");
 
-    /** test results directory */
-    static File resultDirectory = new File("../results/test");
+    /** base test results directory */
+    static File baseResultDirectory = new File("../results/test");
 
     /** test file match */
     static final String testMatcher = ".*\\.ser";

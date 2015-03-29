@@ -4,16 +4,20 @@
 package it.geosolutions.java2d;
 
 import java.awt.geom.AffineTransform;
-import java.lang.reflect.InvocationTargetException;
+import java.io.File;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author bourgesl
  */
 public class BaseTest implements MapConst {
+
+    /** base reference results directory */
+    static File refResultDirectory = new File(baseRefResultDirectory, Profile.getProfileName());
+
+    /** base test results directory */
+    static File resultDirectory = new File(baseResultDirectory, Profile.getProfileName());
 
     protected BaseTest() {
         super();

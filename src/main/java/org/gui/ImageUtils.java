@@ -3,8 +3,6 @@
  ******************************************************************************/
 package org.gui;
 
-import static it.geosolutions.java2d.MapConst.refResultDirectory;
-import static it.geosolutions.java2d.MapConst.resultDirectory;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
@@ -60,8 +58,8 @@ public final class ImageUtils {
         return destImage;
     }
 
-    public static BufferedImage loadImage(final String imageFileName) throws IOException {
-        final File imageFile = new File(refResultDirectory, imageFileName);
+    public static BufferedImage loadImage(final File refDirectory, final String imageFileName) throws IOException {
+        final File imageFile = new File(refDirectory, imageFileName);
         if (!imageFile.canRead()) {
             return null;
         }
@@ -70,14 +68,14 @@ public final class ImageUtils {
         return copyImage(image, newImage(image.getWidth(), image.getHeight()));
     }
 
-    public static void saveImage(final BufferedImage image, final String imageFileName) throws IOException {
+    public static void saveImage(final BufferedImage image, final File resDirectory, final String imageFileName) throws IOException {
         final Iterator<ImageWriter> itWriters = ImageIO.getImageWritersByFormatName("PNG");
         if (itWriters.hasNext()) {
             final ImageWriter writer = itWriters.next();
             final ImageWriteParam writerParams = writer.getDefaultWriteParam();
             writerParams.setProgressiveMode(ImageWriteParam.MODE_DISABLED);
 
-            final File imgFile = new File(resultDirectory, imageFileName);
+            final File imgFile = new File(resDirectory, imageFileName);
 
             if (!imgFile.exists() || imgFile.canWrite()) {
                 System.out.println("saveImage: saving image as PNG ...");

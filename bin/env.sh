@@ -3,8 +3,11 @@
 # set profile
 PROFILE=default.properties
 
+# longer (no shared image 4T) test:
+#PROFILE=longer_no_shared.properties
+
 # use shared image (less gc overhead but less realistic)
-PROFILE=sharedImage.properties
+#PROFILE=sharedImage.properties
 
 # longer (shared 4T) test:
 PROFILE=longer_shared.properties

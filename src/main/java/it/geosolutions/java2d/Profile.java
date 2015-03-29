@@ -19,6 +19,11 @@ import java.util.TreeSet;
 public final class Profile {
     /* MapConst settings (shared) */
 
+    public final static String SCALE_FILE = "mapbench-scales.properties";
+
+    /* profile name */
+    public final static String KEY_PROFILE_NAME = "defaults";
+
     /* create stroked shape instead of draw(shape) and then fill(strokedShape) */
     public final static String KEY_DO_CREATE_STROKED_SHAPE = "doCreateStrokedShape";
 
@@ -63,6 +68,8 @@ public final class Profile {
     private final static Properties defProps = new Properties();
     private static boolean resolved = false;
     private static Properties props = null;
+    private static Properties scales = null;
+    private static String profileName = "defaults";
 
     static {
         /* MapConst settings (shared) */
@@ -71,7 +78,7 @@ public final class Profile {
 
         /* true to use the even-odd winding rule */
         defProps.setProperty(KEY_DO_WINDING_RULE_EVEN_ODD, "false");
-        
+
         /* true to use dashed stroke */
         defProps.setProperty(KEY_DO_USE_DASHED_STROKE, "false");
 
@@ -89,7 +96,7 @@ public final class Profile {
         /* translation factors */
         defProps.setProperty(KEY_TRANSLATE_X, "0.0");
         defProps.setProperty(KEY_TRANSLATE_Y, "0.0");
-        
+
         /* true to perform shape shearing */
         defProps.setProperty(KEY_DO_SHEAR, "false");
         /* shearing factor */
@@ -111,6 +118,10 @@ public final class Profile {
         defProps.setProperty(KEY_MAX_THREADS, Integer.toString(Runtime.getRuntime().availableProcessors()));
 
         defProps.setProperty(KEY_MIN_DURATION, "5000.0");
+    }
+
+    public static String getProfileName() {
+        return profileName;
     }
 
     public static boolean getBoolean(final String key) {
@@ -138,8 +149,13 @@ public final class Profile {
             final String profile = System.getProperty("mapbench.profile");
 
             if (profile == null || profile.isEmpty()) {
-                System.out.println("no profile set (use -Dmapbench.profile=<profile file name>); using defaults");
+                System.out.println("no profile set (use -Dmapbench.profile=<profile file name>); using " + profileName);
             } else {
+                // Fix profile name:
+                final int pos = profile.lastIndexOf('.');
+                profileName = (pos != -1) ? profile.substring(0, pos) : profile;
+                System.out.println("profileName: " + profileName);
+
                 final File profileFileName = new File(profileDirectory, profile);
                 System.out.println("Loading profile file: " + profileFileName.getAbsolutePath());
 
@@ -157,6 +173,22 @@ public final class Profile {
                 props = loadedProps;
             }
 
+            // load scales:
+            final File scaleFileName = new File(profileDirectory, SCALE_FILE);
+            System.out.println("Loading scale file: " + scaleFileName.getAbsolutePath());
+
+            Properties loadedProps = new Properties();
+            try {
+                loadedProps.load(new FileInputStream(scaleFileName));
+            } catch (FileNotFoundException ex) {
+                System.out.println("Scale file not found: " + scaleFileName.getAbsolutePath());
+                loadedProps = null;
+            } catch (IOException ex) {
+                System.out.println("I/O failure while reading scale file: " + scaleFileName.getAbsolutePath());
+                loadedProps = null;
+            }
+            scales = loadedProps;
+
             /* dump properties in use */
             dump();
 
@@ -165,6 +197,16 @@ public final class Profile {
             }
         }
         return defProps;
+    }
+
+    public static double getScale(final String key) {
+        if (scales != null) {
+            final String scale = scales.getProperty(key);
+            if (scale != null) {
+                return Double.parseDouble(scale);
+            }
+        }
+        return 1.0;
     }
 
     public static void startup() {
@@ -198,7 +240,20 @@ public final class Profile {
             System.out.print("=");
             System.out.println(properties.getProperty(key));
         }
-        System.out.printf("##############################################################\n");
+
+        if (false) {
+            if (scales != null) {
+                System.out.println("### Test Scales:");
+                for (Object key : scales.keySet()) {
+                    System.out.print("  ");
+                    System.out.print(key);
+                    System.out.print("=");
+                    System.out.println(scales.getProperty(key.toString()));
+                }
+            }
+        }
+
+        System.out.println("##############################################################");
     }
 
     private Profile() {

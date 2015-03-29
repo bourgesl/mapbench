@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import sun.java2d.pipe.RenderingEngine;
 
 /**
  * Map benchmark 
@@ -74,6 +75,8 @@ public final class MapBench extends BaseTest {
             System.out.println("Invalid input directory = " + inputDirectory);
             System.exit(1);
         }
+        
+        System.out.println("Testing renderer = " + RenderingEngine.getInstance().getClass().getName());
 
         System.out.println("Loading maps from = " + inputDirectory.getAbsolutePath());
 

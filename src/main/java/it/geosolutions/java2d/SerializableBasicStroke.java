@@ -7,6 +7,8 @@ import java.awt.BasicStroke;
 import java.io.Serializable;
 
 public final class SerializableBasicStroke implements Serializable {
+    
+    private static final boolean DISABLE_JOIN_MITER = false;
 
     private static final long serialVersionUID = 8157570308117400971L;
     private float width;
@@ -29,7 +31,11 @@ public final class SerializableBasicStroke implements Serializable {
     public BasicStroke toStroke() {
         // cache the BasicStroke (GC friendly)
         if (bs == null) {
-            bs = new BasicStroke(width, endCap, lineJoin, miterLimit, dashArray, dashPhase);
+            if (DISABLE_JOIN_MITER) {
+                bs = new BasicStroke(width, endCap, BasicStroke.JOIN_BEVEL, miterLimit, dashArray, dashPhase);
+            } else {
+                bs = new BasicStroke(width, endCap, lineJoin, miterLimit, dashArray, dashPhase);
+            }
         }
         return bs;
     }

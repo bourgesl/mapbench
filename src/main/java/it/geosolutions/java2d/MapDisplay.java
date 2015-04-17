@@ -46,7 +46,7 @@ public final class MapDisplay extends BaseTest {
         }
 
         dumpInfo();
-        
+
         System.out.println("Testing renderer = " + RenderingEngine.getInstance().getClass().getName());
 
         System.out.println("Loading maps from = " + inputDirectory.getAbsolutePath());
@@ -77,6 +77,10 @@ public final class MapDisplay extends BaseTest {
 
             BufferedImage image = commands.prepareImage();
             Graphics2D graphics = commands.prepareGraphics(image);
+
+            if (doGCBeforeTest) {
+                cleanup();
+            }
 
             start = System.nanoTime();
             commands.execute(graphics);
@@ -117,24 +121,24 @@ public final class MapDisplay extends BaseTest {
     public static String getImageFileName(final File dataFile) {
         return dataFile.getName() + ".png";
     }
-    
+
     public static void dumpInfo() {
         final StringBuilder info = new StringBuilder(512);
         info.append("Java:     ").append(System.getProperty("java.runtime.version"));
         info.append("\nVM:       ").append(System.getProperty("java.vm.name"));
         info.append(' ').append(System.getProperty("java.vm.version"));
         info.append(' ').append(System.getProperty("java.vm.info"));
-        
+
         info.append("\nOS:       ").append(System.getProperty("os.name"));
         info.append(' ').append(System.getProperty("os.version"));
         info.append(' ').append(System.getProperty("os.arch"));
 
         info.append("\nrenderer: ").append(RenderingEngine.getInstance().getClass().getName());
         info.append("\nprofile:  ").append(Profile.getProfileName());
-        
+
         logTestInfo(info.toString());
     }
-    
+
     public static void logTestInfo(String content) {
         File file = new File(resultDirectory, "test.log");
         Writer w = null;
@@ -144,7 +148,7 @@ public final class MapDisplay extends BaseTest {
             w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
 
             w.write(content);
-            
+
         } catch (final IOException ioe) {
             System.out.println("IO failure : ");
             ioe.printStackTrace();

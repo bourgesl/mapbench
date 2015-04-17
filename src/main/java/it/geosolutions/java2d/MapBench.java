@@ -49,7 +49,6 @@ public final class MapBench extends BaseTest {
     /* constants */
     static final boolean doWarmup = true;
     static final boolean doWarmupEachTest = true;
-    static final boolean doGCBeforeTest = true;
 
     // before 200/200
     static final int WARMUP_LOOPS_MIN = 80;
@@ -420,26 +419,6 @@ public final class MapBench extends BaseTest {
 
             return _image;
         }
-    }
-
-    /**
-     * Cleanup (GC + pause)
-     */
-    private static void cleanup() {
-        final long freeBefore = Runtime.getRuntime().freeMemory();
-        // Perform GC:
-        System.gc();
-        System.gc();
-        System.gc();
-
-        // pause for 500 ms :
-        try {
-            Thread.sleep(500l);
-        } catch (InterruptedException ie) {
-            System.out.println("thread interrupted");
-        }
-        final long freeAfter = Runtime.getRuntime().freeMemory();
-        System.out.println(String.format("cleanup (explicit Full GC): %,d / %,d bytes free.", freeBefore, freeAfter));
     }
 
     /**

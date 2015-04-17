@@ -19,6 +19,8 @@ public class BaseTest implements MapConst {
     /** base test results directory */
     static File resultDirectory = new File(baseResultDirectory, Profile.getProfileName());
 
+    static final boolean doGCBeforeTest = true;
+
     protected BaseTest() {
         super();
     }
@@ -85,19 +87,51 @@ public class BaseTest implements MapConst {
     private static Method dumpStatsMethod = null;
 
     static void dumpRendererStats() {
-        try {
-            if (!dumpStatsResolved) {
-                dumpStatsResolved = true;
+        if (!dumpStatsResolved) {
+            dumpStatsResolved = true;
+            try {
                 dumpStatsMethod = Class.forName("org.marlin.pisces.RendererStats").getMethod("dumpStats", null);
+            } catch (Exception ex) {
+                // ignore
+                // ex.printStackTrace();
             }
+            if (dumpStatsMethod == null) {
+                try {
+                    dumpStatsMethod = Class.forName("sun.java2d.marlin.RendererStats").getMethod("dumpStats", null);
+                } catch (Exception ex) {
+                    // ignore
+                    // ex.printStackTrace();
+                }
+            }
+        }
+        try {
             if (dumpStatsMethod != null) {
                 // static method:
                 dumpStatsMethod.invoke(null, null);
             }
-
         } catch (Exception ex) {
             // ignore
             // ex.printStackTrace();
         }
+    }
+
+    /**
+     * Cleanup (GC + pause)
+     */
+    static void cleanup() {
+        final long freeBefore = Runtime.getRuntime().freeMemory();
+        // Perform GC:
+        System.gc();
+        System.gc();
+        System.gc();
+
+        // pause for 500 ms :
+        try {
+            Thread.sleep(500l);
+        } catch (InterruptedException ie) {
+            System.out.println("thread interrupted");
+        }
+        final long freeAfter = Runtime.getRuntime().freeMemory();
+        System.out.println(String.format("cleanup (explicit Full GC): %,d / %,d bytes free.", freeBefore, freeAfter));
     }
 }

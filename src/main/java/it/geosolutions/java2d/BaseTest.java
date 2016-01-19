@@ -5,7 +5,9 @@ package it.geosolutions.java2d;
 
 import java.awt.geom.AffineTransform;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  *
@@ -14,15 +16,52 @@ import java.lang.reflect.Method;
 public class BaseTest implements MapConst {
 
     /** base reference results directory */
-    static File refResultDirectory = new File(baseRefResultDirectory, Profile.getProfileName());
+    static File refResultDirectory = new File(baseRefResultDirectory, getTestDirectory());
 
     /** base test results directory */
-    static File resultDirectory = new File(baseResultDirectory, Profile.getProfileName());
+    static File resultDirectory = new File(baseResultDirectory, getTestDirectory());
 
     static final boolean doGCBeforeTest = true;
 
+    public static boolean isWarmup = false;
+    
+    private static String reName = null;
+    
     protected BaseTest() {
         super();
+    }
+
+    private static String getTestDirectory() {
+        final String profile = Profile.getProfileName();
+        if ("MarlinRenderingEngine".equals(BaseTest.getRenderingEngineName())) {
+            String subPixel_log2_X = System.getProperty("sun.java2d.renderer.subPixel_log2_X", "3");
+            String subPixel_log2_Y = System.getProperty("sun.java2d.renderer.subPixel_log2_Y", "3");
+            if (!"3".equals(subPixel_log2_X) && !"3".equals(subPixel_log2_Y)) {
+                return profile + "_" + subPixel_log2_X + "x" + subPixel_log2_Y;
+            }
+        }
+        return profile;
+    }
+    
+    protected static File[] getSortedFiles() {
+        if (!inputDirectory.exists()) {
+            System.out.println("Invalid input directory = " + inputDirectory);
+            System.exit(1);
+        }
+
+        System.out.println("Loading maps from = " + inputDirectory.getAbsolutePath());
+        
+        final File[] dataFiles = inputDirectory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.matches(testMatcher);
+            }
+        });
+
+        // Sort file names:
+        Arrays.sort(dataFiles);
+        
+        return dataFiles;
     }
 
     protected static AffineTransform getViewTransform() {
@@ -133,5 +172,19 @@ public class BaseTest implements MapConst {
         }
         final long freeAfter = Runtime.getRuntime().freeMemory();
         System.out.println(String.format("cleanup (explicit Full GC): %,d / %,d bytes free.", freeBefore, freeAfter));
+    }
+    
+    public static String getRenderingEngineName() {
+        if (reName == null) {
+            try {
+                reName = sun.java2d.pipe.RenderingEngine.getInstance().getClass().getSimpleName();
+            } catch (Throwable th) {
+                // may fail with JDK9 jigsaw (jake)
+                System.err.println("Unable to get RenderingEngine.getInstance()");
+                th.printStackTrace();
+                reName = "unknown";
+            }
+        }
+        return reName;
     }
 }

@@ -6,8 +6,10 @@ source ./env.sh
 source ./env_marlin_ojdk.sh
 
 # Enable stats
+CHECK=false
 STATS=true
-JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
+MONITOR=false
+JAVA_OPTS="-Dsun.java2d.renderer.doChecks=$CHECK -Dsun.java2d.renderer.doMonitors=$MONITOR -Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"
@@ -20,4 +22,6 @@ which java
 echo "Java version"
 java -version
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay
+#MARLIN_G2D="-DMarlinGraphics.blendComposite=true -DMapBench.useMarlinGraphics2D=true"
+
+java $MARLIN_G2D -DPNGImageWriter.level=4 -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay

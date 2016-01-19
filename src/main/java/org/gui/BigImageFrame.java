@@ -29,7 +29,35 @@ import javax.swing.event.ChangeListener;
  * Big image frame (zoom slider)
  * @author bourgesl
  */
-public class BigImageFrame extends JFrame implements ChangeListener, ItemListener {
+public final class BigImageFrame extends JFrame implements ChangeListener, ItemListener {
+
+    private static final long serialVersionUID = 1L;
+
+    private enum ViewMode {
+
+        Test,
+        Ref,
+        Diff;
+    }
+
+    /** default timer delay (10 milliseconds) */
+    public final static int DELAY = 10;
+    /** default screen margin */
+    public final static int SCREEN_MARGIN = 50;
+    /** default frame margin */
+    public final static int FRAME_MARGIN = 80;
+    /** default scale = 100% */
+    public final static int DEF_SCALE = 100;
+
+    /**
+     * Create a new BigImageFrame with the given image displayed to 100%
+     * @param title frame's title
+     * @param image image to show
+     * @return created BigImageFrame instance
+     */
+    public static BigImageFrame createAndShow(final String title, final BufferedImage image) {
+        return createAndShow(title, image, null, null);
+    }
 
     /**
      * Create a new BigImageFrame with the given image displayed to 100%
@@ -56,47 +84,29 @@ public class BigImageFrame extends JFrame implements ChangeListener, ItemListene
         return frame;
     }
 
-    private static final long serialVersionUID = 1L;
-
-    private enum ViewMode {
-
-        Test,
-        Ref,
-        Diff;
-    }
-
-    /* default timer delay (10 milliseconds) */
-    public final static int DELAY = 10;
-    /** default screen margin */
-    public final static int SCREEN_MARGIN = 50;
-    /** default frame margin */
-    public final static int FRAME_MARGIN = 80;
-    /** default scale = 100% */
-    public final static int DEF_SCALE = 100;
-
     /* members */
-    protected final JScrollPane scrollPane;
-    protected final JSlider zoomSlider;
-    protected final JLabel scale;
-    protected final JComboBox<ViewMode> viewCombo;
-    protected final Timer timer;
+    private final JScrollPane scrollPane;
+    private final JSlider zoomSlider;
+    private final JLabel scale;
+    private final JComboBox<ViewMode> viewCombo;
+    private final Timer timer;
 
     /** image panel */
-    protected final BigImagePanel imagePanel;
+    private final BigImagePanel imagePanel;
     /** main image */
-    protected BufferedImage image = null;
+    private BufferedImage image = null;
     /** ref image */
-    protected BufferedImage refImage = null;
+    private BufferedImage refImage = null;
     /** diff image */
-    protected BufferedImage diffImage = null;
+    private BufferedImage diffImage = null;
     /** current image displayed */
-    protected BufferedImage current = null;
+    private BufferedImage current = null;
 
     /**
      * Protected Constructor
      * @param title frame's title
      */
-    protected BigImageFrame(final String title) {
+    BigImageFrame(final String title) {
         super(title);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -146,7 +156,7 @@ public class BigImageFrame extends JFrame implements ChangeListener, ItemListene
 
         viewCombo = new JComboBox<ViewMode>(ViewMode.values());
         viewCombo.addItemListener(this);
-//        viewCombo.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 8));
+
         infoPanel.add(viewCombo);
 
         pane.add(infoPanel, BorderLayout.PAGE_END);
@@ -202,7 +212,7 @@ public class BigImageFrame extends JFrame implements ChangeListener, ItemListene
         timer.restart();
     }
 
-    public void updateScaleImmediately(final int value) {
+    void updateScaleImmediately(final int value) {
         scale.setText(String.valueOf(value));
 
         // Get viewport center point before changing scale:

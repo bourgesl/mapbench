@@ -20,4 +20,8 @@ which java
 echo "Java version"
 java -version
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay
+#FILTER="-Dfilter.type=BELL -Dfilter.blur=1.0"
+
+#MARLIN_G2D="-DMarlinGraphics.blendComposite=true -DMapBench.useMarlinGraphics2D=true"
+# $FILTER $MARLIN_G2D 
+java $MARLIN_G2D -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay

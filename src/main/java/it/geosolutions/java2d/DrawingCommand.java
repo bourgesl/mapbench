@@ -22,6 +22,8 @@ import java.util.Map;
 public final class DrawingCommand implements Serializable {
 
     private static final boolean HIDE_CLIPPED_SHAPE = true;
+    private static final boolean SHOW_BBOX = false;
+    private static final Color BBOX_PAINT = new Color(128,128,128,32);
 
     private static final long serialVersionUID = -6164586104804552649L;
     private static final BasicStroke defaultStroke = new BasicStroke(1f);
@@ -47,9 +49,9 @@ public final class DrawingCommand implements Serializable {
     }
 
     /* members */
-    SerializableBasicStroke stroke;
-    Paint paint;
-    Shape shape;
+    private SerializableBasicStroke stroke;
+    private Paint paint;
+    private Shape shape;
     private SerializableAlphaComposite composite;
     private AffineTransform transform;
 
@@ -101,51 +103,76 @@ public final class DrawingCommand implements Serializable {
     private transient AffineTransform effectiveTransform = null;
     /** clip test */
     private transient boolean visible = true;
+    /** bounding box */
+    private transient Rectangle2D bbox = null;
 
     public void dispose() {
         effectiveTransform = null;
         visible = true;
     }
 
-    public boolean clip(final Rectangle2D clip) {
+    public boolean filter(final Rectangle2D clip, final Rectangle2D sizeRanges) {
         visible = true;
-        if (clip != null) {
+        if (clip != null || sizeRanges != null) {
+            Rectangle2D bounds = shape.getBounds2D();
             if (transform != null && !transform.isIdentity()) {
-                // TODO: bounds = transform.createTransformedShape(bounds);
-                return false;
+                bounds = transform.createTransformedShape(bounds).getBounds2D();
             }
 
-            final Rectangle2D bounds = shape.getBounds2D();
+            if (visible && clip != null) {
+                if (stroke != null) {
+                    final BasicStroke bs = stroke.toStroke();
 
-            if (stroke != null) {
-                final BasicStroke bs = stroke.toStroke();
+                    double lw = bs.getLineWidth();
 
-                double lw = bs.getLineWidth();
+                    bounds.setRect(bounds.getX() - lw, bounds.getY() - lw,
+                            bounds.getWidth() + 2d * lw, bounds.getHeight() + 2d * lw);
+                }
 
-                bounds.setRect(bounds.getX() - lw, bounds.getY() - lw,
-                        bounds.getWidth() + 2d * lw, bounds.getHeight() + 2d * lw);
+                visible = clip.intersects(bounds);
+                // TODO: use clipper ?
             }
+            if (visible && sizeRanges != null) {
+                final double width = bounds.getWidth();
+                final double height = bounds.getHeight();
 
-            visible = clip.intersects(bounds);
-            // TODO: use clipper ?
+                if (width < sizeRanges.getX()) {
+                    visible = false;
+                } else if (width > sizeRanges.getWidth()) {
+                    visible = false;
+                } else if (height < sizeRanges.getY()) {
+                    visible = false;
+                } else if (height > sizeRanges.getHeight()) {
+                    visible = false;
+                }
+                if (false && !visible) {
+                    System.out.println("shape filtered: " + bounds);
+                }
+                if (visible) {
+                    // keep bbox:
+                    bbox = bounds;
+                }
+            }
         }
         return !visible;
     }
 
     public void prepareTransform(final AffineTransform graphicsTx) {
+        this.effectiveTransform = getCombinedTransform(graphicsTx);
+    }
+    
+    private AffineTransform getCombinedTransform(final AffineTransform graphicsTx) {
         if (transform != null && !transform.isIdentity()) {
             if (graphicsTx != null) {
                 // combine transform with one coming from graphics:
                 // cached until explicit cleanup
-                effectiveTransform = new AffineTransform(graphicsTx);
-                effectiveTransform.concatenate(transform);
-            } else {
-                effectiveTransform = transform;
+                final AffineTransform tx = new AffineTransform(graphicsTx);
+                tx.concatenate(transform);
+                return tx;
             }
-        } else {
-            // no custom transform:
-            effectiveTransform = null;
+            return transform;
         }
+        return null;
     }
 
     public void setWindingRule(final int windingRule) {
@@ -160,22 +187,31 @@ public final class DrawingCommand implements Serializable {
         }
     }
 
-    public void execute(final Graphics2D g2d, final AffineTransform graphicsTx) {
+    public void execute(final Graphics2D g2d, final AffineTransform graphicsTx, final boolean usePreparedTx) {
         if (!visible) {
             if (HIDE_CLIPPED_SHAPE) {
                 return;
             }
-// TEST:            
 //            System.out.println("shape invisible = " + shape);
             g2d.setPaint(Color.ORANGE);
         } else {
             g2d.setPaint(paint);
         }
+        
+        if (SHOW_BBOX && bbox != null) {
+            Paint old = g2d.getPaint();
+            g2d.setPaint(BBOX_PAINT);
+            g2d.fill(bbox);
+            g2d.setPaint(old);
+        }
+        
         if (composite != null) {
             g2d.setComposite(composite.toAlphaComposite());
         }
-        if (effectiveTransform != null) {
-            g2d.setTransform(effectiveTransform);
+        
+        final AffineTransform at = (usePreparedTx) ? effectiveTransform : getCombinedTransform(graphicsTx);
+        if (at != null) {
+            g2d.setTransform(at);
 // TEST:            
 //            g2d.setPaint(Color.GREEN);
         }
@@ -188,15 +224,23 @@ public final class DrawingCommand implements Serializable {
 //            g2d.setPaint(Color.GREEN);
                 g2d.fill(strokedShape);
             } else {
-                g2d.setStroke( (MapConst.doUseDashedStroke) ? MapConst.STROKE_DOTTED : stroke.toStroke());
+                g2d.setStroke((MapConst.doUseDashedStroke) ? MapConst.STROKE_DOTTED : stroke.toStroke());
                 g2d.draw(shape);
             }
         } else {
+            if (SHOW_BBOX && bbox != null) {
+                Paint old = g2d.getPaint();
+                if (old instanceof Color) {
+                    Color c = (Color)old;
+                    g2d.setPaint(new Color(0xA0000000 | (c.getRGB() & 0x00FFFFFF), true));
+                }
+            }
+//            g2d.setPaint(Color.PINK);
             g2d.fill(shape);
         }
 
         // finally restore state:
-        if (effectiveTransform != null) {
+        if (at != null && graphicsTx != null) {
             g2d.setTransform(graphicsTx);
         }
         if (composite != null) {

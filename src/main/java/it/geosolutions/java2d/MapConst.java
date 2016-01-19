@@ -5,6 +5,7 @@ package it.geosolutions.java2d;
 
 import java.awt.BasicStroke;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 
 /**
@@ -12,6 +13,34 @@ import java.io.File;
  */
 public interface MapConst {
 
+    final static boolean useClipSmall = Boolean.getBoolean("MapBench.clip.small");
+
+    final static boolean useClipDemo = true;
+    
+    // TODO: use profile property ?
+    /* flag indicating to use BufferedImage.TYPE_INT_ARGB_PRE or BufferedImage.TYPE_INT_ARGB */
+    final static boolean premultiplied = true;
+
+    final static boolean useAcceleration = Boolean.getBoolean("MapBench.acceleration"); // false by default
+
+    final static boolean useVolatile = Boolean.getBoolean("MapBench.volatile"); // false by default
+    
+    final static boolean qualityMode = Boolean.getBoolean("MapBench.qualityMode");
+
+    final static boolean filterSize = Boolean.getBoolean("MapBench.filter.size");
+    
+    final static Rectangle2D sizeRanges = (filterSize)
+            ? new Rectangle2D.Double(
+                    Profile.getDouble("MapBench.filter.minWidth", 0, 0, Double.POSITIVE_INFINITY),
+                    Profile.getDouble("MapBench.filter.minHeight", 0, 0, Double.POSITIVE_INFINITY),
+                    Profile.getDouble("MapBench.filter.maxWidth", Double.POSITIVE_INFINITY, 0, Double.POSITIVE_INFINITY),
+                    Profile.getDouble("MapBench.filter.maxHeight", Double.POSITIVE_INFINITY, 0, Double.POSITIVE_INFINITY)
+            ) : null;
+    
+    
+    // TODO: use profile property ?
+    final static boolean useMarlinGraphics2D = Boolean.getBoolean("MapBench.useMarlinGraphics2D");
+    
     /** true to create stroked shape instead of draw(shape) and then fill(strokedShape) */
     final static boolean doCreateStrokedShape = Profile.getBoolean(Profile.KEY_DO_CREATE_STROKED_SHAPE);
 

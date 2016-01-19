@@ -21,6 +21,12 @@ public final class SerializableAlphaComposite implements Serializable {
     public AlphaComposite toAlphaComposite() {
         // cache the AlphaComposite (GC friendly)
         if (ac == null) {
+/*            
+            if ((alpha != 1f) || (rule != 3)) {
+                System.out.println("AlphaComposite rule: "+rule + " alpha: "+alpha);
+            }
+*/        
+            // TODO: cache AlphaComposite instances if alpha != 1
             ac = AlphaComposite.getInstance(rule, alpha);
         }
         return ac;

@@ -12,9 +12,9 @@
       <includes>
         <include>results/ref/README.txt</include>
         <include>results/ref/ductus/*</include>
+        <include>results/ref/marlin/*</include>
         <include>results/ref/pisces/*</include>
         <include>results/test/README.txt</include>
-        <include>results/test/diff_ductus/*</include>
       </includes>
     </fileSet>
   </fileSets>

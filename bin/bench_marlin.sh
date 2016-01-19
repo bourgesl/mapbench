@@ -16,4 +16,5 @@ which java
 echo "Java version"
 java -version
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING $MARLIN_CUSTOM -cp $CLASSPATH it.geosolutions.java2d.MapBench
+USE_MARLIN_G2D=false
+java -DMapBench.useMarlinGraphics2D=$USE_MARLIN_G2D -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING $MARLIN_CUSTOM -cp $CLASSPATH it.geosolutions.java2d.MapBench

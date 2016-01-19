@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 
  * @author bourgesl
  */
-public class BigImagePanel extends JPanel {
+public final class BigImagePanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,43 +31,45 @@ public class BigImagePanel extends JPanel {
      *  - RenderingHints.VALUE_INTERPOLATION_BILINEAR
      *  - RenderingHints.VALUE_INTERPOLATION_BICUBIC
      */
-    protected Object interpolation = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+    private Object interpolation = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
 
     /** scale factor */
-    protected float scale = 1.0f;
+    private float scale = 1.0f;
     /** image width and height */
-    protected int iw, ih;
+    private int iw, ih;
     /** image */
-    protected BufferedImage image;
+    private BufferedImage image;
     /** image rectangle */
-    protected final Rectangle imgRect;
+    private final Rectangle imgRect;
     /* source rectangle : coords on image */
     private Rectangle srcRect;
     /* destination rectangle : coords on frame */
     private final Rectangle dstRect;
 
     /**
-     * Protected constructor
+     * Constructor
      */
-    protected BigImagePanel() {
+    BigImagePanel() {
         this.imgRect = new Rectangle();
         this.srcRect = new Rectangle();
         this.dstRect = new Rectangle();
     }
 
-    protected void setImage(final BufferedImage image) {
-        this.image = image;
-        this.iw = (image != null) ? image.getWidth() : 0;
-        this.ih = (image != null) ? image.getHeight() : 0;
+    void setImage(final BufferedImage image) {
+        if (this.image != image) {
+            this.image = image;
+            this.iw = (image != null) ? image.getWidth() : 0;
+            this.ih = (image != null) ? image.getHeight() : 0;
 
-        imgRect.setSize(this.iw, this.ih);
+            imgRect.setSize(this.iw, this.ih);
 
-        updatePreferredSize();
+            updatePreferredSize();
+        }
         // force repaint:
         repaint();
     }
 
-    protected void setScale(final float factor) {
+    void setScale(final float factor) {
         this.scale = factor;
         updatePreferredSize();
     }
@@ -75,7 +77,7 @@ public class BigImagePanel extends JPanel {
     /**
      * @return the current interpolation method
      */
-    protected Object getInterpolation() {
+    Object getInterpolation() {
         return interpolation;
     }
 
@@ -86,13 +88,13 @@ public class BigImagePanel extends JPanel {
      *  - RenderingHints.VALUE_INTERPOLATION_BICUBIC
      * @param interpolation RenderingHints.VALUE_INTERPOLATION_*
      */
-    protected void setInterpolation(final Object interpolation) {
+    void setInterpolation(final Object interpolation) {
         if (interpolation != null) {
             this.interpolation = interpolation;
         }
     }
 
-    protected void updatePreferredSize() {
+    void updatePreferredSize() {
         if (image != null && scale > 0f) {
             setPreferredSize(new Dimension((int) (this.iw * scale), (int) (this.ih * scale)));
             revalidate();

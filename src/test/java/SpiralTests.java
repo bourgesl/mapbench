@@ -21,6 +21,7 @@
  * questions.
  */
 
+import it.geosolutions.java2d.BaseTest;
 import it.geosolutions.java2d.ShapeDumpingGraphics2D;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -32,7 +33,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import sun.java2d.pipe.RenderingEngine;
 
 /**
  * Simple Line rendering test using GeneralPath to enable Pisces / marlin /
@@ -41,14 +41,15 @@ import sun.java2d.pipe.RenderingEngine;
 public class SpiralTests {
 
     public static void main(String[] args) {
-        final boolean useDashes = true;
+        final boolean useDashes = false;
         final float lineStroke = 2f;
 
         BasicStroke stroke = createStroke(lineStroke, useDashes);
 
         final int size = 4096;
         
-        System.out.println("Testing renderer = " + RenderingEngine.getInstance().getClass().getName());
+        final String renderer = BaseTest.getRenderingEngineName();
+        System.out.println("Testing renderer = " + renderer);
 
         System.out.println("SpiralTests: size = " + size);
 
@@ -57,7 +58,9 @@ public class SpiralTests {
         final Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+        
+        // TODO: add an user preference for the normalization setting:
+//        g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
 
         g2d.setClip(0, 0, size, size);
         g2d.setBackground(Color.WHITE);
@@ -79,8 +82,6 @@ public class SpiralTests {
 
         try {
             dumper.dispose();
-
-            final String renderer = RenderingEngine.getInstance().getClass().getSimpleName();
 
             final File file = new File("SpiralTests-" + renderer + "-dash-" + useDashes + ".png");
 

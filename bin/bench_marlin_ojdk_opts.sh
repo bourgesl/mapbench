@@ -87,9 +87,9 @@ MARLIN_OPTS="-Dsun.java2d.renderer.useFastMath=false -Dsun.java2d.renderer.useTh
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_1.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_2.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_3.log
+# java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_1.log
+# java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_2.log
+# java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_3.log
 
 
 # ThreadLocal (TL) or ConcurrentLinkedQueue (CLQ) storage for renderer contexts:

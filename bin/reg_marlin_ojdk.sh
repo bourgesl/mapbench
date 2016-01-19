@@ -6,8 +6,9 @@ source ./env.sh
 source ./env_marlin_ojdk.sh
 
 # Enable stats
+CHECK=true
 STATS=false
-JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
+JAVA_OPTS="-DPNGImageWriter.level=4 -Dsun.java2d.renderer.doChecks=$CHECK -Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"

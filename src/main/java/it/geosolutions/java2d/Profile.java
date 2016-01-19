@@ -7,9 +7,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.AccessController;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TreeSet;
+import org.gui.ImageUtils;
+import static org.marlin.pisces.MarlinUtils.logInfo;
+import sun.security.action.GetPropertyAction;
 
 /**
  * Settings holder
@@ -216,6 +220,30 @@ public final class Profile {
         System.out.printf("#   OS: %s %s (%s)\n", System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"));
         System.out.printf("# CPUs: %d (virtual)\n", Runtime.getRuntime().availableProcessors());
         System.out.printf("##############################################################\n");
+
+        System.out.printf("# Renderer: %s \n", BaseTest.getRenderingEngineName());
+
+        System.out.printf("# Quality mode: %s...\n", (MapConst.qualityMode) ? "QUALITY" : "DEFAULT");
+        System.out.printf("# Filter shape on size: %s...\n", (MapConst.filterSize) ? "ENABLED" : "DISABLED");
+        
+        if (MapConst.filterSize) {
+            System.out.printf("# Filter criteria: %s...\n", MapConst.sizeRanges.toString());
+        }
+
+        if (ImageUtils.USE_GRAPHICS_ACCELERATION) {
+            if (ImageUtils.USE_VOLATILE) {
+                System.out.printf("# Using VolatileImage ...\n");
+            } else {
+                System.out.printf("# Using CompatibleImage ...\n");
+            }
+        } else {
+            System.out.printf("# Using BufferedImage %s...\n", (MapConst.premultiplied) ? "INT_ARGB_PRE" : "INT_ARGB");
+        }
+
+        if (MapConst.useMarlinGraphics2D) {
+            System.out.printf("# Using MarlinGraphics2D ...\n");
+        }
+        System.out.printf("##############################################################\n");
     }
 
     private static void dump() {
@@ -241,6 +269,7 @@ public final class Profile {
             System.out.println(properties.getProperty(key));
         }
 
+        // TODO: use scales to compute final score ie weighted mean !
         if (false) {
             if (scales != null) {
                 System.out.println("### Test Scales:");
@@ -259,4 +288,27 @@ public final class Profile {
     private Profile() {
         // forbidden
     }
+
+    public static double getDouble(final String key, final double def,
+                                   final double min, final double max) {
+        double value = def;
+        final String property = AccessController.doPrivileged(
+                new GetPropertyAction(key));
+
+        if (property != null) {
+            try {
+                value = Double.parseDouble(property);
+            } catch (NumberFormatException nfe) {
+                logInfo("Invalid value for " + key + " = " + property + " !");
+            }
+        }
+        // check for invalid values
+        if (value < min || value > max) {
+            logInfo("Invalid value for " + key + " = " + value
+                    + "; expect value in range[" + min + ", " + max + "] !");
+            value = def;
+        }
+        return value;
+    }
+
 }

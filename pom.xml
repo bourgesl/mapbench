@@ -115,5 +115,15 @@
 
         </plugins>
     </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.marlin</groupId>
+            <artifactId>marlin-graphics</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+    </dependencies>
 </project>
 

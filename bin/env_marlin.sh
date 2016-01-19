@@ -1,9 +1,8 @@
 #!/bin/sh
 
 # Marlin jar prefix:
-MARLIN_JAR_PREFIX=../lib/marlin-0.4.5
-MARLIN_JAR_PREFIX=../lib/marlin-0.5.6-Unsafe
-#MARLIN_JAR_PREFIX=../lib/marlin-0.5.6-Unsafe-OpenJDK
+MARLIN_JAR_PREFIX=../lib/marlin-0.7.3.1-Unsafe
+#MARLIN_JAR_PREFIX=../lib/marlin-0.6.0-Unsafe
 
 # Marlin tuning options:
 
@@ -22,7 +21,6 @@ TILE_LOG2=5
 
 # Marlin renderer in lib folder:
 BOOTCLASSPATH="-Xbootclasspath/a:$MARLIN_JAR_PREFIX.jar"
-#BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX.jar"
 
 # Optional Marlin java2d patch in lib folder:
 BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX-sun-java2d.jar $BOOTCLASSPATH"
@@ -32,4 +30,4 @@ RDR="org.marlin.pisces.PiscesRenderingEngine"
 #RDR="sun.java2d.marlin.MarlinRenderingEngine"
 
 # Update Java options:
-JAVA_OPTS="-Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.useSimplifier=$USE_SIMPLIFIER -Dsun.java2d.renderer.useRef=$REF_TYPE -Dsun.java2d.renderer.pixelsize=$SIZE -Dsun.java2d.renderer.tileSize_log2=$TILE_LOG2 -Dsun.java2d.renderer=$RDR $JAVA_OPTS"
+JAVA_OPTS="-Dsun.java2d.renderer.subPixel_log2_X=3 -Dsun.java2d.renderer.subPixel_log2_Y=3 -Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.useSimplifier=$USE_SIMPLIFIER -Dsun.java2d.renderer.useRef=$REF_TYPE -Dsun.java2d.renderer.pixelsize=$SIZE -Dsun.java2d.renderer.tileSize_log2=$TILE_LOG2 -Dsun.java2d.renderer=$RDR $JAVA_OPTS"

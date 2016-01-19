@@ -3,13 +3,15 @@
  ******************************************************************************/
 package org.gui;
 
+import it.geosolutions.java2d.MapConst;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
-import java.io.BufferedOutputStream;
+import java.awt.image.VolatileImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,7 +30,10 @@ public final class ImageUtils {
 
     public static final int DCM_ALPHA_MASK = 0xff000000;
 
-    private static final boolean USE_GRAPHICS_ACCELERATION = false;
+    public static final boolean USE_GRAPHICS_ACCELERATION = MapConst.useAcceleration || MapConst.useVolatile;
+    public static final boolean USE_VOLATILE = MapConst.useVolatile;
+
+    private static final boolean NORMALIZE_DIFF = true;
 
     private final static GraphicsConfiguration gc = (USE_GRAPHICS_ACCELERATION)
             ? GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration() : null;
@@ -36,11 +41,40 @@ public final class ImageUtils {
     private ImageUtils() {
     }
 
+    public static Image newFastImage(final int w, final int h) {
+        if (USE_GRAPHICS_ACCELERATION) {
+            return (USE_VOLATILE) ? gc.createCompatibleVolatileImage(w, h) : gc.createCompatibleImage(w, h);
+        }
+        return newImage(w, h);
+    }
+
     public static BufferedImage newImage(final int w, final int h) {
         if (USE_GRAPHICS_ACCELERATION) {
             return gc.createCompatibleImage(w, h);
         }
-        return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        return new BufferedImage(w, h,
+                (MapConst.premultiplied) ? BufferedImage.TYPE_INT_ARGB_PRE : BufferedImage.TYPE_INT_ARGB);
+    }
+
+    public static Graphics2D createGraphics(final Image img) {
+        if (img instanceof BufferedImage) {
+            return ((BufferedImage) img).createGraphics();
+        }
+        if (img instanceof VolatileImage) {
+            return ((VolatileImage) img).createGraphics();
+        }
+        throw new IllegalStateException("image not supported: " + img);
+    }
+
+    public static BufferedImage convert(final Image img) {
+        if (img instanceof BufferedImage) {
+            return (BufferedImage) img;
+        }
+        if (img instanceof VolatileImage) {
+            final VolatileImage vol = (VolatileImage) img;
+            return vol.getSnapshot();
+        }
+        throw new IllegalStateException("image not supported: " + img);
     }
 
     public static BufferedImage copyImage(final BufferedImage srcImage) {
@@ -61,6 +95,7 @@ public final class ImageUtils {
     public static BufferedImage loadImage(final File refDirectory, final String imageFileName) throws IOException {
         final File imageFile = new File(refDirectory, imageFileName);
         if (!imageFile.canRead()) {
+            System.out.println("loadImage: missing image [" + imageFile + "].");
             return null;
         }
         final BufferedImage image = ImageIO.read(imageFile);
@@ -72,13 +107,14 @@ public final class ImageUtils {
         final Iterator<ImageWriter> itWriters = ImageIO.getImageWritersByFormatName("PNG");
         if (itWriters.hasNext()) {
             final ImageWriter writer = itWriters.next();
+
             final ImageWriteParam writerParams = writer.getDefaultWriteParam();
             writerParams.setProgressiveMode(ImageWriteParam.MODE_DISABLED);
 
             final File imgFile = new File(resDirectory, imageFileName);
 
             if (!imgFile.exists() || imgFile.canWrite()) {
-                System.out.println("saveImage: saving image as PNG ...");
+                System.out.println("saveImage: saving image as PNG [" + imgFile + "]...");
                 imgFile.delete();
 
                 // disable cache in temporary files:
@@ -86,12 +122,12 @@ public final class ImageUtils {
 
                 final long start = System.nanoTime();
 
-                // use buffered output stream (64K):
-                final ImageOutputStream imgOutStream = ImageIO.createImageOutputStream(new BufferedOutputStream(new FileOutputStream(imgFile), 64 * 1024));
+                // PNG uses already buffering:
+                final ImageOutputStream imgOutStream = ImageIO.createImageOutputStream(new FileOutputStream(imgFile));
 
                 writer.setOutput(imgOutStream);
                 try {
-                    writer.write(new IIOImage(image, null, null));
+                    writer.write(null, new IIOImage(image, null, null), writerParams);
                 } finally {
                     imgOutStream.close();
 
@@ -102,7 +138,8 @@ public final class ImageUtils {
         }
     }
 
-    public static BufferedImage computeDiffImage(final String imageFileName, final BufferedImage tstImage, final BufferedImage refImage) {
+    public static BufferedImage computeDiffImage(final String imageFileName, final BufferedImage tstImage, final BufferedImage refImage,
+                                                 final DiffContext globalCtx) {
         if (tstImage == null) {
             System.out.println("computeDiffImage: test image is null !");
             return null;
@@ -140,24 +177,32 @@ public final class ImageUtils {
             final int aTstPix[] = ((DataBufferInt) tstDataBuffer).getData();
             final int aDifPix[] = ((DataBufferInt) diffImage.getRaster().getDataBuffer()).getData();
 
-            final Histogram h = new Histogram("diff[" + imageFileName + "]");
+            final DiffContext localCtx = new DiffContext(imageFileName);
 
             final boolean useGrayScale = true;
 
             int dr, dg, db, v, max = 0;
             for (int i = 0, len = aRefPix.length; i < len; i++) {
-                dr = r(aRefPix[i]) - r(aTstPix[i]);
-                dg = g(aRefPix[i]) - g(aTstPix[i]);
-                db = b(aRefPix[i]) - b(aTstPix[i]);
 
                 /* put condition out of loop */
                 if (useGrayScale) {
-                    v = (Math.abs(dr) + Math.abs(dg) + Math.abs(db)) / 3;
+                    // grayscale diff:
+                    dg = (r(aRefPix[i]) + g(aRefPix[i]) + b(aRefPix[i]))
+                            - (r(aTstPix[i]) + g(aTstPix[i]) + b(aTstPix[i]));
+
+                    // max difference on grayscale values:
+                    v = (int) Math.ceil(Math.abs(dg / 3.0));
+
                     if (v > max) {
                         max = v;
                     }
                     aDifPix[i] = toInt(v, v, v);
+
                 } else {
+                    dr = r(aRefPix[i]) - r(aTstPix[i]);
+                    dg = g(aRefPix[i]) - g(aTstPix[i]);
+                    db = b(aRefPix[i]) - b(aTstPix[i]);
+
                     if (dr > max) {
                         max = v;
                     }
@@ -168,35 +213,43 @@ public final class ImageUtils {
                         max = v;
                     }
                     aDifPix[i] = toInt(clamp127(dr), clamp127(dg), clamp127(db));
+
+                    // grayscale diff:
+                    dg = (r(aRefPix[i]) + g(aRefPix[i]) + b(aRefPix[i]))
+                            - (r(aTstPix[i]) + g(aTstPix[i]) + b(aTstPix[i]));
+
+                    // max difference on grayscale values:
+                    v = (int) Math.ceil(Math.abs(dg / 3.0));
                 }
 
-                // residuals:
-                h.add((dr * dr + dg * dg + db * db) / 3);
+                localCtx.add(v);
+                globalCtx.add(v);
             }
 
             final long time = System.nanoTime() - start;
             System.out.println("computeDiffImage: duration= " + (time / 1000000l) + " ms.");
 
-            if (h.sum == 0l) {
-                System.out.println("computeDiffImage: No difference for images: " + imageFileName);
+            localCtx.dump();
+
+            if (!localCtx.isDiff()) {
                 return null;
             }
             System.out.println("computeDiffImage: max delta: " + max);
 
-            /* normalize diff image vs mean(diff) */
-            if ((max > 0) && (max < 255)) {
-                if (useGrayScale) {
-                    final float factor = 255f / max;
-                    for (int i = 0, len = aDifPix.length; i < len; i++) {
-                        v = Math.round(factor * b(aDifPix[i]));
-                        aDifPix[i] = toInt(v, v, v);
+            if (NORMALIZE_DIFF) {
+                /* normalize diff image vs mean(diff) */
+                if ((max > 0) && (max < 255)) {
+                    if (useGrayScale) {
+                        final float factor = 255f / max;
+                        for (int i = 0, len = aDifPix.length; i < len; i++) {
+                            v = (int) Math.ceil(factor * b(aDifPix[i]));
+                            aDifPix[i] = toInt(v, v, v);
+                        }
+                    } else {
+                        System.out.println("TODO: normalize color image");
                     }
-                } else {
-                    System.out.println("TODO: normalize color image");
                 }
             }
-
-            System.out.println("computeDiffImage: Histogram:\n" + h);
 
             return diffImage;
         }
@@ -223,8 +276,8 @@ public final class ImageUtils {
     public static int toInt(final int r, final int g, final int b) {
         return DCM_ALPHA_MASK | (r << 16) | (g << 8) | b;
     }
-    /* stats */
 
+    /* stats */
     static class StatInteger {
 
         public final String name;
@@ -274,7 +327,7 @@ public final class ImageUtils {
         }
 
         public final StringBuilder toString(final StringBuilder sb) {
-            sb.append(name).append('[').append(count);
+            sb.append(name).append("[n: ").append(count);
             sb.append("] sum: ").append(sum).append(" avg: ").append(trimTo3Digits(((double) sum) / count));
             sb.append(" [").append(min).append(" | ").append(max).append("]");
             return sb;
@@ -282,7 +335,7 @@ public final class ImageUtils {
 
     }
 
-    static class Histogram extends StatInteger {
+    public final static class Histogram extends StatInteger {
 
         static int BUCKET = 2;
         static int MAX = 20;
@@ -290,13 +343,12 @@ public final class ImageUtils {
         static int[] STEPS = new int[MAX];
 
         static {
-            STEPS[0] = 1;
+            STEPS[0] = 0;
+            STEPS[1] = 1;
 
-            for (int i = 1; i < MAX; i++) {
+            for (int i = 2; i < MAX; i++) {
                 STEPS[i] = STEPS[i - 1] * BUCKET;
             }
-            STEPS[0] = 0;
-
 //            System.out.println("Histogram.STEPS = " + Arrays.toString(STEPS));
         }
 
@@ -311,7 +363,7 @@ public final class ImageUtils {
 
         private StatInteger[] stats = new StatInteger[MAX];
 
-        Histogram(String name) {
+        public Histogram(String name) {
             super(name);
             for (int i = 0; i < MAX; i++) {
                 stats[i] = new StatInteger(String.format("%5s .. %5s", STEPS[i], ((i + 1 < MAX) ? STEPS[i + 1] : "~")));
@@ -361,4 +413,35 @@ public final class ImageUtils {
         return ((long) (1e3d * value)) / 1e3d;
     }
 
+    public static final class DiffContext {
+
+        public final Histogram histAll;
+        public final Histogram histPix;
+
+        public DiffContext(String name) {
+            histAll = new Histogram("All  Pixels [" + name + "]");
+            histPix = new Histogram("Diff Pixels [" + name + "]");
+        }
+
+        public void dump() {
+            if (isDiff()) {
+                System.out.println("Differences [" + histAll.name + "]:");
+                System.out.println("Total [all pixels]:\n" + histAll.toString());
+                System.out.println("Total [different pixels]:\n" + histPix.toString());
+            } else {
+                System.out.println("No difference for [" + histAll.name + "].");
+            }
+        }
+
+        void add(int val) {
+            histAll.add(val);
+            if (val != 0) {
+                histPix.add(val);
+            }
+        }
+
+        boolean isDiff() {
+            return histAll.sum != 0l;
+        }
+    }
 }

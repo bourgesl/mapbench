@@ -1,6 +1,6 @@
 /nb*
 /target/
-/maps/discarded/
+/tests/
 /maps/insane/
 /results/ref/*.png
 /results/test/*.png

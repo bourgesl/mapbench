@@ -1,10 +1,9 @@
 #!/bin/sh
 
-source ~/test-jdk9-gr.sh
+source env_openjdk9.sh
 
 # should use Marlin within open jdk 9:
 # Marlin jar prefix:
-#MARLIN_JAR_PREFIX=../lib/marlin-0.5.6-Unsafe-OpenJDK
 MARLIN_JAR_PREFIX=
 
 # Marlin tuning options:
@@ -32,5 +31,13 @@ BOOTCLASSPATH=
 # Rendering engine:
 RDR="sun.java2d.marlin.MarlinRenderingEngine"
 
+
+# Pixel loops:
+#RLE="-Dsun.java2d.renderer.enableRLE=true -Dsun.java2d.renderer.forceRLE=false -Dsun.java2d.renderer.forceNoRLE=false -Dsun.java2d.renderer.useTileFlags=true -Dsun.java2d.renderer.useTileFlags.useHeuristics=true -Dsun.java2d.renderer.rleMinWidth=40 -Dsun.java2d.renderer.blockSize_log2=5"
+
 # Update Java options:
-JAVA_OPTS="-Dsun.java2d.renderer.logCreateContext=false -Dsun.java2d.renderer.logUnsafeMalloc=false -Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.useSimplifier=$USE_SIMPLIFIER -Dsun.java2d.renderer.useRef=$REF_TYPE -Dsun.java2d.renderer.pixelsize=$SIZE -Dsun.java2d.renderer.tileSize_log2=$TILE_LOG2 -Dsun.java2d.renderer=$RDR $JAVA_OPTS"
+#JAVA_OPTS="$RLE -Dsun.java2d.renderer.subPixel_log2_X=3 -Dsun.java2d.renderer.subPixel_log2_Y=3 -Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.useSimplifier=$USE_SIMPLIFIER -Dsun.java2d.renderer.useRef=$REF_TYPE -Dsun.java2d.renderer.pixelsize=$SIZE -Dsun.java2d.renderer.tileSize_log2=$TILE_LOG2 -Dsun.java2d.renderer=$RDR $JAVA_OPTS"
+
+#JAVA_OPTS="-Dsun.java2d.renderer=$RDR"
+
+JAVA_OPTS="-Dsun.java2d.renderer.verbose=false -Dsun.java2d.renderer.log=false -Dsun.java2d.renderer.logUnsafeMalloc=false -Dsun.java2d.renderer.subPixel_log2_X=3 -Dsun.java2d.renderer.subPixel_log2_Y=3 -Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.useSimplifier=$USE_SIMPLIFIER -Dsun.java2d.renderer.useRef=$REF_TYPE -Dsun.java2d.renderer.pixelsize=$SIZE -Dsun.java2d.renderer.tileSize_log2=$TILE_LOG2 $JAVA_OPTS"

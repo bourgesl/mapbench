@@ -1,8 +1,11 @@
 /nb*
+/bin/*.log
+/bin/*.png
 /target/
 /tests/
+/maps/discarded/
 /maps/insane/
-/results/ref/*.png
-/results/test/*.png
+/results/ref/**
+/results/test/**
 /results/test/insane/
 

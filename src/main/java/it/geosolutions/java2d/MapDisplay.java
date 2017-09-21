@@ -59,7 +59,9 @@ public final class MapDisplay extends BaseTest {
             System.out.println("drawing[" + dataFile.getName() + "][width = " + commands.getWidth()
                     + ", height = " + commands.getHeight() + "] ...");
 
-            commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
+// TODO: use property            
+            commands.prepareCommands(MapConst.doClip, true, PathIterator.WIND_NON_ZERO);
+//            commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
 
             Image image = commands.prepareImage();
             Graphics2D graphics = commands.prepareGraphics(image);
@@ -114,7 +116,7 @@ public final class MapDisplay extends BaseTest {
         }
 
         // TODO: make mode silent : do not show GUI or exit at end => regression tests...
-        final BigImageFrame frame = BigImageFrame.createAndShow(title, tstImage, refImage, diffImage);
+        final BigImageFrame frame = BigImageFrame.createAndShow(title, tstImage, refImage, diffImage, true, true);
         frame.setInterpolation(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);

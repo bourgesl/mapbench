@@ -19,6 +19,7 @@ public class BenchTest extends BaseTest {
 
     // constants:
     static final int PASS = Profile.getInteger(Profile.KEY_PASS);
+    static final int ITER = Profile.getInteger(Profile.KEY_ITERATION);
     static final int MIN_LOOPS = Profile.getInteger(Profile.KEY_MIN_LOOPS);
 
     static final int MAX_THREADS = Profile.getInteger(Profile.KEY_MAX_THREADS);
@@ -31,11 +32,11 @@ public class BenchTest extends BaseTest {
     static final boolean doWarmupEachTest = true;
 
     // before 200/200
-    static final int WARMUP_LOOPS_MIN = 80;
+    static final int WARMUP_LOOPS_MIN = Profile.getInteger(Profile.KEY_WARMUP_LOOPS_MIN);
     static final int WARMUP_LOOPS_MAX = 2 * WARMUP_LOOPS_MIN;
 
     static final int WARMUP_BEFORE_TEST_THREADS = 2;
-    static final int WARMUP_BEFORE_TEST_MIN_LOOPS = 10;
+    static final int WARMUP_BEFORE_TEST_MIN_LOOPS = Math.min(10, WARMUP_LOOPS_MIN);
     static final int WARMUP_BEFORE_TEST_MIN_DURATION = 3000;
 
     static final int CALIBRATE_LOOPS = 3000;

@@ -56,7 +56,7 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
      * @return created BigImageFrame instance
      */
     public static BigImageFrame createAndShow(final String title, final BufferedImage image) {
-        return createAndShow(title, image, null, null);
+        return createAndShow(title, image, null, null, true, true);
     }
 
     /**
@@ -68,8 +68,10 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
      * @return created BigImageFrame instance
      */
     public static BigImageFrame createAndShow(final String title, final BufferedImage image,
-                                              final BufferedImage refImage, final BufferedImage diffImage) {
-        final BigImageFrame frame = new BigImageFrame(title);
+                                              final BufferedImage refImage, final BufferedImage diffImage,
+                                              final boolean showZoomSlider, final boolean showCombo)
+    {
+        final BigImageFrame frame = new BigImageFrame(title, showZoomSlider, showCombo);
         frame.image = image;
         frame.refImage = refImage;
         frame.diffImage = diffImage;
@@ -107,6 +109,14 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
      * @param title frame's title
      */
     BigImageFrame(final String title) {
+        this(title, true, true);
+    }
+
+    /**
+     * Protected Constructor
+     * @param title frame's title
+     */
+    BigImageFrame(final String title, final boolean showZoomSlider, final boolean showCombo) {
         super(title);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -147,7 +157,9 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
         // add components:
         final Container pane = this.getContentPane();
 
-        pane.add(zoomSlider, BorderLayout.WEST);
+        if (showZoomSlider) {
+            pane.add(zoomSlider, BorderLayout.WEST);
+        }
         pane.add(scrollPane, BorderLayout.CENTER);
 
         final JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
@@ -156,10 +168,11 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
 
         viewCombo = new JComboBox<ViewMode>(ViewMode.values());
         viewCombo.addItemListener(this);
-
         infoPanel.add(viewCombo);
 
-        pane.add(infoPanel, BorderLayout.PAGE_END);
+        if (showCombo) {
+            pane.add(infoPanel, BorderLayout.PAGE_END);
+        }
     }
 
     @Override
@@ -197,7 +210,7 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
                 // full screen:
                 setPreferredSize(new Dimension(width, height));
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
-                revalidate();
+                this.getRootPane().revalidate();
                 setLocationRelativeTo(null);
             }
         }

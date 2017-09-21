@@ -5,6 +5,8 @@ source ./env.sh
 # get marlin settings and boot class path:
 source ./env_marlin_ojdk.sh
 
+JAVA_TUNING=" -Xms4g  -Xmx4g -XX:+UseConcMarkSweepGC"
+
 # Enable stats
 CHECK=true
 STATS=false

@@ -21,6 +21,7 @@ import sun.security.action.GetPropertyAction;
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class Profile {
+
     /* MapConst settings (shared) */
 
     public final static String SCALE_FILE = "mapbench-scales.properties";
@@ -36,6 +37,12 @@ public final class Profile {
 
     /* use dashed stroke instead of shape's stroke */
     public final static String KEY_DO_USE_DASHED_STROKE = "doUseDashedStroke";
+
+    /* use gradient instead of shape's color */
+    public final static String KEY_DO_USE_GRADIENT = "doUseGradient";
+
+    /* use texture paint instead of shape's color */
+    public final static String KEY_DO_USE_TEXTURE = "doUseTexture";
 
     /* do clipping before rendering ? */
     public final static String KEY_DO_CLIP = "doClip";
@@ -66,6 +73,10 @@ public final class Profile {
 
     public final static String KEY_MIN_DURATION = "minDuration";
 
+    public final static String KEY_WARMUP_LOOPS_MIN = "warmupLoopsMin";
+
+    public final static String KEY_ITERATION = "iteration";
+
     /** result directory */
     static File profileDirectory = new File("../profiles/");
 
@@ -77,7 +88,7 @@ public final class Profile {
 
     static {
         /* MapConst settings (shared) */
-        /* true to create stroked shape instead of draw(shape) and then fill(strokedShape) */
+ /* true to create stroked shape instead of draw(shape) and then fill(strokedShape) */
         defProps.setProperty(KEY_DO_CREATE_STROKED_SHAPE, "false");
 
         /* true to use the even-odd winding rule */
@@ -85,6 +96,12 @@ public final class Profile {
 
         /* true to use dashed stroke */
         defProps.setProperty(KEY_DO_USE_DASHED_STROKE, "false");
+
+        /* true to use gradient */
+        defProps.setProperty(KEY_DO_USE_GRADIENT, "false");
+        
+        /* true to use texture paint */
+        defProps.setProperty(KEY_DO_USE_TEXTURE, "false");
 
         /* true to enable shape clipping before benchmark to render only visible (even partially) shapes */
         defProps.setProperty(KEY_DO_CLIP, "false");
@@ -113,15 +130,19 @@ public final class Profile {
         defProps.setProperty(KEY_ROTATE_ANGLE, "17.333");
 
         /* MapBench settings */
-        /* use shared image for all iterations or create 1 image per iteration */
+ /* use shared image for all iterations or create 1 image per iteration */
         defProps.setProperty(KEY_USE_SHARED_IMAGE, "false");
 
         defProps.setProperty(KEY_PASS, "1");
+        defProps.setProperty(KEY_ITERATION, "1");
+
         defProps.setProperty(KEY_MIN_LOOPS, "25");
 
         defProps.setProperty(KEY_MAX_THREADS, Integer.toString(Runtime.getRuntime().availableProcessors()));
 
         defProps.setProperty(KEY_MIN_DURATION, "5000.0");
+
+        defProps.setProperty(KEY_WARMUP_LOOPS_MIN, "80");
     }
 
     public static String getProfileName() {
@@ -225,7 +246,7 @@ public final class Profile {
 
         System.out.printf("# Quality mode: %s...\n", (MapConst.qualityMode) ? "QUALITY" : "DEFAULT");
         System.out.printf("# Filter shape on size: %s...\n", (MapConst.filterSize) ? "ENABLED" : "DISABLED");
-        
+
         if (MapConst.filterSize) {
             System.out.printf("# Filter criteria: %s...\n", MapConst.sizeRanges.toString());
         }

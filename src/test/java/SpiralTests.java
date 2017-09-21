@@ -27,6 +27,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.Path2D;
 import static java.awt.geom.Path2D.WIND_NON_ZERO;
 import java.awt.image.BufferedImage;
@@ -40,6 +41,8 @@ import javax.imageio.ImageIO;
  */
 public class SpiralTests {
 
+    final static boolean DO_FILL = true;
+
     public static void main(String[] args) {
         final boolean useDashes = false;
         final float lineStroke = 2f;
@@ -47,7 +50,7 @@ public class SpiralTests {
         BasicStroke stroke = createStroke(lineStroke, useDashes);
 
         final int size = 4096;
-        
+
         final String renderer = BaseTest.getRenderingEngineName();
         System.out.println("Testing renderer = " + renderer);
 
@@ -58,10 +61,9 @@ public class SpiralTests {
         final Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        
+
         // TODO: add an user preference for the normalization setting:
 //        g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
-
         g2d.setClip(0, 0, size, size);
         g2d.setBackground(Color.WHITE);
         g2d.clearRect(0, 0, size, size);
@@ -70,7 +72,7 @@ public class SpiralTests {
         g2d.setColor(Color.BLUE);
 
         ShapeDumpingGraphics2D dumper = new ShapeDumpingGraphics2D(g2d, size, size,
-                new File("SpiralTest-dash-" + useDashes + ".ser"));
+                new File("SpiralTest-fill-" + DO_FILL + "-dash-" + useDashes + ".ser"));
 
         final long start = System.nanoTime();
 
@@ -83,9 +85,9 @@ public class SpiralTests {
         try {
             dumper.dispose();
 
-            final File file = new File("SpiralTests-" + renderer + "-dash-" + useDashes + ".png");
+            final File file = new File("SpiralTests-" + renderer + "-fill-" + DO_FILL + "-dash-" + useDashes + ".png");
 
-            System.out.println("Writing file: " + file.getAbsolutePath());;
+            System.out.println("Writing file: " + file.getAbsolutePath());
             ImageIO.write(image, "PNG", file);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -96,13 +98,25 @@ public class SpiralTests {
 
     private static void paint(final Graphics2D g2d, final float size) {
 
+        final double halfSize = size / 2.0;
+
+        final Path2D path = createPath(halfSize);
+
+        g2d.translate(halfSize, halfSize);
+
+        if (DO_FILL) {
+            final Shape filledPath = g2d.getStroke().createStrokedShape(path);
+            g2d.fill(filledPath);
+        } else {
+            g2d.draw(path);
+        }
+    }
+
+    private static Path2D createPath(final double halfSize) {
         final Path2D.Float path = new Path2D.Float(WIND_NON_ZERO, 256 * 1024);
         path.moveTo(0f, 0f);
 
-        final double halfSize = size / 2.0;
-        g2d.translate(halfSize, halfSize);
-
-        final double maxRadius = Math.sqrt(2.0) * halfSize;
+        final double maxRadius = Math.sqrt(2.0) * (halfSize + 20.);
         final double twoPi = 2.0 * Math.PI;
         final double stepCircle = 10.0;
 
@@ -127,8 +141,9 @@ public class SpiralTests {
                 n++;
             }
         }
-        System.out.println("draw : " + n + " lines.");
-        g2d.draw(path);
+
+        System.out.println("path: " + n + " lines.");
+        return path;
     }
 
     private static BasicStroke createStroke(final float width, final boolean useDashes) {

@@ -12,6 +12,14 @@ PROFILE=default.properties
 # longer (shared 4T) test:
 PROFILE=longer_shared.properties
 
+# try gradient paint:
+#PROFILE=longer_shared_grad.properties
+
+# shorter (shared 4T) test:
+#PROFILE=shorter_shared.properties
+
+#PROFILE=shared_nu-tx.properties
+
 # longer (shared 4T) DEMO test:
 #PROFILE=longer_shared_demo.properties
 
@@ -29,6 +37,9 @@ PROFILE=longer_shared.properties
 # use shared image but single thread only
 #PROFILE=shared_1T.properties
 
+# JAM (shorter warmup):
+#PROFILE=shared_1T_jam.properties
+
 # scaling test (1T but image x4):
 #PROFILE=scaleTest.properties
 
@@ -37,6 +48,10 @@ PROFILE=longer_shared.properties
 
 # complex affine transform test:
 #PROFILE=cpxTransform.properties
+#PROFILE=cpxTransform2.properties
+
+# clip fill shapes
+#PROFILE=clipTransform.properties
 
 # use createStrokedShape() + fill() test:
 #PROFILE=strokedShape.properties
@@ -48,13 +63,14 @@ PROFILE=longer_shared.properties
 # MapBench jar:
 MAP_BENCH_JAR=../lib/mapbench-0.4.0.jar
 # Marlin Graphics jar:
-MARLIN_GRAPHICS_JAR=../lib/marlin-graphics-0.2.1.jar 
+MARLIN_GRAPHICS_JAR=../lib/marlin-graphics-0.2.3.jar 
 
 
 # server jvm
 JAVA_OPTS="-server"
+#JAVA_OPTS=""
 #JAVA_OPTS="-XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal"
-#JAVA_OPTS="-server -XX:FreqInlineSize=2000"
+#JAVA_OPTS="-server -XX:FreqInlineSize=800" # -XX:+PrintCompilation"
 
 #JAVA_OPTS="-server -XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:StartFlightRecording=name=mapbench,filename=/home/marlin/mapbench/bin/mapbench.jfr,dumponexit=true -XX:FlightRecorderOptions=defaultrecording=true"
 
@@ -82,10 +98,13 @@ JAVA_OPTS="-server"
 #JAVA_TUNING=" -Xms128m  -Xmx128m -XX:+AggressiveOpts -XX:CompileThreshold=1000"
 
 #JAVA_TUNING=" -Xms1g  -Xmx1g -XX:+UseConcMarkSweepGC"
-#JAVA_TUNING=" -Xms2048m  -Xmx2048m"
+#JAVA_TUNING=" -Xms2g  -Xmx2g"
+
+# Normal settings:
 JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC"
 #JAVA_TUNING=" -Xms512m  -Xmx512m -XX:+UseConcMarkSweepGC"
 
+# Large heap for regression tests:
 #JAVA_TUNING=" -Xms4g  -Xmx4g -XX:+UseConcMarkSweepGC"
 #JAVA_TUNING=" -Xms2048m  -Xmx2048m -XX:-TieredCompilation"
 
@@ -119,13 +138,23 @@ JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC"
 
 
 # MapBench jar file:
-#CLASSPATH=$MAP_BENCH_JAR
-CLASSPATH=$MAP_BENCH_JAR:$MARLIN_GRAPHICS_JAR
+CLASSPATH=$MAP_BENCH_JAR
+#CLASSPATH=$MAP_BENCH_JAR:$MARLIN_GRAPHICS_JAR
 
 # MapBench Quality mode:
 QUALITY=false
+CLIP=false
+SKIP_DRAW=false
+
+PRE=true
+ACCEL=false
+VOLATILE=false
 FILTER=false
-JAVA_OPTS="-DMapBench.clip.small=false -DMapBench.qualityMode=$QUALITY -DMapBench.filter.size=$FILTER -DMapBench.filter.minWidth=64 $JAVA_OPTS"
+
+# TRY AlphaPaint ie GradientPaint !!
+
+#JAVA_OPTS="-DMapBench.clip.small=false -DMapBench.qualityMode=$QUALITY -DMapBench.filter.size=$FILTER -DMapBench.filter.minWidth=64 $JAVA_OPTS"
+JAVA_OPTS="-DMapBench.skipDraw=$SKIP_DRAW -DMapBench.clip.small=$CLIP -DMapBench.qualityMode=$QUALITY -DMapBench.premultiplied=$PRE -DMapBench.acceleration=$ACCEL -DMapBench.volatile=$VOLATILE $JAVA_OPTS"
 
 # Reset Boot classpath:
 BOOTCLASSPATH=""

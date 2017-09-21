@@ -5,6 +5,10 @@ source ./env.sh
 # get marlin settings and boot class path:
 source ./env_marlin_ojdk.sh
 
+# Enable stats
+STATS=false
+JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
+
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $JAVA_OPTS"

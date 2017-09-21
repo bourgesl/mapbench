@@ -13,13 +13,16 @@ import java.io.File;
  */
 public interface MapConst {
 
+    final static boolean skipDraw = Boolean.getBoolean("MapBench.skipDraw");
+    final static boolean skipFill = Boolean.getBoolean("MapBench.skipFill");
+    
     final static boolean useClipSmall = Boolean.getBoolean("MapBench.clip.small");
 
     final static boolean useClipDemo = true;
     
     // TODO: use profile property ?
     /* flag indicating to use BufferedImage.TYPE_INT_ARGB_PRE or BufferedImage.TYPE_INT_ARGB */
-    final static boolean premultiplied = true;
+    final static boolean premultiplied = Boolean.getBoolean("MapBench.premultiplied"); // false by default
 
     final static boolean useAcceleration = Boolean.getBoolean("MapBench.acceleration"); // false by default
 
@@ -49,6 +52,12 @@ public interface MapConst {
 
     /** true to use dashed stroke instead of shape's stroke */
     final static boolean doUseDashedStroke = Profile.getBoolean(Profile.KEY_DO_USE_DASHED_STROKE);
+
+    /** true to use gradient instead of shape's paint */
+    final static boolean doUseGradient = Profile.getBoolean(Profile.KEY_DO_USE_GRADIENT);
+    
+    /** true to use texture paint instead of shape's paint */
+    final static boolean doUseTexture = Profile.getBoolean(Profile.KEY_DO_USE_TEXTURE);
     
     /** true to enable shape clipping before benchmark to render only visible (even partially) shapes */
     final static boolean doClip = Profile.getBoolean(Profile.KEY_DO_CLIP);

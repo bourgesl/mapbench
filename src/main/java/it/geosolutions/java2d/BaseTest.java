@@ -16,10 +16,10 @@ import java.util.Arrays;
 public class BaseTest implements MapConst {
 
     /** base reference results directory */
-    static File refResultDirectory = new File(baseRefResultDirectory, getTestDirectory());
+    static final File refResultDirectory = getReferenceTestDirectory();
 
     /** base test results directory */
-    static File resultDirectory = new File(baseResultDirectory, getTestDirectory());
+    static final File resultDirectory = new File(baseResultDirectory, getTestDirectory());
 
     static final boolean doGCBeforeTest = true;
 
@@ -31,6 +31,14 @@ public class BaseTest implements MapConst {
         super();
     }
 
+    private static File getReferenceTestDirectory() {
+        File refResultDir = new File(baseRefResultDirectory, getTestDirectory());
+        if (!refResultDir.isDirectory() && !refResultDir.exists()) {
+            refResultDir = new File(baseRefResultDirectory, Profile.getProfileName());
+        }
+        return refResultDir;
+    }
+    
     private static String getTestDirectory() {
         final String profile = Profile.getProfileName();
         if ("MarlinRenderingEngine".equals(BaseTest.getRenderingEngineName())) {
@@ -130,27 +138,29 @@ public class BaseTest implements MapConst {
             dumpStatsResolved = true;
             try {
                 dumpStatsMethod = Class.forName("org.marlin.pisces.RendererStats").getMethod("dumpStats", null);
-            } catch (Exception ex) {
-                // ignore
-                // ex.printStackTrace();
+            } catch (Throwable th) {
+                // ignore JDK9
+                // th.printStackTrace();
             }
             if (dumpStatsMethod == null) {
                 try {
                     dumpStatsMethod = Class.forName("sun.java2d.marlin.RendererStats").getMethod("dumpStats", null);
-                } catch (Exception ex) {
-                    // ignore
-                    // ex.printStackTrace();
+                } catch (Throwable th) {
+                    // ignore JDK9
+                    // th.printStackTrace();
                 }
             }
         }
-        try {
-            if (dumpStatsMethod != null) {
+        if (dumpStatsMethod != null) {
+            try {
                 // static method:
                 dumpStatsMethod.invoke(null, null);
+            } catch (Throwable th) {
+                // ignore JDK9
+                // th.printStackTrace();
+                // set to null to avoid later invocations:
+                dumpStatsMethod = null;
             }
-        } catch (Exception ex) {
-            // ignore
-            // ex.printStackTrace();
         }
     }
 
@@ -180,8 +190,8 @@ public class BaseTest implements MapConst {
                 reName = sun.java2d.pipe.RenderingEngine.getInstance().getClass().getSimpleName();
             } catch (Throwable th) {
                 // may fail with JDK9 jigsaw (jake)
-                System.err.println("Unable to get RenderingEngine.getInstance()");
-                th.printStackTrace();
+                System.err.println("ERROR: Unable to get RenderingEngine.getInstance()");
+//                th.printStackTrace();
                 reName = "unknown";
             }
         }

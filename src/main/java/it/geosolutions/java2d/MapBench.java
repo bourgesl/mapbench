@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.gui.ImageUtils;
 
 /**
@@ -28,6 +29,10 @@ import org.gui.ImageUtils;
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class MapBench extends BenchTest {
+
+    private final static boolean POOL_DEBUG = false;
+    
+    private final static int N_ITERATION = 5;
 
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
@@ -45,13 +50,13 @@ public final class MapBench extends BenchTest {
         final StringBuilder sbRes = new StringBuilder(16 * 1024);
         sbRes.append(Result.toStringHeader()).append('\n');
 
-        final StringBuilder sbScore = new StringBuilder(1024);
-
         System.out.println("Results format: \n" + Result.toStringHeader());
 
         // global score:
         int nTest = 0;
-        double totalTest = 0d;
+        double totalMed = 0.0;
+        double totalPct95 = 0.0;
+        double totalFps = 0.0;
         // thread score:
         int nThPass = 0;
         int threads = 1;
@@ -61,15 +66,14 @@ public final class MapBench extends BenchTest {
         }
         final int nThScores = nThPass;
         final int[] nThTest = new int[nThScores];
-        final double[] nThTotal = new double[nThScores];
+        final double[] nThTotalMed = new double[nThScores];
+        final double[] nThTotalPct95 = new double[nThScores];
+        final double[] nThTotalFps = new double[nThScores];
 
         double initialTime;
         int testLoops;
 
-        final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_THREADS);
-        executor.prestartAllCoreThreads();
-        
-        final MapBench bench = new MapBench(executor);
+        final MapBench bench = new MapBench();
         try {
             Result res;
             String sRes;
@@ -107,30 +111,61 @@ public final class MapBench extends BenchTest {
                     System.out.println("drawing[" + file.getName() + "][width = " + commands.getWidth()
                             + ", height = " + commands.getHeight() + "] ...");
 
-                    // run a warm up
-                    if (doWarmup && first) {
-                        BaseTest.isWarmup = true;
-                        first = false;
+                    for (int p = 0; p < ITER; p++) {
+                        if (true) {
+                            bench.prepareExecutor();
+                            if (ITER > 1) {
+                                System.out.println(">>> Iteration: " + p + " <<<");
+                            }
+                        }
+                        // run a warm up
+                        if (doWarmup && first) {
+                            BaseTest.isWarmup = true;
+                            first = false;
 
-                        for (int nWarmup = WARMUP_LOOPS_MIN, i = 1; nWarmup <= WARMUP_LOOPS_MAX; nWarmup *= 2, i++) {
-                            System.out.println("\nWarming up with " + MAX_THREADS + " threads and " + nWarmup + " loops on " + file.getAbsolutePath());
-                            res = bench.timedExecute(commands, MAX_THREADS, nWarmup);
+                            for (int nWarmup = WARMUP_LOOPS_MIN, i = 1; nWarmup <= WARMUP_LOOPS_MAX; nWarmup *= 2, i++) {
+                                System.out.println("\nWarming up with " + MAX_THREADS + " threads and " + nWarmup + " loops on " + file.getAbsolutePath());
+                                res = bench.timedExecute(commands, MAX_THREADS, nWarmup);
+                                System.out.println("Warm up took " + res.totalTime + " ms");
+                                sRes = res.toString();
+
+                                System.out.println(sRes);
+                                sbWarm.append("<<< Warmup ").append(i).append("\n");
+                                sbWarm.append(sRes).append('\n');
+                                sbWarm.append(">>> Warmup ").append(i).append("\n");
+                            }
+
+                            // Marlin stats:
+                            dumpRendererStats();
+                        }
+
+                        // Warmup
+                        if (doWarmupEachTest) {
+                            BaseTest.isWarmup = true;
+
+                            // Estimate number of loops based on median time given by 3 loops:
+                            res = bench.timedExecute(commands, 1, 3);
+                            initialTime = Result.toMillis(res.nsPerOpMed);
+
+                            System.out.println("Initial test: " + initialTime + " ms.");
+
+                            initialTime *= 0.95d; // 5% margin
+                            testLoops = Math.max(WARMUP_BEFORE_TEST_MIN_LOOPS, (int) (WARMUP_BEFORE_TEST_MIN_DURATION / initialTime));
+
+                            System.out.println("\nWarming up with " + WARMUP_BEFORE_TEST_THREADS + " threads and "
+                                    + testLoops + " loops on " + file.getAbsolutePath());
+                            res = bench.timedExecute(commands, WARMUP_BEFORE_TEST_THREADS, testLoops);
                             System.out.println("Warm up took " + res.totalTime + " ms");
                             sRes = res.toString();
 
                             System.out.println(sRes);
-                            sbWarm.append("<<< Warmup ").append(i).append("\n");
                             sbWarm.append(sRes).append('\n');
-                            sbWarm.append(">>> Warmup ").append(i).append("\n");
+
+                            // Marlin stats:
+                            dumpRendererStats();
                         }
 
-                        // Marlin stats:
-                        dumpRendererStats();
-                    }
-
-                    // Warmup
-                    if (doWarmupEachTest) {
-                        BaseTest.isWarmup = true;
+                        BaseTest.isWarmup = false;
 
                         // Estimate number of loops based on median time given by 3 loops:
                         res = bench.timedExecute(commands, 1, 3);
@@ -139,55 +174,37 @@ public final class MapBench extends BenchTest {
                         System.out.println("Initial test: " + initialTime + " ms.");
 
                         initialTime *= 0.95d; // 5% margin
-                        testLoops = Math.max(WARMUP_BEFORE_TEST_MIN_LOOPS, (int) (WARMUP_BEFORE_TEST_MIN_DURATION / initialTime));
+                        testLoops = Math.max(MIN_LOOPS, (int) (MIN_DURATION / initialTime));
 
-                        System.out.println("\nWarming up with " + WARMUP_BEFORE_TEST_THREADS + " threads and "
-                                + testLoops + " loops on " + file.getAbsolutePath());
-                        res = bench.timedExecute(commands, WARMUP_BEFORE_TEST_THREADS, testLoops);
-                        System.out.println("Warm up took " + res.totalTime + " ms");
-                        sRes = res.toString();
+                        System.out.println("Testing file " + file.getAbsolutePath() + " for " + testLoops + " loops ...");
 
-                        System.out.println(sRes);
-                        sbWarm.append(sRes).append('\n');
+                        nThPass = 0;
+                        threads = 1;
+                        while (threads <= MAX_THREADS) {
+                            res = bench.timedExecute(commands, threads, testLoops);
+                            System.out.println(threads + " threads and " + testLoops + " loops per thread, time: " + res.totalTime + " ms");
+                            sRes = res.toString();
 
-                        // Marlin stats:
-                        dumpRendererStats();
-                    }
+                            nTest++;
+                            totalMed += res.nsPerOpMed;
+                            totalPct95 += res.nsPerOpPct95;
+                            totalFps += res.getFpsMed();
 
-                    BaseTest.isWarmup = false;
+                            nThTest[nThPass]++;
+                            nThTotalMed[nThPass] += res.nsPerOpMed;
+                            nThTotalPct95[nThPass] += res.nsPerOpPct95;
+                            nThTotalFps[nThPass] += res.getFpsMed();
 
-                    // Estimate number of loops based on median time given by 3 loops:
-                    res = bench.timedExecute(commands, 1, 3);
-                    initialTime = Result.toMillis(res.nsPerOpMed);
+                            System.out.println(sRes);
+                            sbRes.append(sRes).append('\n');
 
-                    System.out.println("Initial test: " + initialTime + " ms.");
+                            threads *= 2;
+                            nThPass++;
+                        }
 
-                    initialTime *= 0.95d; // 5% margin
-                    testLoops = Math.max(MIN_LOOPS, (int) (MIN_DURATION / initialTime));
+                        System.out.println("\n");
 
-                    System.out.println("Testing file " + file.getAbsolutePath() + " for " + testLoops + " loops ...");
-
-                    nThPass = 0;
-                    threads = 1;
-                    while (threads <= MAX_THREADS) {
-                        res = bench.timedExecute(commands, threads, testLoops);
-                        System.out.println(threads + " threads and " + testLoops + " loops per thread, time: " + res.totalTime + " ms");
-                        sRes = res.toString();
-
-                        nTest++;
-                        totalTest += res.nsPerOpMed95;
-
-                        nThTest[nThPass]++;
-                        nThTotal[nThPass] += res.nsPerOpMed95;
-
-                        System.out.println(sRes);
-                        sbRes.append(sRes).append('\n');
-
-                        threads *= 2;
-                        nThPass++;
-                    }
-
-                    System.out.println("\n");
+                    } // iterations
 
                 } // files
 
@@ -195,6 +212,9 @@ public final class MapBench extends BenchTest {
                 System.out.println(sbWarm.toString());
                 System.out.println("TEST results:");
                 System.out.println(sbRes.toString());
+
+                // Scores:
+                final StringBuilder sbScore = new StringBuilder(1024);
 
                 sbScore.append("Tests\t");
                 sbScore.append(nTest).append('\t');
@@ -218,15 +238,44 @@ public final class MapBench extends BenchTest {
                     nThPass++;
                 }
 
-                sbScore.append("\nPct95\t");
+                // Median:
+                sbScore.append("\nMed\t");
                 sbScore.append(String.format("%.3f",
-                        Result.toMillis(totalTest / (double) nTest))).append('\t');
+                        Result.toMillis(totalMed / (double) nTest))).append('\t');
 
                 nThPass = 0;
                 threads = 1;
                 while (threads <= MAX_THREADS) {
                     sbScore.append(String.format("%.3f",
-                            Result.toMillis(nThTotal[nThPass] / (double) nThTest[nThPass]))).append('\t');
+                            Result.toMillis(nThTotalMed[nThPass] / (double) nThTest[nThPass]))).append('\t');
+                    threads *= 2;
+                    nThPass++;
+                }
+
+                // 95 percentile:
+                sbScore.append("\nPct95\t");
+                sbScore.append(String.format("%.3f",
+                        Result.toMillis(totalPct95 / (double) nTest))).append('\t');
+
+                nThPass = 0;
+                threads = 1;
+                while (threads <= MAX_THREADS) {
+                    sbScore.append(String.format("%.3f",
+                            Result.toMillis(nThTotalPct95[nThPass] / (double) nThTest[nThPass]))).append('\t');
+                    threads *= 2;
+                    nThPass++;
+                }
+
+                // Fps:
+                sbScore.append("\nFPS\t");
+                sbScore.append(String.format("%.3f",
+                        totalFps / (double) nTest)).append('\t');
+
+                nThPass = 0;
+                threads = 1;
+                while (threads <= MAX_THREADS) {
+                    sbScore.append(String.format("%.3f",
+                            nThTotalFps[nThPass] / (double) nThTest[nThPass])).append('\t');
                     threads *= 2;
                     nThPass++;
                 }
@@ -238,20 +287,60 @@ public final class MapBench extends BenchTest {
             } // PASS
 
         } finally {
-            executor.shutdown();
+            bench.shutdown();
         }
     }
 
     // members:
-    private final ExecutorService executor;
+    private ThreadPoolExecutor executor = null;
 
-    MapBench(ExecutorService executor) {
-        this.executor = executor;
+    MapBench() {
     }
-    
-    Result timedExecute(final DrawingCommands commands, final int numThreads, final int loops) 
-            throws InterruptedException, ExecutionException, IOException
-    {
+
+    void shutdown() {
+        shutdown(executor);
+    }
+
+    private static void shutdown(ExecutorService executor) {
+        if (executor != null) {
+            try {
+                if (POOL_DEBUG) {
+                    System.out.println("shutdown: " + executor);
+                }
+                executor.shutdownNow();
+                if (!executor.awaitTermination(1L, TimeUnit.SECONDS)) {
+                    System.out.println("shutdown: threads are still running ...");
+                }
+            } catch (InterruptedException ie) {
+                System.out.println("shutdown: Interrupted !");
+            }
+        }
+    }
+
+    void prepareExecutor() {
+        if (executor != null) {
+            shutdown(executor);
+            executor = null;
+        }
+        if (executor == null) {
+            executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_THREADS);
+            executor.prestartAllCoreThreads();
+
+            if (POOL_DEBUG) {
+                    System.out.println("newFixedThreadPool: " + executor);
+            }
+        }
+    }
+
+    private ThreadPoolExecutor getExecutor() {
+        if (executor == null) {
+            prepareExecutor();
+        }
+        return executor;
+    }
+
+    Result timedExecute(final DrawingCommands commands, final int numThreads, final int loops)
+            throws InterruptedException, ExecutionException, IOException {
         if (doGCBeforeTest) {
             cleanup();
         }
@@ -269,10 +358,10 @@ public final class MapBench extends BenchTest {
     }
 
     private void execute(final DrawingCommands commands, final int numThreads, final int loops,
-                         final long[] opss, final long[] nanoss) 
-            throws InterruptedException, ExecutionException, IOException
-    {
-        final ExecutorService _executor = executor;
+                         final long[] opss, final long[] nanoss)
+            throws InterruptedException, ExecutionException, IOException {
+
+        final ThreadPoolExecutor _executor = getExecutor();
         final int _numThreads = numThreads;
 
         commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
@@ -330,6 +419,10 @@ public final class MapBench extends BenchTest {
 
         @Override
         public Image call() throws Exception {
+             if (POOL_DEBUG) {
+                 System.out.println("call() thread: " + Thread.currentThread().getName());
+             }
+
             // copy members to local vars:
             final long[] _opss = opss;
             final long[] _nanoss = nanoss;

@@ -2,7 +2,7 @@
 # get paths and jvm settings:
 source ./env.sh
 
-BOOTCLASSPATH=""
+source ./env_base.sh
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"
@@ -17,4 +17,3 @@ echo "Java version"
 java -version
 
 java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay
-

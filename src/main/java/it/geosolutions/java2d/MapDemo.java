@@ -45,10 +45,13 @@ public final class MapDemo extends BenchTest {
             System.exit(1);
         }
 
-        final RenderCallback rdrCallback = new RenderCallback();
+        final int winW = 3800;
+        final int winH = 1800;
+        // 1800 x 900 for Full-HD
+        //  976 x 640 for XGA
+        final RenderCallback rdrCallback = new RenderCallback(winW, winH);
 
         // Prepare view transformation:
-//        final AffineTransform viewAT = getViewTransform();
         startTests();
 
         final File[] dataFiles = getSortedFiles();
@@ -59,13 +62,13 @@ public final class MapDemo extends BenchTest {
         final StringBuilder sbRes = new StringBuilder(16 * 1024);
         sbRes.append(Result.toStringHeader()).append('\n');
 
-        final StringBuilder sbScore = new StringBuilder(1024);
-
         System.out.println("Results format: \n" + Result.toStringHeader());
 
         // global score:
         int nTest = 0;
-        double totalTest = 0d;
+        double totalMed = 0.0;
+        double totalPct95 = 0.0;
+        double totalFps = 0.0;
         // thread score:
         int nThPass = 0;
         int threads = 1;
@@ -75,7 +78,9 @@ public final class MapDemo extends BenchTest {
         }
         final int nThScores = nThPass;
         final int[] nThTest = new int[nThScores];
-        final double[] nThTotal = new double[nThScores];
+        final double[] nThTotalMed = new double[nThScores];
+        final double[] nThTotalPct95 = new double[nThScores];
+        final double[] nThTotalFps = new double[nThScores];
 
         double initialTime;
         int testLoops;
@@ -188,10 +193,14 @@ public final class MapDemo extends BenchTest {
                         sRes = res.toString();
 
                         nTest++;
-                        totalTest += res.nsPerOpMed95;
+                        totalMed += res.nsPerOpMed;
+                        totalPct95 += res.nsPerOpPct95;
+                        totalFps += res.getFpsMed();
 
                         nThTest[nThPass]++;
-                        nThTotal[nThPass] += res.nsPerOpMed95;
+                        nThTotalMed[nThPass] += res.nsPerOpMed;
+                        nThTotalPct95[nThPass] += res.nsPerOpPct95;
+                        nThTotalFps[nThPass] += res.getFpsMed();
 
                         System.out.println(sRes);
                         sbRes.append(sRes).append('\n');
@@ -208,6 +217,9 @@ public final class MapDemo extends BenchTest {
                 System.out.println(sbWarm.toString());
                 System.out.println("TEST results:");
                 System.out.println(sbRes.toString());
+
+                // Scores:
+                final StringBuilder sbScore = new StringBuilder(1024);
 
                 sbScore.append("Tests\t");
                 sbScore.append(nTest).append('\t');
@@ -231,20 +243,49 @@ public final class MapDemo extends BenchTest {
                     nThPass++;
                 }
 
-                sbScore.append("\nPct95\t");
+                // Median:
+                sbScore.append("\nMed\t");
                 sbScore.append(String.format("%.3f",
-                        Result.toMillis(totalTest / (double) nTest))).append('\t');
+                        Result.toMillis(totalMed / (double) nTest))).append('\t');
 
                 nThPass = 0;
                 threads = 1;
                 while (threads <= MAX_THREADS) {
                     sbScore.append(String.format("%.3f",
-                            Result.toMillis(nThTotal[nThPass] / (double) nThTest[nThPass]))).append('\t');
+                            Result.toMillis(nThTotalMed[nThPass] / (double) nThTest[nThPass]))).append('\t');
+                    threads *= 2;
+                    nThPass++;
+                }
+                
+                // 95 percentile:
+                sbScore.append("\nPct95\t");
+                sbScore.append(String.format("%.3f",
+                        Result.toMillis(totalPct95 / (double) nTest))).append('\t');
+
+                nThPass = 0;
+                threads = 1;
+                while (threads <= MAX_THREADS) {
+                    sbScore.append(String.format("%.3f",
+                            Result.toMillis(nThTotalPct95[nThPass] / (double) nThTest[nThPass]))).append('\t');
+                    threads *= 2;
+                    nThPass++;
+                }
+
+                // Fps:
+                sbScore.append("\nFPS\t");
+                sbScore.append(String.format("%.3f", 
+                        totalFps / (double) nTest)).append('\t');
+
+                nThPass = 0;
+                threads = 1;
+                while (threads <= MAX_THREADS) {
+                    sbScore.append(String.format("%.3f", 
+                            nThTotalFps[nThPass] / (double) nThTest[nThPass])).append('\t');
                     threads *= 2;
                     nThPass++;
                 }
                 sbScore.append('\n');
-
+                
                 System.out.println("Scores:");
                 System.out.println(sbScore.toString());
 
@@ -425,15 +466,17 @@ public final class MapDemo extends BenchTest {
         private final int[] blockX = new int[MAX_REAL_THREADS];
         private final int[] blockY = new int[MAX_REAL_THREADS];
 
-        RenderCallback() {
-            this.width = 1800;
-            this.height = 900;
+        RenderCallback(final int width, final int height) {
+            this.width = width;
+            this.height = height;
             this.image = ImageUtils.newImage(this.width, this.height);
             this.graphics = (Graphics2D) this.image.getGraphics();
             initialize(this.graphics);
-
 //            System.out.println("Demo Image Graphics: " + this.graphics.getRenderingHints());
-            this.frame = BigImageFrame.createAndShow("Demo", this.image);
+
+            this.frame = BigImageFrame.createAndShow("MapDemo: " + BaseTest.getRenderingEngineName(), 
+                    this.image, null, null, false, false);
+            
             frame.setInterpolation(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setVisible(true);

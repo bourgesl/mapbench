@@ -2,7 +2,7 @@
 
 # This file defines the JAVA_HOME and PATH pointing to the proper JDK9:
 
-# Oracle JDK9 EA b96+
+# Oracle JDK9 EA b110
 export JAVA_HOME=~/apps/jdk-9/
 
 # Oracle JDK9 EA jigsaw b99+

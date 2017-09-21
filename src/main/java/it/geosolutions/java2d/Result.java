@@ -17,7 +17,7 @@ public final class Result {
     public final double nsPerOpAvg;
     public final double nsPerOpSigma;
     public final double nsPerOpMed;
-    public final double nsPerOpMed95;
+    public final double nsPerOpPct95;
     public final double nsPerOpMin;
     public final double nsPerOpMax;
     private final long[] opss;
@@ -67,8 +67,17 @@ public final class Result {
         // percentiles (median & 95% ie 2 sigma) :
         Arrays.sort(_nsPerOps);
         this.nsPerOpMed = percentile(0.5, nops, _nsPerOps); // 50%
-        this.nsPerOpMed95 = percentile(0.95, nops, _nsPerOps); // 95%
+        this.nsPerOpPct95 = percentile(0.95, nops, _nsPerOps); // 95%
     }
+
+    public double getFpsMed() {
+        return 1.0 / toSecond(nsPerOpMed);
+    }
+    
+    public double getFpsPct95() {
+        return 1.0 / toSecond(nsPerOpPct95);
+    }
+    
 
     private static double percentile(final double percent, final int nops, final double[] nsPerOps) {
         final double idx = Math.max(percent * (nops - 1), 0);
@@ -87,7 +96,7 @@ public final class Result {
     private static final String separator = "\t";
 
     public static String toStringHeader() {
-        return String.format("%-45s%sThreads%sOps%sMed%sPct95%sAvg%sStdDev%sMin%sMax%sFPS(avg)%sTotalOps%s[ms/op]", "Test", 
+        return String.format("%-45s%sThreads%sOps%sMed%sPct95%sAvg%sStdDev%sMin%sMax%sFPS(med)%sTotalOps%s[ms/op]", "Test", 
                 separator, separator, separator, separator, separator, separator, separator, separator, separator, separator, separator, separator);
     }
 
@@ -95,8 +104,8 @@ public final class Result {
         StringBuilder sb = new StringBuilder(256);
         sb.append(String.format("%-45s%s%d%s%d%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%d", 
                 testName, separator, param, separator, nOps, separator, toMillis(nsPerOpMed), separator, 
-                toMillis(nsPerOpMed95), separator, toMillis(nsPerOpAvg), separator, toMillis(nsPerOpSigma), separator, 
-                toMillis(nsPerOpMin), separator, toMillis(nsPerOpMax), separator, 1.0 / toSecond(nsPerOpAvg), separator, opsSum));
+                toMillis(nsPerOpPct95), separator, toMillis(nsPerOpAvg), separator, toMillis(nsPerOpSigma), separator, 
+                toMillis(nsPerOpMin), separator, toMillis(nsPerOpMax), separator, getFpsMed(), separator, opsSum));
         if (dumpIndividualThreads) {
             sb.append(" [");
             for (int i = 0; i < nsPerOps.length; i++) {

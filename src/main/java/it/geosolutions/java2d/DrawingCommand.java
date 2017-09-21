@@ -8,27 +8,68 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.MultipleGradientPaint;
+import java.awt.MultipleGradientPaint.CycleMethod;
 import java.awt.Paint;
+import java.awt.RadialGradientPaint;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import org.gui.ImageUtils;
 
 public final class DrawingCommand implements Serializable {
 
     private static final boolean HIDE_CLIPPED_SHAPE = true;
     private static final boolean SHOW_BBOX = false;
-    private static final Color BBOX_PAINT = new Color(128,128,128,32);
+    private static final Color BBOX_PAINT = new Color(128, 128, 128, 32);
 
     private static final long serialVersionUID = -6164586104804552649L;
     private static final BasicStroke defaultStroke = new BasicStroke(1f);
-    private static Map<BasicStroke, SerializableBasicStroke> mapStrokes = new IdentityHashMap<>();
-    private static Map<AlphaComposite, SerializableAlphaComposite> mapComposites = new IdentityHashMap<>();
+    private static Map<BasicStroke, SerializableBasicStroke> mapStrokes = new IdentityHashMap<BasicStroke, SerializableBasicStroke>();
+    private static Map<AlphaComposite, SerializableAlphaComposite> mapComposites = new IdentityHashMap<AlphaComposite, SerializableAlphaComposite>();
+
+    /** cached gradient paint */
+    private static final Paint GRADIENT_PAINT = createGradientPaint();
+    /** cached texture paint */
+    private static final Paint TEXTURE_PAINT = createTexturePaint();
+
+    private static MultipleGradientPaint createGradientPaint() {
+        return new RadialGradientPaint(200f, 200f, 1000f,
+                new float[]{0.25f, 0.75f, 1f},
+                new Color[]{Color.RED, Color.GREEN, Color.BLUE},
+                CycleMethod.REFLECT);
+    }
+
+    private static TexturePaint createTexturePaint() {
+        final int size = 32; // small
+        final BufferedImage bimg = ImageUtils.newImage(size, size);
+        final Graphics2D g = bimg.createGraphics();
+        try {
+            g.setBackground(Color.LIGHT_GRAY);
+            g.clearRect(0, 0, size, size);
+
+            // Enable antialiasing:
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g.setPaint(Color.BLACK);
+            g.setStroke(new BasicStroke(3f));
+            g.draw(new Line2D.Double(-3, -3, size+3, size+3));
+
+        } finally {
+            g.dispose();
+        }
+        return new TexturePaint(bimg, new Rectangle2D.Double(0, 0, size, size));
+    }
 
     private static SerializableBasicStroke getSerializableStroke(BasicStroke bs) {
         SerializableBasicStroke s = mapStrokes.get(bs);
@@ -160,7 +201,7 @@ public final class DrawingCommand implements Serializable {
     public void prepareTransform(final AffineTransform graphicsTx) {
         this.effectiveTransform = getCombinedTransform(graphicsTx);
     }
-    
+
     private AffineTransform getCombinedTransform(final AffineTransform graphicsTx) {
         if (transform != null && !transform.isIdentity()) {
             if (graphicsTx != null) {
@@ -197,18 +238,18 @@ public final class DrawingCommand implements Serializable {
         } else {
             g2d.setPaint(paint);
         }
-        
+
         if (SHOW_BBOX && bbox != null) {
             Paint old = g2d.getPaint();
             g2d.setPaint(BBOX_PAINT);
             g2d.fill(bbox);
             g2d.setPaint(old);
         }
-        
+
         if (composite != null) {
             g2d.setComposite(composite.toAlphaComposite());
         }
-        
+
         final AffineTransform at = (usePreparedTx) ? effectiveTransform : getCombinedTransform(graphicsTx);
         if (at != null) {
             g2d.setTransform(at);
@@ -223,18 +264,25 @@ public final class DrawingCommand implements Serializable {
 // TEST:            
 //            g2d.setPaint(Color.GREEN);
                 g2d.fill(strokedShape);
-            } else {
+            } else if (!MapConst.skipDraw) {
                 g2d.setStroke((MapConst.doUseDashedStroke) ? MapConst.STROKE_DOTTED : stroke.toStroke());
                 g2d.draw(shape);
             }
-        } else {
+        } else if (!MapConst.skipFill) {
             if (SHOW_BBOX && bbox != null) {
                 Paint old = g2d.getPaint();
                 if (old instanceof Color) {
-                    Color c = (Color)old;
+                    Color c = (Color) old;
                     g2d.setPaint(new Color(0xA0000000 | (c.getRGB() & 0x00FFFFFF), true));
                 }
             }
+            if (MapConst.doUseTexture) {
+                g2d.setPaint(TEXTURE_PAINT);
+            } 
+            if (MapConst.doUseGradient) {
+                g2d.setPaint(GRADIENT_PAINT);
+            }
+            
 //            g2d.setPaint(Color.PINK);
             g2d.fill(shape);
         }

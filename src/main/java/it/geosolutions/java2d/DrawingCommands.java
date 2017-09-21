@@ -134,12 +134,20 @@ public final class DrawingCommands implements Serializable {
         return ImageUtils.newFastImage(w, h);
     }
 
+    @SuppressWarnings("unchecked")
     public Graphics2D prepareGraphics(Image image) {
-        final Graphics2D graphics;
-        if (MapConst.useMarlinGraphics2D) {
-            // TODO: fix
-            graphics = new org.marlin.graphics.MarlinGraphics2D((BufferedImage) image);
-        } else {
+        Graphics2D graphics = null;
+        if (MapConst.useMarlinGraphics2D && image instanceof BufferedImage) {
+            try {
+                final Class mgClass = Class.forName("org.marlin.graphics.MarlinGraphics2D");
+                graphics = (Graphics2D)mgClass.getConstructor(BufferedImage.class).newInstance((BufferedImage) image);
+            } catch (Throwable th) {
+                // may fail if marlin-graphics dependency is missing
+                System.err.println("Unable to create MarlinGraphics2D (missing marlin-graphics library) !");
+                th.printStackTrace();
+            }
+        }
+        if (graphics == null) {
             graphics = ImageUtils.createGraphics(image);
             setDefaultRenderingHints(graphics);
         }

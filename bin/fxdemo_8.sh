@@ -4,9 +4,8 @@ source ./env.sh
 
 VERBOSE=true
 
-MARLIN_OPTS="-verbose:gc -Dprism.marlin=true -Dprism.marlin.double=true -Dprism.marlin.log=false -Dprism.marlin.doChecks=false -Dprism.marlin.doStats=false"
-
-PRISM_OPTS="-Dprism.order=es2,sw -Dprism.verbose=$VERBOSE -Djavafx.animation.fullspeed=true"
+MARLIN_OPTS="-Dprism.marlin=false -Dprism.marlin.double=true -Dprism.marlin.log=true -Dprism.marlin.doChecks=false -Dprism.marlin.doStats=false"
+PRISM_OPTS="-Dprism.order=es2,sw -Dprism.nativepisces=true -Dprism.verbose=$VERBOSE -Djavafx.animation.fullspeed=true"
 
 BOOTCLASSPATH=-Xbootclasspath/p:../lib/marlinfx-0.8.0-Unsafe.jar
 

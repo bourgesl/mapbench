@@ -126,6 +126,11 @@ public class ResultInterpreter {
         setups.put("MARLIN_VAR_CLIP_RATIO", new PlotSetup("clip-marlin-gain.png", "Marlin 0.8.1 - Path Clipping On vs Off - Rel Gain " + JVM,
                 "Test Name - Number of threads", "GAIN (%)", 10, -2, 70));
 
+        setups.put("MARLIN_FX", new PlotSetup("fx-marlin.png", "Native Pisces vs Java Pisces vs MarlinFX - Time " + JVM,
+                "Test Name", "95% Time (ms)", 100));
+        setups.put("MARLIN_FX_RATIO", new PlotSetup("fx-marlin-gain.png", "Native Pisces vs Java Pisces vs MarlinFX - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 10));
+        
         CURRENT_SETUP = "MARLIN_VAR_RATIO";
     }
 
@@ -237,11 +242,24 @@ public class ResultInterpreter {
         testFiles.clear();
         testFiles.add("big_test_clip_off.log");
         testFiles.add("big_test_clip_on.log");
-        
         new ResultInterpreter("MARLIN_VAR_CLIP", testFiles).showAndSavePlot();
 
         CURRENT_REF_INDEX = 0;
         new ResultInterpreter("MARLIN_VAR_CLIP_RATIO", testFiles).showAndSavePlot();
+        
+        COL_1 = red; // native pisces
+        COL_2 = blue; // java pisces
+        COL_3 = green; // marlin
+
+        testFiles.clear();
+        testFiles.add("fxdemo8_native-pisces.log");
+        testFiles.add("fxdemo8_java-pisces.log");
+        testFiles.add("fxdemo8_marlinD.log");
+        new ResultInterpreter("MARLIN_FX", testFiles).showAndSavePlot();
+        
+        CURRENT_REF_INDEX = 2;
+        GAIN_SIGN = 1.0;
+        new ResultInterpreter("MARLIN_FX_RATIO", testFiles).showAndSavePlot();
     }
 
     /** Show command arguments help */

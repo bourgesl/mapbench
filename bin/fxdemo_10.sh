@@ -4,9 +4,9 @@ source ./env.sh
 
 source /home/bourgesl/libs/graphics-rasterizer/openjfx/jfx10.sh
 
-VERBOSE=true
+VERBOSE=false
 
-MARLIN_OPTS="-verbose:gc -Dprism.rasterizerorder=marlin -Dprism.marlin.log=true -Dprism.marlin.doChecks=false -Dprism.marlin.doStats=false -Dprism.marlin.clip=true"
+MARLIN_OPTS="-Dprism.rasterizerorder=marlin -Dprism.marlin.log=true -Dprism.marlin.doChecks=false -Dprism.marlin.doStats=false -Dprism.marlin.clip=true"
 
 PRISM_OPTS="-Dprism.order=es2 -Dprism.verbose=$VERBOSE -Djavafx.animation.fullspeed=true"
 

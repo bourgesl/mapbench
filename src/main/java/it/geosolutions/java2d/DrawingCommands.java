@@ -77,9 +77,9 @@ public final class DrawingCommands implements Serializable {
     public void prepareCommands(final boolean doClip, final boolean doOverrideWindingRule, final int windingRule) {
         if (!prepared) {
             int n = 0;
-            
+
             final boolean isWarmup = BaseTest.isWarmup;
-            
+
             // filter commands:
             final Rectangle2D clip = (doClip && !isWarmup) ? new Rectangle2D.Double(0d, 0d, width, height) : null;
             final Rectangle2D sizeRanges = (!isWarmup) ? MapConst.sizeRanges : null;
@@ -108,11 +108,11 @@ public final class DrawingCommands implements Serializable {
             prepared = true;
         }
     }
-    
+
     public void prepareCommandsForAffineTransform() {
         if (!prepared) {
             final ArrayList<DrawingCommand> _commands = commands;
-            
+
             // Prepare transforms:
             final AffineTransform _at = getAt();
 
@@ -127,7 +127,7 @@ public final class DrawingCommands implements Serializable {
     public Image prepareImage() {
         return prepareImage(Integer.MAX_VALUE, Integer.MAX_VALUE);
     }
-    
+
     public Image prepareImage(int maxWidth, int maxHeight) {
         final int w = Math.min(maxWidth, getWidth());
         final int h = Math.min(maxHeight, getHeight());
@@ -153,7 +153,7 @@ public final class DrawingCommands implements Serializable {
         }
         final int w = image.getWidth(null);
         final int h = image.getHeight(null);
-        
+
         if (MapConst.useClipSmall) {
             clip = new Rectangle2D.Double((w >> 1) - 200, (h >> 1) - 200, 400, 400);
         } else if (MapConst.useClipDemo) {
@@ -162,7 +162,7 @@ public final class DrawingCommands implements Serializable {
             clip = new Rectangle2D.Double(0d, 0d, w, h);
         }
 //        System.out.println("clip: " + clip);
-        
+
         this.imgWidth = w;
         this.imgHeight = h;
 
@@ -214,7 +214,7 @@ public final class DrawingCommands implements Serializable {
         if (clip != null) {
             graphics.setClip(clip);
         }
-        
+
         final ArrayList<DrawingCommand> _commands = commands;
         final boolean usePreparedTx = this.prepared && (animAt == null);
 

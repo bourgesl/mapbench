@@ -7,7 +7,7 @@ import java.awt.BasicStroke;
 import java.io.Serializable;
 
 public final class SerializableBasicStroke implements Serializable {
-    
+
     private static final boolean DISABLE_JOIN_MITER = false;
 
     private static final long serialVersionUID = 8157570308117400971L;

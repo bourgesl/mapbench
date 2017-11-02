@@ -24,9 +24,9 @@ public class BaseTest implements MapConst {
     static final boolean doGCBeforeTest = true;
 
     public static boolean isWarmup = false;
-    
+
     private static String reName = null;
-    
+
     protected BaseTest() {
         super();
     }
@@ -38,7 +38,7 @@ public class BaseTest implements MapConst {
         }
         return refResultDir;
     }
-    
+
     private static String getTestDirectory() {
         final String profile = Profile.getProfileName();
         if ("MarlinRenderingEngine".equals(BaseTest.getRenderingEngineName())) {
@@ -50,7 +50,7 @@ public class BaseTest implements MapConst {
         }
         return profile;
     }
-    
+
     protected static File[] getSortedFiles() {
         if (!inputDirectory.exists()) {
             System.out.println("Invalid input directory = " + inputDirectory);
@@ -58,7 +58,7 @@ public class BaseTest implements MapConst {
         }
 
         System.out.println("Loading maps from = " + inputDirectory.getAbsolutePath());
-        
+
         final File[] dataFiles = inputDirectory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -68,7 +68,7 @@ public class BaseTest implements MapConst {
 
         // Sort file names:
         Arrays.sort(dataFiles);
-        
+
         return dataFiles;
     }
 
@@ -183,7 +183,7 @@ public class BaseTest implements MapConst {
         final long freeAfter = Runtime.getRuntime().freeMemory();
         System.out.println(String.format("cleanup (explicit Full GC): %,d / %,d bytes free.", freeBefore, freeAfter));
     }
-    
+
     public static String getRenderingEngineName() {
         if (reName == null) {
             try {

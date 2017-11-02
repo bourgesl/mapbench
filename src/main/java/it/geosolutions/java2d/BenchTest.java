@@ -42,7 +42,7 @@ public class BenchTest extends BaseTest {
     static final int CALIBRATE_LOOPS = 3000;
 
     static final int MAX_REAL_THREADS = Math.max(WARMUP_BEFORE_TEST_THREADS, MAX_THREADS);
-    
+
     static void startTests() {
         System.out.println("# Min duration per test = " + MIN_DURATION + " ms.");
         System.out.printf("##############################################################\n");

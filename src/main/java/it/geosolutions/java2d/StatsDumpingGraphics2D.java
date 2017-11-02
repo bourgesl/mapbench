@@ -31,7 +31,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 public class StatsDumpingGraphics2D extends Graphics2D {
-    
+
     Graphics2D delegate;
     int shapeCount;
     int totalCount;
@@ -40,7 +40,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
     float totalMin;
     float totalMax;
     double totalSum;
-    
+
     public StatsDumpingGraphics2D(Graphics2D graphic) {
         this.delegate = graphic;
     }
@@ -56,7 +56,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
         dumpStats(s, true);
         delegate.fill(s);
     }
-    
+
     void dumpStats(Shape s, boolean fill) {
         shapeCount++;
         PathIterator pi = s.getPathIterator(new AffineTransform());
@@ -83,7 +83,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
             }
             System.arraycopy(curr, 0, prev, 0, 2);
         }
-        
+
         if(count > 0) {
             System.out.println((fill ? "polygon" : "line") + ", " + count + " segments, min distance " + minDistance + ", max distance " + maxDistance + ", average distance " + (distanceSum / count));
             totalCount += count;
@@ -102,7 +102,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
             totalSum += distanceSum;
         }
     }
-    
+
     @Override
     public void dispose() {
         System.out.println("TOTAL SUMMARY:");
@@ -114,7 +114,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
         System.out.println("Overall min distance: " + totalMin);
         System.out.println("Overall max distance: " + totalMax);
         System.out.println("Overall avg distance: " + (totalSum / totalCount));
-        
+
         delegate.dispose();
     }
 
@@ -526,7 +526,7 @@ public class StatsDumpingGraphics2D extends Graphics2D {
     public Rectangle getClipBounds(Rectangle r) {
         return delegate.getClipBounds(r);
     }
-    
-    
+
+
 
 }

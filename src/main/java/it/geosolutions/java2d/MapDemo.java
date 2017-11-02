@@ -39,7 +39,7 @@ public final class MapDemo extends BenchTest {
 
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
-        
+
         if (!BenchTest.useSharedImage) {
             System.out.println("Please set useSharedImage = true in your profile !");
             System.exit(1);
@@ -256,7 +256,7 @@ public final class MapDemo extends BenchTest {
                     threads *= 2;
                     nThPass++;
                 }
-                
+
                 // 95 percentile:
                 sbScore.append("\nPct95\t");
                 sbScore.append(String.format("%.3f",
@@ -273,19 +273,19 @@ public final class MapDemo extends BenchTest {
 
                 // Fps:
                 sbScore.append("\nFPS\t");
-                sbScore.append(String.format("%.3f", 
+                sbScore.append(String.format("%.3f",
                         totalFps / (double) nTest)).append('\t');
 
                 nThPass = 0;
                 threads = 1;
                 while (threads <= MAX_THREADS) {
-                    sbScore.append(String.format("%.3f", 
+                    sbScore.append(String.format("%.3f",
                             nThTotalFps[nThPass] / (double) nThTest[nThPass])).append('\t');
                     threads *= 2;
                     nThPass++;
                 }
                 sbScore.append('\n');
-                
+
                 System.out.println("Scores:");
                 System.out.println(sbScore.toString());
 
@@ -415,7 +415,7 @@ public final class MapDemo extends BenchTest {
             final double cy = (_commands.height / 2.0);
             final double hx = Math.max(0, cx - _rdrCallback.blockWidth / 2.0);
             final double hy = Math.max(0, cy - _rdrCallback.blockHeight / 2.0);
-            
+
             final AffineTransform animAt = new AffineTransform();
             animAt.translate(-hx, -hy);
 
@@ -474,9 +474,9 @@ public final class MapDemo extends BenchTest {
             initialize(this.graphics);
 //            System.out.println("Demo Image Graphics: " + this.graphics.getRenderingHints());
 
-            this.frame = BigImageFrame.createAndShow("MapDemo: " + BaseTest.getRenderingEngineName(), 
+            this.frame = BigImageFrame.createAndShow("MapDemo: " + BaseTest.getRenderingEngineName(),
                     this.image, null, null, false, false);
-            
+
             frame.setInterpolation(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setVisible(true);

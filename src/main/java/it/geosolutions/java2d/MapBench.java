@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.gui.ImageUtils;
 
 /**
- * Map benchmark 
+ * Map benchmark
  *
  * TODO: save results (images) ...
  *
@@ -31,7 +31,7 @@ import org.gui.ImageUtils;
 public final class MapBench extends BenchTest {
 
     private final static boolean POOL_DEBUG = false;
-    
+
     private final static int N_ITERATION = 5;
 
     public static void main(String[] args) throws Exception {

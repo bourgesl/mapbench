@@ -35,6 +35,8 @@ public final class ImageUtils {
 
     private static final boolean NORMALIZE_DIFF = true;
 
+    public static boolean SHOW_DIFF_INFO = true;
+
     private final static GraphicsConfiguration gc = (USE_GRAPHICS_ACCELERATION)
             ? GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration() : null;
 
@@ -140,6 +142,11 @@ public final class ImageUtils {
 
     public static BufferedImage computeDiffImage(final String imageFileName, final BufferedImage tstImage, final BufferedImage refImage,
                                                  final DiffContext globalCtx) {
+        return computeDiffImage(new DiffContext(imageFileName), tstImage, refImage, null, globalCtx);
+    }
+
+    public static BufferedImage computeDiffImage(final DiffContext localCtx, final BufferedImage tstImage, final BufferedImage refImage,
+                                                 final BufferedImage diffImage, final DiffContext globalCtx) {
         if (tstImage == null) {
             System.out.println("computeDiffImage: test image is null !");
             return null;
@@ -167,17 +174,21 @@ public final class ImageUtils {
         }
 
         if (refDataBuffer instanceof DataBufferInt) {
-            System.out.println("computeDiffImage: computing difference values ...");
+            if (SHOW_DIFF_INFO) {
+                System.out.println("computeDiffImage: computing difference values ...");
+            }
 
             final long start = System.nanoTime();
 
-            final BufferedImage diffImage = newImage(width, height);
+            // TODO: check diffImage size:
+            final BufferedImage dImage = (diffImage != null) ? diffImage : newImage(width, height);
 
             final int aRefPix[] = ((DataBufferInt) refDataBuffer).getData();
             final int aTstPix[] = ((DataBufferInt) tstDataBuffer).getData();
-            final int aDifPix[] = ((DataBufferInt) diffImage.getRaster().getDataBuffer()).getData();
+            final int aDifPix[] = ((DataBufferInt) dImage.getRaster().getDataBuffer()).getData();
 
-            final DiffContext localCtx = new DiffContext(imageFileName);
+            // reset local diff context:
+            localCtx.reset();
 
             final boolean useGrayScale = true;
 
@@ -226,15 +237,19 @@ public final class ImageUtils {
                 globalCtx.add(v);
             }
 
-            final long time = System.nanoTime() - start;
-            System.out.println("computeDiffImage: duration= " + (time / 1000000l) + " ms.");
-
-            localCtx.dump();
+            if (SHOW_DIFF_INFO) {
+                final long time = System.nanoTime() - start;
+                System.out.println("computeDiffImage: duration= " + (time / 1000000l) + " ms.");
+            }
 
             if (!localCtx.isDiff()) {
                 return null;
             }
-            System.out.println("computeDiffImage: max delta: " + max);
+            if (SHOW_DIFF_INFO) {
+                System.out.println("computeDiffImage: max delta: " + max);
+
+                localCtx.dump();
+            }
 
             if (NORMALIZE_DIFF) {
                 /* normalize diff image vs mean(diff) */
@@ -251,7 +266,7 @@ public final class ImageUtils {
                 }
             }
 
-            return diffImage;
+            return dImage;
         }
         System.out.println("computeDiffImage: unsupported data buffer [" + refDataBuffer + "] !");
         return null;
@@ -319,6 +334,10 @@ public final class ImageUtils {
             }
         }
 
+        public final double average() {
+            return ((double) sum) / count;
+        }
+
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder(128);
@@ -328,7 +347,7 @@ public final class ImageUtils {
 
         public final StringBuilder toString(final StringBuilder sb) {
             sb.append(name).append("[n: ").append(count);
-            sb.append("] sum: ").append(sum).append(" avg: ").append(trimTo3Digits(((double) sum) / count));
+            sb.append("] sum: ").append(sum).append(" avg: ").append(trimTo3Digits(average()));
             sb.append(" [").append(min).append(" | ").append(max).append("]");
             return sb;
         }
@@ -337,10 +356,10 @@ public final class ImageUtils {
 
     public final static class Histogram extends StatInteger {
 
-        static int BUCKET = 2;
-        static int MAX = 20;
-        static int LAST = MAX - 1;
-        static int[] STEPS = new int[MAX];
+        static final int BUCKET = 2;
+        static final int MAX = 20;
+        static final int LAST = MAX - 1;
+        static final int[] STEPS = new int[MAX];
 
         static {
             STEPS[0] = 0;
@@ -361,7 +380,7 @@ public final class ImageUtils {
             return LAST;
         }
 
-        private StatInteger[] stats = new StatInteger[MAX];
+        private final StatInteger[] stats = new StatInteger[MAX];
 
         public Histogram(String name) {
             super(name);
@@ -421,6 +440,10 @@ public final class ImageUtils {
         public DiffContext(String name) {
             histAll = new Histogram("All  Pixels [" + name + "]");
             histPix = new Histogram("Diff Pixels [" + name + "]");
+        }
+
+        public void reset() {
+            histAll.reset();
         }
 
         public void dump() {

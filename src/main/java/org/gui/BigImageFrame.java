@@ -47,7 +47,9 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
     /** default frame margin */
     public final static int FRAME_MARGIN = 80;
     /** default scale = 100% */
-    public final static int DEF_SCALE = 100;
+    public static int DEF_SCALE = 100;
+    /** max scale = 2000% */
+    public final static int MAX_SCALE = 20 * 100;
 
     /**
      * Create a new BigImageFrame with the given image displayed to 100%
@@ -131,10 +133,8 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
 
         // Create zoom slider:
         zoomSlider = new JSlider(JSlider.VERTICAL);
-        // 1%:
-        zoomSlider.setMinimum(1);
-        // 1000%
-        zoomSlider.setMaximum(1000);
+        zoomSlider.setMinimum(1); // 1%
+        zoomSlider.setMaximum(MAX_SCALE); // 2000%
         zoomSlider.setValue(DEF_SCALE);
         zoomSlider.setPaintTicks(true);
         zoomSlider.setMajorTickSpacing(100);
@@ -193,8 +193,9 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
 
     public void reset() {
         if (current != null) {
-            int imgWidth = current.getWidth();
-            int imgHeight = current.getHeight();
+            final float scale = DEF_SCALE / 100f;
+            int imgWidth = (int)Math.ceil(current.getWidth() * scale);
+            int imgHeight = (int)Math.ceil(current.getHeight() * scale);
 
             final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             final int width = (int) screenSize.getWidth();
@@ -215,8 +216,11 @@ public final class BigImageFrame extends JFrame implements ChangeListener, ItemL
             }
         }
 
-        // reset the scale factor to 100%:
+        // reset the scale factor:
         zoomSlider.setValue(DEF_SCALE);
+
+        /* use timer to defer immediate execution (10ms delay) */
+        timer.restart();
     }
 
     @Override

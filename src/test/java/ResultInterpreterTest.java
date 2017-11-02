@@ -21,7 +21,7 @@ import org.junit.Test;
 public class ResultInterpreterTest {
 
     private final static String PATH = "/home/bourgesl/libs/marlin/bourgesl.github.io/fosdem-2016/data/";
-//    private final static String PATH = "/home/bourgesl/Documents/OSUG/benchmarks/";    
+//    private final static String PATH = "/home/bourgesl/Documents/OSUG/benchmarks/";
 
     @BeforeClass
     public static void setUpClass() {
@@ -51,18 +51,18 @@ public class ResultInterpreterTest {
                 })).showAndSavePlot();
             }
 
-            /*            
+            /*
             new ResultInterpreter("BEFORE", Arrays.asList(new String[]{
                 PATH + "ductus_20160122.log",
                 PATH + "pisces_20160122.log"
             })).showAndSavePlot();
-            
+
             new ResultInterpreter("WITH_MARLIN", Arrays.asList(new String[]{
                 PATH + "ductus_20160122.log",
                 PATH + "pisces_20160122.log",
                 PATH + "marlin_20160122.log"
             })).showAndSavePlot();
-            
+
             new ResultInterpreter("WITH_MARLIN_ZOOM", Arrays.asList(new String[]{
                 PATH + "ductus_20160122.log",
                 PATH + "pisces_20160122.log",
@@ -93,7 +93,7 @@ public class ResultInterpreterTest {
                     PATH + "pisces_demo.log",
                     PATH + "marlin_demo.log"
                 })).showAndSavePlot();
-                
+
                 new ResultInterpreter("VOLATILE", Arrays.asList(new String[]{
                     PATH + "marlin_20160122_soft_tile6_last.log",
                     PATH + "marlin_20160122_soft_tile6_accel.log"

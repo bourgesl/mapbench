@@ -73,11 +73,11 @@ public final class Result {
     public double getFpsMed() {
         return 1.0 / toSecond(nsPerOpMed);
     }
-    
+
     public double getFpsPct95() {
         return 1.0 / toSecond(nsPerOpPct95);
     }
-    
+
 
     private static double percentile(final double percent, final int nops, final double[] nsPerOps) {
         final double idx = Math.max(percent * (nops - 1), 0);
@@ -96,15 +96,15 @@ public final class Result {
     private static final String separator = "\t";
 
     public static String toStringHeader() {
-        return String.format("%-45s%sThreads%sOps%sMed%sPct95%sAvg%sStdDev%sMin%sMax%sFPS(med)%sTotalOps%s[ms/op]", "Test", 
+        return String.format("%-45s%sThreads%sOps%sMed%sPct95%sAvg%sStdDev%sMin%sMax%sFPS(med)%sTotalOps%s[ms/op]", "Test",
                 separator, separator, separator, separator, separator, separator, separator, separator, separator, separator, separator, separator);
     }
 
     public String toString(boolean dumpIndividualThreads) {
         StringBuilder sb = new StringBuilder(256);
-        sb.append(String.format("%-45s%s%d%s%d%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%d", 
-                testName, separator, param, separator, nOps, separator, toMillis(nsPerOpMed), separator, 
-                toMillis(nsPerOpPct95), separator, toMillis(nsPerOpAvg), separator, toMillis(nsPerOpSigma), separator, 
+        sb.append(String.format("%-45s%s%d%s%d%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%d",
+                testName, separator, param, separator, nOps, separator, toMillis(nsPerOpMed), separator,
+                toMillis(nsPerOpPct95), separator, toMillis(nsPerOpAvg), separator, toMillis(nsPerOpSigma), separator,
                 toMillis(nsPerOpMin), separator, toMillis(nsPerOpMax), separator, getFpsMed(), separator, opsSum));
         if (dumpIndividualThreads) {
             sb.append(" [");

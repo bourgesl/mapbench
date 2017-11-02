@@ -52,24 +52,26 @@ public class ResultInterpreter {
     private static final String COL_PCT95 = "pct95";
     private static final String COL_FPS = "fps(med)";
 
-    private static final Font DEFAULT_TITLE_FONT = new Font("SansSerif", Font.BOLD, 32);
-    private static final Font DEFAULT_LABEL_FONT = new Font("SansSerif", Font.BOLD, 24);
-    private static final Font DEFAULT_TICK_FONT = new Font("SansSerif", Font.PLAIN, 24);
+    private static final Font DEFAULT_TITLE_FONT = new Font("SansSerif", Font.BOLD, 24);
+    private static final Font DEFAULT_LABEL_FONT = new Font("SansSerif", Font.BOLD, 32);
+    private static final Font DEFAULT_TICK_FONT = new Font("SansSerif", Font.PLAIN, 20);
     private static final Font SMALL_TICK_FONT = new Font("SansSerif", Font.PLAIN, 18);
 
     private static final Map<String, PlotSetup> setups = new HashMap<String, PlotSetup>();
 
-    private static final float ASPECT_RATIO = 16f / 9f;
+    private static final float ASPECT_RATIO = 1200f / 525;// 16f / 9f;
 
     private static final String CURRENT_SETUP;
 
     private static int CURRENT_REF_INDEX = 0;
     private static double GAIN_SIGN = 1.0;
 
-    // original colors    
+    // original colors
     private static Color COL_1 = ChartColor.DARK_BLUE;
     private static Color COL_2 = ChartColor.DARK_RED;
     private static Color COL_3 = ChartColor.DARK_GREEN;
+    private static Color COL_4 = ChartColor.PINK;
+    private static Color COL_5 = ChartColor.YELLOW;
 
     private static boolean USE_BAR = true;
 
@@ -103,12 +105,11 @@ public class ResultInterpreter {
 
         setups.put("VOLATILE", new PlotSetup("compare-accel.png", "Marlin - Volatile vs Buffered Image - 95% time " + JVM,
                 "Test Name - Number of threads", "95% Time (ms)", Double.NaN, Double.NaN));
-        
+
         /*
         setups.put("DEF", new PlotSetup("compare-fps.png", "Marlin 0.8 (clipper ON / OFF) - DEMO - FPS " + JVM,
                 "Test Name - Number of threads", "FPS(med)", Double.NaN, Double.NaN));
          */
-
         setups.put("MARLIN_VAR", new PlotSetup("diff-marlin-time.png", "Marlin jdk-10 vs jdk-9 - 95% time ",
                 "Test Name - Number of threads", "95% Time (ms)", 250));
         setups.put("MARLIN_VAR_RATIO", new PlotSetup("diff-marlin-gain.png", "Marlin jdk-10 vs jdk-9 - Rel. Gain ",
@@ -120,17 +121,33 @@ public class ResultInterpreter {
                 "Test Name - Number of threads", "GAIN (%)", 20, -60, 50));
 
         JVM = "(jdk-8 b144)";
-        
+
         setups.put("MARLIN_VAR_CLIP", new PlotSetup("clip-marlin-time.png", "Marlin 0.8.1 - Path Clipping On vs Off - 95% time " + JVM,
                 "Test Name - Number of threads", "95% Time (ms)", 25, 350));
         setups.put("MARLIN_VAR_CLIP_RATIO", new PlotSetup("clip-marlin-gain.png", "Marlin 0.8.1 - Path Clipping On vs Off - Rel Gain " + JVM,
                 "Test Name - Number of threads", "GAIN (%)", 10, -2, 70));
 
+        setups.put("MARLIN_VAR_HIST", new PlotSetup("release-marlin-time.png", "Marlin 0.3 vs 0.5.6 vs 0.7.4 (jdk-9) vs 0.8.1 - 95% time " + JVM,
+                "Test Name", "95% Time (ms)", 250));
+        setups.put("MARLIN_VAR_HIST_RATIO", new PlotSetup("release-marlin-gain.png", "Marlin 0.3 vs 0.5.6 vs 0.7.4 (jdk-9) vs 0.8.1 - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 10, -40, 90));
+
+        setups.put("MARLIN_VAR_PIPE", new PlotSetup("pipeline-marlin-time.png", "Java2D & Marlin stages - 95% time " + JVM,
+                "Test Name", "95% Time (ms)", 250));
+        setups.put("MARLIN_VAR_PIPE_RATIO", new PlotSetup("pipeline-marlin-gain.png", "Java2D & Marlin stages - Rel Gain " + JVM,
+                "Test Name", "RATIO (%)", 10));
+
         setups.put("MARLIN_FX", new PlotSetup("fx-marlin.png", "Native Pisces vs Java Pisces vs MarlinFX - Time " + JVM,
                 "Test Name", "95% Time (ms)", 100));
         setups.put("MARLIN_FX_RATIO", new PlotSetup("fx-marlin-gain.png", "Native Pisces vs Java Pisces vs MarlinFX - Rel Gain " + JVM,
                 "Test Name", "GAIN (%)", 10));
-        
+
+        JVM = "(jdk-9 b181)";
+        setups.put("MARLIN_FX9", new PlotSetup("fx9-marlin.png", "Native Pisces vs Java Pisces vs MarlinFX - Time " + JVM,
+                "Test Name", "95% Time (ms)", 100));
+        setups.put("MARLIN_FX9_RATIO", new PlotSetup("fx9-marlin-gain.png", "Native Pisces vs Java Pisces vs MarlinFX - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 10));
+
         CURRENT_SETUP = "MARLIN_VAR_RATIO";
     }
 
@@ -208,6 +225,8 @@ public class ResultInterpreter {
         COL_1 = green;
         COL_2 = violet;
         COL_3 = turquoise;
+        COL_4 = red;
+        COL_5 = blue;
         ONLY_TH = 1;
         GAIN_SIGN = -1.0;
 
@@ -230,23 +249,61 @@ public class ResultInterpreter {
         testFiles.add("jdk9_marlin_sp4.log");
         testFiles.add("jdk9_marlin_sp6.log");
         new ResultInterpreter("MARLIN_VAR_SP", testFiles).showAndSavePlot();
-        
+
         CURRENT_REF_INDEX = 2; // 3x3
         USE_BAR = false;
         // ignore last 6
-        testFiles.remove(testFiles.size() - 1); 
+        testFiles.remove(testFiles.size() - 1);
         new ResultInterpreter("MARLIN_VAR_SP_RATIO", testFiles).showAndSavePlot();
+
+        COL_1 = green;
+        COL_2 = violet;
+        COL_3 = turquoise;
+        COL_4 = red;
+        COL_5 = blue;
+        CURRENT_REF_INDEX = 2; // 0.7.4
+        USE_BAR = true;
+        testFiles.clear();
+        testFiles.add("jdk8_marlin_03.log");
+        testFiles.add("jdk8_marlin_056.log");
+        testFiles.add("jdk9_marlin.log");
+        testFiles.add("jdk8_marlin_0811.log");
+        new ResultInterpreter("MARLIN_VAR_HIST", testFiles).showAndSavePlot();
+
+        CURRENT_REF_INDEX = 0; // 0.3
+        COL_1 = violet;
+        COL_2 = turquoise;
+        COL_3 = red;
+        new ResultInterpreter("MARLIN_VAR_HIST_RATIO", testFiles).showAndSavePlot();
+        COL_1 = green;
+        COL_2 = violet;
+        COL_3 = turquoise;
+
+        USE_BAR = true;
+        GAIN_SIGN = 1.0;
+        testFiles.clear();
+        testFiles.add("jdk8_marlin_no_render.log"); // stage1: preparing path
+        testFiles.add("jdk8_marlin_no_blending.log"); // stage1+2: preparing path + rendering
+        testFiles.add("jdk8_marlin_0811.log");      // stage1+2+3: preparing path + rendering + blending
+        new ResultInterpreter("MARLIN_VAR_PIPE", testFiles).showAndSavePlot();
+
+        CURRENT_REF_INDEX = 2;
+        new ResultInterpreter("MARLIN_VAR_PIPE_RATIO", testFiles).showAndSavePlot();
 
         // Clipping 0.8.1:
         USE_BAR = true;
+        GAIN_SIGN = -1.0;
+        COL_1 = green;
+        COL_2 = violet;
         testFiles.clear();
         testFiles.add("big_test_clip_off.log");
         testFiles.add("big_test_clip_on.log");
         new ResultInterpreter("MARLIN_VAR_CLIP", testFiles).showAndSavePlot();
 
         CURRENT_REF_INDEX = 0;
+        COL_1 = violet;
         new ResultInterpreter("MARLIN_VAR_CLIP_RATIO", testFiles).showAndSavePlot();
-        
+
         COL_1 = red; // native pisces
         COL_2 = blue; // java pisces
         COL_3 = green; // marlin
@@ -256,10 +313,20 @@ public class ResultInterpreter {
         testFiles.add("fxdemo8_java-pisces.log");
         testFiles.add("fxdemo8_marlinD.log");
         new ResultInterpreter("MARLIN_FX", testFiles).showAndSavePlot();
-        
+
         CURRENT_REF_INDEX = 2;
         GAIN_SIGN = 1.0;
         new ResultInterpreter("MARLIN_FX_RATIO", testFiles).showAndSavePlot();
+
+        testFiles.clear();
+        testFiles.add("fxdemo9_native-pisces.log");
+        testFiles.add("fxdemo9_java-pisces.log");
+        testFiles.add("fxdemo9_marlinD.log");
+        new ResultInterpreter("MARLIN_FX9", testFiles).showAndSavePlot();
+
+        CURRENT_REF_INDEX = 2;
+        GAIN_SIGN = 1.0;
+        new ResultInterpreter("MARLIN_FX9_RATIO", testFiles).showAndSavePlot();
     }
 
     /** Show command arguments help */
@@ -313,9 +380,10 @@ public class ResultInterpreter {
         final CustomCategoryDataset dataset = new CustomCategoryDataset(setup);
 
         // compare with nth dataset:
-        final boolean doRatio = setup.yLabel.startsWith("GAIN");
+        final boolean doRatio = setup.yLabel.startsWith("RATIO");
+        final boolean doGain = setup.yLabel.startsWith("GAIN");
 
-        final ResultParser ref = (doRatio && results.size() > CURRENT_REF_INDEX) ? results.get(CURRENT_REF_INDEX) : null;
+        final ResultParser ref = ((doRatio || doGain) && results.size() > CURRENT_REF_INDEX) ? results.get(CURRENT_REF_INDEX) : null;
 
         final String dataCol = COL_PCT95;
 
@@ -332,10 +400,10 @@ public class ResultInterpreter {
         }
 
         for (ResultParser result : results) {
-            if (USE_BAR && ref != null && ref == result) {
+            if (doGain && USE_BAR && (ref != null) && (ref == result)) {
                 continue;
             }
-            
+
             final String datasetKey = result.filepath.getName();
             final Map<String, Integer> cols = result.columns;
             final List<Data> datas = result.datas;
@@ -357,7 +425,7 @@ public class ResultInterpreter {
 
                 if (refIdxVAL != -1) {
                     // gain:
-                    val = 100.0 * GAIN_SIGN * ((val / refDatas.get(i).values[refIdxVAL]) - 1.0); // -1 to have relative gain
+                    val = 100.0 * GAIN_SIGN * ((val / refDatas.get(i).values[refIdxVAL]) + ((doGain) ? -1.0 : 0.0)); // -1 to have relative gain
                 }
 
                 if (!MEAN_ONLY) {
@@ -381,7 +449,7 @@ public class ResultInterpreter {
             }
 
             System.out.println("Stats[" + datasetKey + "]: " + statTH);
-            
+
             for (Map.Entry<Integer, Accumulator> e : statTH.entrySet()) {
                 final int th = e.getKey();
                 final double val = e.getValue().mean();
@@ -536,16 +604,20 @@ public class ResultInterpreter {
     }
 
     private static JFreeChart createChart(CustomCategoryDataset dataset) {
+        final String title = null; // dataset.info.title;
+        final String xLabel = null; // dataset.info.xLabel
         JFreeChart chart;
         if (USE_BAR) {
-            chart = ChartFactory.createBarChart(dataset.info.title, dataset.info.xLabel, dataset.info.yLabel,
+            chart = ChartFactory.createBarChart(title, xLabel, dataset.info.yLabel,
                     dataset, PlotOrientation.VERTICAL, true, true, false);
         } else {
-            chart = ChartFactory.createLineChart(dataset.info.title, dataset.info.xLabel, dataset.info.yLabel,
+            chart = ChartFactory.createLineChart(title, xLabel, dataset.info.yLabel,
                     dataset, PlotOrientation.VERTICAL, true, true, false);
         }
 
-        chart.getTitle().setFont(DEFAULT_TITLE_FONT);
+        if (chart.getTitle() != null) {
+            chart.getTitle().setFont(DEFAULT_TITLE_FONT);
+        }
         chart.setAntiAlias(true);
         chart.setTextAntiAlias(true);
 
@@ -584,9 +656,11 @@ public class ResultInterpreter {
         rdr.setSeriesPaint(0, COL_1);
         rdr.setSeriesPaint(1, COL_2);
         rdr.setSeriesPaint(2, COL_3);
+        rdr.setSeriesPaint(3, COL_4);
+        rdr.setSeriesPaint(4, COL_5);
 
         CategoryAxis catAxis = plot.getDomainAxis();
-        catAxis.setLabelFont(DEFAULT_LABEL_FONT);
+        catAxis.setLabelFont(DEFAULT_TICK_FONT);
         catAxis.setLowerMargin(0.01);
         catAxis.setCategoryMargin(0.2);
         catAxis.setUpperMargin(0.01);

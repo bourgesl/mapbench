@@ -107,7 +107,7 @@ public final class DrawingCommand implements Serializable {
         if (!fill) {
             Stroke s = graphics.getStroke();
             // basic stroke is not serializable, trying to extend it to make the subclass
-            // serializable does not seem to work (deserializes with the wrong width?) so 
+            // serializable does not seem to work (deserializes with the wrong width?) so
             // let's hack a DTO...
             if (s instanceof BasicStroke) {
                 this.stroke = getSerializableStroke((BasicStroke) s);
@@ -119,7 +119,7 @@ public final class DrawingCommand implements Serializable {
 
         Composite c = graphics.getComposite();
         if (c != null && c instanceof AlphaComposite) {
-// Buggy ?            
+// Buggy ?
             this.composite = getSerializableComposite((AlphaComposite) c);
         }
 
@@ -253,7 +253,7 @@ public final class DrawingCommand implements Serializable {
         final AffineTransform at = (usePreparedTx) ? effectiveTransform : getCombinedTransform(graphicsTx);
         if (at != null) {
             g2d.setTransform(at);
-// TEST:            
+// TEST:
 //            g2d.setPaint(Color.GREEN);
         }
 
@@ -261,7 +261,7 @@ public final class DrawingCommand implements Serializable {
         if (stroke != null) {
             if (MapConst.doCreateStrokedShape) {
                 final Shape strokedShape = stroke.toStroke().createStrokedShape(shape);
-// TEST:            
+// TEST:
 //            g2d.setPaint(Color.GREEN);
                 g2d.fill(strokedShape);
             } else if (!MapConst.skipDraw) {
@@ -278,11 +278,11 @@ public final class DrawingCommand implements Serializable {
             }
             if (MapConst.doUseTexture) {
                 g2d.setPaint(TEXTURE_PAINT);
-            } 
+            }
             if (MapConst.doUseGradient) {
                 g2d.setPaint(GRADIENT_PAINT);
             }
-            
+
 //            g2d.setPaint(Color.PINK);
             g2d.fill(shape);
         }

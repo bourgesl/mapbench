@@ -97,7 +97,7 @@ public class CircleTests {
 
         double half = size / 2.0;
         final int N = 5000;
-        
+
         double radius = half - 50.1;
         final double maxR = 31.1;
         final double stepR = 2.55 * maxR / N;
@@ -109,7 +109,7 @@ public class CircleTests {
             double x = half + radius * Math.cos(theta);
             double y = half + radius * Math.sin(theta);
             double r = maxR - i * stepR;
-            
+
             if (r <= 0) {
                 System.out.println("r negative");
                 break;
@@ -136,28 +136,6 @@ public class CircleTests {
             ellipse.setFrame(x, y, 2.0 * r, 2.0 * r);
             g2d.draw(ellipse);
         }
-
-        /*
-         radius = 255.0
-         theta = 0
-         dtheta = 5.5/180.0*math.pi
-         for i in range(500):
-         theta += dtheta
-         x = 256+radius*math.cos(theta);
-         y = 256+32+radius*math.sin(theta);
-         r = 10.1-i*0.02;
-         radius -= 0.45
-         patch = Circle((x,y), r, lw=1.0, color='None', ec='k', fc='None')
-         axes.add_patch(patch)
-
-         for i in range(0,39):
-         r = 4
-         thickness = (i+1)/10.0
-         x = 20+i*12.5 - r
-         y = 16
-         patch = Circle((x,y), r, lw=thickness, color='None', ec='k', fc='None')
-         axes.add_patch(patch)
-         */
     }
 
     private static BasicStroke createStroke(final float width) {

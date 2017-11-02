@@ -99,7 +99,7 @@ public final class Profile {
 
         /* true to use gradient */
         defProps.setProperty(KEY_DO_USE_GRADIENT, "false");
-        
+
         /* true to use texture paint */
         defProps.setProperty(KEY_DO_USE_TEXTURE, "false");
 

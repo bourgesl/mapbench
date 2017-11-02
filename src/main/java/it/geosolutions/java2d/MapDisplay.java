@@ -45,7 +45,7 @@ public final class MapDisplay extends BaseTest {
         final File[] dataFiles = getSortedFiles();
 
         System.out.println("Saving images to  = " + resultDirectory.getAbsolutePath());
-        
+
         final DiffContext globalCtx = new DiffContext("all images");
 
         long time;
@@ -59,7 +59,7 @@ public final class MapDisplay extends BaseTest {
             System.out.println("drawing[" + dataFile.getName() + "][width = " + commands.getWidth()
                     + ", height = " + commands.getHeight() + "] ...");
 
-// TODO: use property            
+// TODO: use property
             commands.prepareCommands(MapConst.doClip, true, PathIterator.WIND_NON_ZERO);
 //            commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
 
@@ -87,7 +87,7 @@ public final class MapDisplay extends BaseTest {
 
             // Marlin stats:
             dumpRendererStats();
-            
+
             final BufferedImage bImg = ImageUtils.convert(image);
 
             ImageUtils.saveImage(bImg, resultDirectory, getImageFileName(dataFile));
@@ -151,7 +151,7 @@ public final class MapDisplay extends BaseTest {
         File file = new File(resultDirectory, "test.log");
         Writer w = null;
         try {
-            // Should define UTF-8 encoding for cross platform compatibility 
+            // Should define UTF-8 encoding for cross platform compatibility
             // but we must stay compatible with existing files (windows vs unix)
             w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
 

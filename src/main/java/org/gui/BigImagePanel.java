@@ -25,7 +25,7 @@ public final class BigImagePanel extends JPanel {
     private static final boolean doMonitorTime = false;
 
     /* members */
-    /** 
+    /**
      * Interpolation method among:
      *  - RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
      *  - RenderingHints.VALUE_INTERPOLATION_BILINEAR
@@ -118,7 +118,7 @@ public final class BigImagePanel extends JPanel {
             // multiple scrolls can call multiple times this method :
             g2.getClipBounds(dstRect);
 
-            // convert clip coordinates to image coordinates            
+            // convert clip coordinates to image coordinates
             srcRect.x = Math.round(dstRect.x / scale);
             srcRect.y = Math.round(dstRect.y / scale);
             srcRect.width = Math.round(dstRect.width / scale);

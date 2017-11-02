@@ -444,6 +444,7 @@ public final class ImageUtils {
 
         public void reset() {
             histAll.reset();
+            histPix.reset();
         }
 
         public void dump() {

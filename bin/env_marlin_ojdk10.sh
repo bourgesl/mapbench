@@ -25,7 +25,7 @@ TILE_LOG2=5
 # enable logging
 LOG=false
 # enable path clipping
-CLIP=true
+CLIP=false
 
 # Marlin renderer in lib folder:
 BOOTCLASSPATH=

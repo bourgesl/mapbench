@@ -3,10 +3,10 @@
 BOOTCLASSPATH=""
 
 # Rendering engine:
-#RDR="sun.dc.DuctusRenderingEngine"
+RDR="sun.dc.DuctusRenderingEngine"
 #RDR="sun.java2d.pisces.PiscesRenderingEngine"
 
-RDR="sun.java2d.marlin.MarlinRenderingEngine"
+#RDR="sun.java2d.marlin.MarlinRenderingEngine"
 #RDR="sun.java2d.marlin.DMarlinRenderingEngine"
 
 JAVA_OPTS="-Dsun.java2d.renderer=$RDR $JAVA_OPTS"

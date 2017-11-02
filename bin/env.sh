@@ -74,6 +74,11 @@ JAVA_OPTS="-server"
 
 #JAVA_OPTS="-server -XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:StartFlightRecording=name=mapbench,filename=/home/marlin/mapbench/bin/mapbench.jfr,dumponexit=true -XX:FlightRecorderOptions=defaultrecording=true"
 
+# GRAAL:
+#JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler"
+#-XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation"
+
+
 # copyAARowNoRLE_WithTileFlags
 #JAVA_OPTS="-server -XX:+UnlockDiagnosticVMOptions -XX:+PrintCompilation -XX:+LogCompilation -XX:CompileCommand=option,copyAARow*,Vectorize"
 

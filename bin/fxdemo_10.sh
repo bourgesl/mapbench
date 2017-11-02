@@ -26,16 +26,3 @@ $JIGSAW_HOME/bin/java -version
 
 $JIGSAW_HOME/bin/java @$JFX_XPATCH -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp ../lib/mapbench-fx-0.1.0.jar:$CLASSPATH it.geosolutions.java2d.MapDemoFX
 
-# Test dc_boulder_2013-13-30-06-13-20.ser
-# pisces        28 fps      41%
-# nativepisces  31 fps      35%
-
-# doublemarlin  48 fps      0%
-
-# TODO: make animation based on time ie angle step is time varying (linear on time)
-
-# test_z_625k.ser
-
-# pisces	10 fps
-# nativepisces	10 fps
-# marlin	18 fps

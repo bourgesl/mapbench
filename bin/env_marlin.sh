@@ -2,7 +2,9 @@
 
 # Marlin jar prefix:
 #MARLIN_JAR_PREFIX=../lib/marlin-0.6.0-Unsafe
-MARLIN_JAR_PREFIX=../lib/marlin-0.8.1.1-Unsafe
+MARLIN_JAR_PREFIX=../lib/marlin-0.8.1.2-Unsafe
+#MARLIN_JAR_PREFIX=../lib/marlin-0.5.6-Unsafe
+#MARLIN_JAR_PREFIX=../lib/marlin-0.3
 
 # Marlin tuning options:
 
@@ -32,7 +34,10 @@ BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX-sun-java2d.jar $BOOTCLASSPAT
 
 # Rendering engine:
 RDR="org.marlin.pisces.MarlinRenderingEngine"
-RDR="org.marlin.pisces.DMarlinRenderingEngine"
+#RDR="org.marlin.pisces.DMarlinRenderingEngine"
+
+# marlin renderer before 0.7.x:
+#RDR="org.marlin.pisces.PiscesRenderingEngine"
 
 # Use Cubic/Quad quality threshold values (<= 0.7.4):
 JAVA_OPTS="-Dsun.java2d.renderer.cubic_dec_d2=2.5 -Dsun.java2d.renderer.cubic_inc_d1=1.0 -Dsun.java2d.renderer.quad_dec_d2=1.0 $JAVA_OPTS"

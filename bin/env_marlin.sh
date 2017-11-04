@@ -2,7 +2,7 @@
 
 # Marlin jar prefix:
 #MARLIN_JAR_PREFIX=../lib/marlin-0.6.0-Unsafe
-MARLIN_JAR_PREFIX=../lib/marlin-0.8.1.2-Unsafe
+MARLIN_JAR_PREFIX=../lib/marlin-0.8.2-Unsafe
 #MARLIN_JAR_PREFIX=../lib/marlin-0.5.6-Unsafe
 #MARLIN_JAR_PREFIX=../lib/marlin-0.3
 

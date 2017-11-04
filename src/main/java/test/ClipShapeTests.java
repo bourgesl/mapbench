@@ -149,7 +149,6 @@ public final class ClipShapeTests {
                 paintPaths(new TestSetup(SHAPE_MODE, false, Path2D.WIND_NON_ZERO));
                 paintPaths(new TestSetup(SHAPE_MODE, true, Path2D.WIND_NON_ZERO));
 
-                // For EO rule: clipping is disabled !
                 paintPaths(new TestSetup(SHAPE_MODE, false, Path2D.WIND_EVEN_ODD));
                 paintPaths(new TestSetup(SHAPE_MODE, true, Path2D.WIND_EVEN_ODD));
             }

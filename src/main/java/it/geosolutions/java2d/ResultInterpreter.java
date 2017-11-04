@@ -120,6 +120,17 @@ public class ResultInterpreter {
         setups.put("MARLIN_VAR_SP_RATIO", new PlotSetup("subpixel-marlin-gain.png", "Marlin jdk-9 - Subpixel setting - Rel Gain " + JVM,
                 "Test Name - Number of threads", "GAIN (%)", 20, -60, 50));
 
+        JVM = "(jdk-10 17.10)";
+        setups.put("MARLIN_VAR_TILE", new PlotSetup("tile-marlin-time.png", "Marlin jdk-10 - TileSize setting - 95% time " + JVM,
+                "Test Name - 1T", "95% Time (ms)", 250));
+        setups.put("MARLIN_VAR_TILE_RATIO", new PlotSetup("tile-marlin-gain.png", "Marlin jdk-10 - TileSize setting - Rel Gain " + JVM,
+                "Test Name - 1T", "GAIN (%)", 5, -25, 70));
+
+        setups.put("MARLIN_VAR_TILE_BEST", new PlotSetup("tile-best-marlin-time.png", "Marlin jdk-10 - Best TileSize setting - 95% time " + JVM,
+                "Test Name - 1T", "95% Time (ms)", 250));
+        setups.put("MARLIN_VAR_TILE_BEST_RATIO", new PlotSetup("tile-best-marlin-gain.png", "Marlin jdk-10 - Best TileSize setting - Rel Gain " + JVM,
+                "Test Name - 1T", "GAIN (%)", 5, -25, 70));
+
         JVM = "(jdk-8 b144)";
 
         setups.put("MARLIN_VAR_CLIP", new PlotSetup("clip-marlin-time.png", "Marlin 0.8.1 - Path Clipping On vs Off - 95% time " + JVM,
@@ -156,30 +167,30 @@ public class ResultInterpreter {
             System.out.println("ResultInterpreter requires arguments !");
 
             doScript();
-            return;
-        }
+        } else {
+            final List<String> testFiles = new ArrayList<String>();
 
-        final List<String> testFiles = new ArrayList<String>();
-
-        // parse command line arguments :
-        for (final String arg : args) {
-            if (arg.startsWith("-")) {
-                if (arg.equals("-h") || arg.equals("-help")) {
-                    showArgumentsHelp();
-                    System.exit(0);
+            // parse command line arguments :
+            for (final String arg : args) {
+                if (arg.startsWith("-")) {
+                    if (arg.equals("-h") || arg.equals("-help")) {
+                        showArgumentsHelp();
+                        System.exit(0);
+                    } else {
+                        System.err.println("'" + arg + "' option not supported.");
+                    }
                 } else {
-                    System.err.println("'" + arg + "' option not supported.");
+                    testFiles.add(arg);
                 }
-            } else {
-                testFiles.add(arg);
             }
-        }
 
-        if (testFiles.isEmpty()) {
-            System.err.println("Missing file name argument.");
-        }
+            if (testFiles.isEmpty()) {
+                System.err.println("Missing file name argument.");
+            }
 
-        new ResultInterpreter(CURRENT_SETUP, testFiles).showAndSavePlot();
+            new ResultInterpreter(CURRENT_SETUP, testFiles).showAndSavePlot();
+        }
+        System.out.println("ResultInterpreter: done.");
     }
 
     private static void doScript() throws IOException {
@@ -256,11 +267,33 @@ public class ResultInterpreter {
         testFiles.remove(testFiles.size() - 1);
         new ResultInterpreter("MARLIN_VAR_SP_RATIO", testFiles).showAndSavePlot();
 
-        COL_1 = green;
-        COL_2 = violet;
-        COL_3 = turquoise;
-        COL_4 = red;
-        COL_5 = blue;
+        // Tile
+        USE_BAR = true;
+        testFiles.clear();
+        testFiles.add("jdk10_buf_32.log");
+        testFiles.add("jdk10_buf_128x64.log");
+        testFiles.add("jdk10_volatile_64.log");
+        testFiles.add("jdk10_volatile_128.log");
+        testFiles.add("jdk10_volatile_256.log");
+        new ResultInterpreter("MARLIN_VAR_TILE", testFiles).showAndSavePlot();
+
+        CURRENT_REF_INDEX = 0; // 32x32
+        USE_BAR = false;
+        new ResultInterpreter("MARLIN_VAR_TILE_RATIO", testFiles).showAndSavePlot();
+
+        USE_BAR = true;
+        testFiles.clear();
+        testFiles.add("jdk10_buf_32.log");
+        testFiles.add("jdk10_buf_128x64.log");
+        testFiles.add("jdk10_volatile_128x32.log");
+        testFiles.add("jdk10_volatile_128x64.log");
+        testFiles.add("jdk10_volatile_128.log");
+        new ResultInterpreter("MARLIN_VAR_TILE_BEST", testFiles).showAndSavePlot();
+
+        CURRENT_REF_INDEX = 0; // 32x32
+        USE_BAR = false;
+        new ResultInterpreter("MARLIN_VAR_TILE_BEST_RATIO", testFiles).showAndSavePlot();
+
         CURRENT_REF_INDEX = 2; // 0.7.4
         USE_BAR = true;
         testFiles.clear();

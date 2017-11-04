@@ -50,12 +50,16 @@ import static org.gui.ImageUtils.trimTo3Digits;
 public final class ClipShapeTests {
 
     static final boolean TEST_STROKER = true;
-    static final boolean TEST_FILLER = false;
+    static final boolean TEST_FILLER = true;
+
+    // dump path on console:
+    static final boolean DUMP_SHAPE = false;
 
     static final int NUM_TESTS = 10000;
     static final int TESTW = 100;
     static final int TESTH = 100;
     static final ShapeMode SHAPE_MODE = ShapeMode.NINE_LINE_POLYS;
+    static final boolean SHAPE_REPEAT = true;
 
     static final boolean SHOW_DETAILS = true;
     static final boolean SHOW_FRAME = true;
@@ -64,12 +68,9 @@ public final class ClipShapeTests {
     static final boolean SHOW_POINTS = true;
     static final boolean SHOW_INFO = false;
 
-    // dump path on console:
-    static final boolean DUMP_SHAPE = true;
-
     static final int MAX_SHOW_FRAMES = 10;
 
-    static final double RAND_SCALE = 2.0;
+    static final double RAND_SCALE = 3.0;
 
     static final double RANDW = TESTW * RAND_SCALE;
     static final double OFFW = (TESTW - RANDW) / 2.0;
@@ -146,13 +147,11 @@ public final class ClipShapeTests {
             if (TEST_FILLER) {
                 // Filler tests:
                 paintPaths(new TestSetup(SHAPE_MODE, false, Path2D.WIND_NON_ZERO));
-//                paintPaths(new TestSetup(SHAPE_MODE, true, Path2D.WIND_NON_ZERO));
+                paintPaths(new TestSetup(SHAPE_MODE, true, Path2D.WIND_NON_ZERO));
 
-                if (false) {
-                    // For EO rule: clipping is disabled !
-                    paintPaths(new TestSetup(SHAPE_MODE, false, Path2D.WIND_EVEN_ODD));
-                    paintPaths(new TestSetup(SHAPE_MODE, true, Path2D.WIND_EVEN_ODD));
-                }
+                // For EO rule: clipping is disabled !
+                paintPaths(new TestSetup(SHAPE_MODE, false, Path2D.WIND_EVEN_ODD));
+                paintPaths(new TestSetup(SHAPE_MODE, true, Path2D.WIND_EVEN_ODD));
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -202,7 +201,7 @@ public final class ClipShapeTests {
                 if (diffImage != null) {
                     nd++;
 
-                    final double ratio = 100.0 * testCtx.histAll.average();
+                    final double ratio = (100.0 * testCtx.histPix.count) / testCtx.histAll.count;
                     System.out.println("Diff ratio: " + testName + " = " + trimTo3Digits(ratio) + " %");
 
                     if (false) {
@@ -234,7 +233,7 @@ public final class ClipShapeTests {
             g2dOn.dispose();
 
             if (nd != 0) {
-                System.out.println("paintPaths: " + NUM_TESTS + " paths - Number of differences = " + nd + " ratio = " + (100f * nd) / NUM_TESTS);
+                System.out.println("paintPaths: " + NUM_TESTS + " paths - Number of differences = " + nd + " ratio = " + (100f * nd) / NUM_TESTS + " %");
             }
 
             globalCtx.dump();
@@ -283,55 +282,60 @@ public final class ClipShapeTests {
 
     static void genShape(final Path2D p2d, final TestSetup ts) {
         p2d.reset();
-        p2d.moveTo(randX(), randY());
+        
+        final int end = (SHAPE_REPEAT) ? 2 : 1;
+        
+        for (int p = 0; p < end; p++) {
+            p2d.moveTo(randX(), randY());
 
-        switch (ts.shapeMode) {
-            case MIXED:
-            case FIFTY_LINE_POLYS:
-            case NINE_LINE_POLYS:
-            case FIVE_LINE_POLYS:
-                p2d.lineTo(randX(), randY());
-                p2d.lineTo(randX(), randY());
-                p2d.lineTo(randX(), randY());
-                p2d.lineTo(randX(), randY());
-                if (ts.shapeMode == ShapeMode.FIVE_LINE_POLYS) {
-                    // And an implicit close makes 5 lines
-                    break;
-                }
-                p2d.lineTo(randX(), randY());
-                p2d.lineTo(randX(), randY());
-                p2d.lineTo(randX(), randY());
-                p2d.lineTo(randX(), randY());
-                if (ts.shapeMode == ShapeMode.NINE_LINE_POLYS) {
-                    // And an implicit close makes 9 lines
-                    break;
-                }
-                if (ts.shapeMode == ShapeMode.FIFTY_LINE_POLYS) {
-                    for (int i = 0; i < 41; i++) {
-                        p2d.lineTo(randX(), randY());
+            switch (ts.shapeMode) {
+                case MIXED:
+                case FIFTY_LINE_POLYS:
+                case NINE_LINE_POLYS:
+                case FIVE_LINE_POLYS:
+                    p2d.lineTo(randX(), randY());
+                    p2d.lineTo(randX(), randY());
+                    p2d.lineTo(randX(), randY());
+                    p2d.lineTo(randX(), randY());
+                    if (ts.shapeMode == ShapeMode.FIVE_LINE_POLYS) {
+                        // And an implicit close makes 5 lines
+                        break;
                     }
-                    // And an implicit close makes 50 lines
-                    break;
-                }
-            case TWO_CUBICS:
-                p2d.curveTo(randX(), randY(), randX(), randY(), randX(), randY());
-                p2d.curveTo(randX(), randY(), randX(), randY(), randX(), randY());
-                if (ts.shapeMode == ShapeMode.TWO_CUBICS) {
-                    break;
-                }
-            case FOUR_QUADS:
-                p2d.quadTo(randX(), randY(), randX(), randY());
-                p2d.quadTo(randX(), randY(), randX(), randY());
-                p2d.quadTo(randX(), randY(), randX(), randY());
-                p2d.quadTo(randX(), randY(), randX(), randY());
-                if (ts.shapeMode == ShapeMode.FOUR_QUADS) {
-                    break;
-                }
-            default:
-        }
+                    p2d.lineTo(randX(), randY());
+                    p2d.lineTo(randX(), randY());
+                    p2d.lineTo(randX(), randY());
+                    p2d.lineTo(randX(), randY());
+                    if (ts.shapeMode == ShapeMode.NINE_LINE_POLYS) {
+                        // And an implicit close makes 9 lines
+                        break;
+                    }
+                    if (ts.shapeMode == ShapeMode.FIFTY_LINE_POLYS) {
+                        for (int i = 0; i < 41; i++) {
+                            p2d.lineTo(randX(), randY());
+                        }
+                        // And an implicit close makes 50 lines
+                        break;
+                    }
+                case TWO_CUBICS:
+                    p2d.curveTo(randX(), randY(), randX(), randY(), randX(), randY());
+                    p2d.curveTo(randX(), randY(), randX(), randY(), randX(), randY());
+                    if (ts.shapeMode == ShapeMode.TWO_CUBICS) {
+                        break;
+                    }
+                case FOUR_QUADS:
+                    p2d.quadTo(randX(), randY(), randX(), randY());
+                    p2d.quadTo(randX(), randY(), randX(), randY());
+                    p2d.quadTo(randX(), randY(), randX(), randY());
+                    p2d.quadTo(randX(), randY(), randX(), randY());
+                    if (ts.shapeMode == ShapeMode.FOUR_QUADS) {
+                        break;
+                    }
+                default:
+            }
 
-        if (ts.closed) {
-            p2d.closePath();
+            if (ts.closed) {
+                p2d.closePath();
+            }
         }
     }
 

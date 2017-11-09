@@ -53,12 +53,12 @@ public final class ClipShapeTests {
     static final boolean TEST_FILLER = true;
 
     // dump path on console:
-    static final boolean DUMP_SHAPE = false;
+    static final boolean DUMP_SHAPE = true;
 
     static final int NUM_TESTS = 10000;
     static final int TESTW = 100;
     static final int TESTH = 100;
-    static final ShapeMode SHAPE_MODE = ShapeMode.NINE_LINE_POLYS;
+    static final ShapeMode SHAPE_MODE = ShapeMode.MIXED;
     static final boolean SHAPE_REPEAT = true;
 
     static final boolean SHOW_DETAILS = true;

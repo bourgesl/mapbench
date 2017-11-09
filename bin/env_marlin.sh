@@ -3,7 +3,7 @@
 # Marlin jar prefix:
 #MARLIN_JAR_PREFIX=../lib/marlin-0.6.0-Unsafe
 MARLIN_JAR_PREFIX=../lib/marlin-0.8.2-Unsafe
-#MARLIN_JAR_PREFIX=../lib/marlin-0.5.6-Unsafe
+#MARLIN_JAR_PREFIX=../lib/marlin-0.7.5-Unsafe
 #MARLIN_JAR_PREFIX=../lib/marlin-0.3
 
 # Marlin tuning options:
@@ -21,6 +21,9 @@ USE_SIMPLIFIER=false
 # 32x32 tiles (5)
 TILE_H_LOG2=5 # 6 ?
 TILE_W_LOG2=5 # 7 is better
+# block size:
+BLOCK_LOG2=5
+RLE_MIN=64
 # enable logging
 LOG=true
 # enable path clipping
@@ -34,7 +37,7 @@ BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX-sun-java2d.jar $BOOTCLASSPAT
 
 # Rendering engine:
 RDR="org.marlin.pisces.MarlinRenderingEngine"
-#RDR="org.marlin.pisces.DMarlinRenderingEngine"
+RDR="org.marlin.pisces.DMarlinRenderingEngine"
 
 # marlin renderer before 0.7.x:
 #RDR="org.marlin.pisces.PiscesRenderingEngine"
@@ -48,7 +51,7 @@ JAVA_OPTS="-Dsun.java2d.renderer.cubic_dec_d2=2.5 -Dsun.java2d.renderer.cubic_in
 # 0.7.5 defaults: 1.0/0.4/0.5
 
 # Pixel loops:
-RLE="-Dsun.java2d.renderer.enableRLE=true -Dsun.java2d.renderer.forceRLE=false -Dsun.java2d.renderer.forceNoRLE=false -Dsun.java2d.renderer.useTileFlags=true -Dsun.java2d.renderer.useTileFlags.useHeuristics=true -Dsun.java2d.renderer.blockSize_log2=5 -Dsun.java2d.renderer.rleMinWidth=64"
+RLE="-Dsun.java2d.renderer.enableRLE=true -Dsun.java2d.renderer.forceRLE=false -Dsun.java2d.renderer.forceNoRLE=false -Dsun.java2d.renderer.useTileFlags=true -Dsun.java2d.renderer.useTileFlags.useHeuristics=true -Dsun.java2d.renderer.blockSize_log2=$BLOCK_LOG2 -Dsun.java2d.renderer.rleMinWidth=$RLE_MIN"
 
 # Update Java options:
 # trace counts: -Dsun.java2d.trace=count

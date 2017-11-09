@@ -11,15 +11,16 @@ import java.util.Arrays;
 public final class Result {
 
     double totalTime = 0d;
-    public final String testName;
-    public final int param;
-    public final int nOps;
-    public final double nsPerOpAvg;
-    public final double nsPerOpSigma;
-    public final double nsPerOpMed;
-    public final double nsPerOpPct95;
-    public final double nsPerOpMin;
-    public final double nsPerOpMax;
+    private final String testName;
+    private final double scale;
+    private final int param;
+    private final int nOps;
+    private final double nsPerOpAvg;
+    private final double nsPerOpSigma;
+    final double nsPerOpMed;
+    final double nsPerOpPct95;
+    private final double nsPerOpMin;
+    private final double nsPerOpMax;
     private final long[] opss;
     private final double[] nsPerOps;
     private final long opsSum;
@@ -27,6 +28,7 @@ public final class Result {
     // TODO: rename threads to N or N elements:
     public Result(String testName, int param, int nops, long[] opss, long[] nanoss) {
         this.testName = testName;
+        this.scale = Profile.getScale(testName);
         this.param = param;
         this.nOps = nops;
         this.opss = opss;
@@ -77,7 +79,14 @@ public final class Result {
     public double getFpsPct95() {
         return 1.0 / toSecond(nsPerOpPct95);
     }
-
+    
+    public double getScaledNsPerOpMed() {
+        return scale * nsPerOpMed;
+    }
+    
+    public double getScaledNsPerOpPct95() {
+        return scale * nsPerOpPct95;
+    }
 
     private static double percentile(final double percent, final int nops, final double[] nsPerOps) {
         final double idx = Math.max(percent * (nops - 1), 0);
@@ -96,16 +105,19 @@ public final class Result {
     private static final String separator = "\t";
 
     public static String toStringHeader() {
-        return String.format("%-45s%sThreads%sOps%sMed%sPct95%sAvg%sStdDev%sMin%sMax%sFPS(med)%sTotalOps%s[ms/op]", "Test",
-                separator, separator, separator, separator, separator, separator, separator, separator, separator, separator, separator, separator);
+        return String.format("%-45s%sThreads%sOps%sMed%sPct95%sAvg%sStdDev%sMin%sMax%sFPS(med)%sTotalOps%sScale%s[ms/op]", "Test",
+                separator, separator, separator, separator, separator, separator, separator,
+                separator, separator, separator, separator, separator, separator);
     }
 
     public String toString(boolean dumpIndividualThreads) {
         StringBuilder sb = new StringBuilder(256);
-        sb.append(String.format("%-45s%s%d%s%d%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%d",
+        sb.append(String.format("%-45s%s%d%s%d%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%.3f%s%d%s%.3f",
                 testName, separator, param, separator, nOps, separator, toMillis(nsPerOpMed), separator,
                 toMillis(nsPerOpPct95), separator, toMillis(nsPerOpAvg), separator, toMillis(nsPerOpSigma), separator,
-                toMillis(nsPerOpMin), separator, toMillis(nsPerOpMax), separator, getFpsMed(), separator, opsSum));
+                toMillis(nsPerOpMin), separator, toMillis(nsPerOpMax), separator, getFpsMed(), separator, opsSum,
+                 separator, scale
+        ));
         if (dumpIndividualThreads) {
             sb.append(" [");
             for (int i = 0; i < nsPerOps.length; i++) {

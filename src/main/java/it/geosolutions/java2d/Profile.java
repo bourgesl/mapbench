@@ -228,7 +228,8 @@ public final class Profile {
         if (scales != null) {
             final String scale = scales.getProperty(key);
             if (scale != null) {
-                return Double.parseDouble(scale);
+                // inverse scale to 100.0
+                return 100.0 / Double.parseDouble(scale);
             }
         }
         return 1.0;
@@ -290,16 +291,13 @@ public final class Profile {
             System.out.println(properties.getProperty(key));
         }
 
-        // TODO: use scales to compute final score ie weighted mean !
-        if (false) {
-            if (scales != null) {
-                System.out.println("### Test Scales:");
-                for (Object key : scales.keySet()) {
-                    System.out.print("  ");
-                    System.out.print(key);
-                    System.out.print("=");
-                    System.out.println(scales.getProperty(key.toString()));
-                }
+        if (scales != null) {
+            System.out.println("### Test Scales:");
+            for (Object key : scales.keySet()) {
+                System.out.print("  ");
+                System.out.print(key);
+                System.out.print("=");
+                System.out.println(scales.getProperty(key.toString()));
             }
         }
 

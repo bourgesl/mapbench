@@ -193,13 +193,13 @@ public final class MapDemo extends BenchTest {
                         sRes = res.toString();
 
                         nTest++;
-                        totalMed += res.nsPerOpMed;
-                        totalPct95 += res.nsPerOpPct95;
+                        totalMed += res.getScaledNsPerOpMed();
+                        totalPct95 += res.getScaledNsPerOpPct95();
                         totalFps += res.getFpsMed();
 
                         nThTest[nThPass]++;
-                        nThTotalMed[nThPass] += res.nsPerOpMed;
-                        nThTotalPct95[nThPass] += res.nsPerOpPct95;
+                        nThTotalMed[nThPass] += res.getScaledNsPerOpMed();
+                        nThTotalPct95[nThPass] += res.getScaledNsPerOpPct95();
                         nThTotalFps[nThPass] += res.getFpsMed();
 
                         System.out.println(sRes);

@@ -78,6 +78,8 @@ public class ResultInterpreter {
     private static int ONLY_TH = 0;
 
     private static boolean MEAN_ONLY = false;
+    
+    private static boolean USE_TITLE = true;
 
     static {
         Locale.setDefault(Locale.US);
@@ -159,6 +161,29 @@ public class ResultInterpreter {
         setups.put("MARLIN_FX9_RATIO", new PlotSetup("fx9-marlin-gain.png", "Native Pisces vs Java Pisces vs MarlinFX - Rel Gain " + JVM,
                 "Test Name", "GAIN (%)", 10));
 
+        // 2018.2: 
+        JVM = "(jdk-8 b152)";
+        setups.put("MARLIN_091", new PlotSetup("clip-marlin-091-time.png", "Marlin 0.9.1 vs 0.8.2 - 95% Time " + JVM,
+                "Test Name", "95% Time (ms)", 20, 0, 180));
+        setups.put("MARLIN_091_RATIO", new PlotSetup("clip-marlin-091-gain.png", "Marlin 0.9.1 vs 0.8.2 - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 5, -5, 60));
+
+        setups.put("MARLIN_091_4K", new PlotSetup("clip-marlin-091-4K-time.png", "Marlin 0.9.1 vs 0.8.2 - 95% Time " + JVM,
+                "Test Name", "95% Time (ms)", 50));
+        setups.put("MARLIN_091_4K_RATIO", new PlotSetup("clip-marlin-091-4K-gain.png", "Marlin 0.9.1 vs 0.8.2 - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 5, -25, 25));
+
+        setups.put("MARLIN_091_4K_VOL", new PlotSetup("marlin-091-4K-vol-time.png", "Marlin 0.9.1 vs 0.8.2 - 95% Time " + JVM,
+                "Test Name", "95% Time (ms)", 50));
+        setups.put("MARLIN_091_4K_VOL_RATIO", new PlotSetup("marlin-091-4K-vol-gain.png", "Marlin 0.9.1 vs 0.8.2 - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 5, -10, 80));
+
+        JVM = "(jetbrains jdk-8 b152)";
+        setups.put("MARLIN_091_4K_VOL_JB", new PlotSetup("marlin-091-4K-vol-jb-time.png", "Marlin 0.9.1 vs 0.7.3.4 - 95% Time " + JVM,
+                "Test Name", "95% Time (ms)", 50));
+        setups.put("MARLIN_091_4K_VOL_JB_RATIO", new PlotSetup("marlin-091-4K-vol-jb-gain.png", "Marlin 0.9.1 vs 0.7.3.4 - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 5, -10, 80));
+        
         CURRENT_SETUP = "MARLIN_VAR_RATIO";
     }
 
@@ -200,166 +225,227 @@ public class ResultInterpreter {
         final Color violet = new Color(194, 84, 210);
         final Color turquoise = new Color(99, 187, 238);
 
-        ONLY_TH = 0;
-        USE_BAR = true;
-        COL_1 = red; // oracle = ductus
-        COL_2 = blue; // pisces
-        COL_3 = green; // marlin
-
         final List<String> testFiles = new ArrayList<String>();
 
-        testFiles.clear();
-        testFiles.add("jdk9_dc.log");
-        testFiles.add("jdk9_pisces.log");
-        new ResultInterpreter("BEFORE", testFiles).showAndSavePlot();
+        if (false) {
 
-        testFiles.clear();
-        testFiles.add("jdk9_dc.log");
-        testFiles.add("jdk9_pisces.log");
-        testFiles.add("jdk9_marlin.log");
-        new ResultInterpreter("WITH_MARLIN", testFiles).showAndSavePlot();
+            ONLY_TH = 0;
+            USE_BAR = true;
+            COL_1 = red; // oracle = ductus
+            COL_2 = blue; // pisces
+            COL_3 = green; // marlin
+
+            testFiles.clear();
+            testFiles.add("jdk9_dc.log");
+            testFiles.add("jdk9_pisces.log");
+            new ResultInterpreter("BEFORE", testFiles).showAndSavePlot();
+
+            testFiles.clear();
+            testFiles.add("jdk9_dc.log");
+            testFiles.add("jdk9_pisces.log");
+            testFiles.add("jdk9_marlin.log");
+            new ResultInterpreter("WITH_MARLIN", testFiles).showAndSavePlot();
 //        new ResultInterpreter("WITH_MARLIN_ZOOM", testFiles).showAndSavePlot();
 
-        CURRENT_REF_INDEX = 2;
-        ONLY_TH = 1;
-        new ResultInterpreter("MARLIN_RATIO_1T", testFiles).showAndSavePlot();
-        ONLY_TH = 2;
-        new ResultInterpreter("MARLIN_RATIO_2T", testFiles).showAndSavePlot();
-        ONLY_TH = 4;
-        new ResultInterpreter("MARLIN_RATIO_4T", testFiles).showAndSavePlot();
+            CURRENT_REF_INDEX = 2;
+            ONLY_TH = 1;
+            new ResultInterpreter("MARLIN_RATIO_1T", testFiles).showAndSavePlot();
+            ONLY_TH = 2;
+            new ResultInterpreter("MARLIN_RATIO_2T", testFiles).showAndSavePlot();
+            ONLY_TH = 4;
+            new ResultInterpreter("MARLIN_RATIO_4T", testFiles).showAndSavePlot();
 
-        ONLY_TH = 0;
-        MEAN_ONLY = true;
-        new ResultInterpreter("MARLIN_RATIO_MEAN", testFiles).showAndSavePlot();
-        MEAN_ONLY = false;
+            ONLY_TH = 0;
+            MEAN_ONLY = true;
+            new ResultInterpreter("MARLIN_RATIO_MEAN", testFiles).showAndSavePlot();
+            MEAN_ONLY = false;
 
-        COL_1 = green;
-        COL_2 = violet;
-        COL_3 = turquoise;
-        COL_4 = red;
-        COL_5 = blue;
-        ONLY_TH = 1;
+            COL_1 = green;
+            COL_2 = violet;
+            COL_3 = turquoise;
+            COL_4 = red;
+            COL_5 = blue;
+            ONLY_TH = 1;
+            GAIN_SIGN = -1.0;
+
+            testFiles.clear();
+            testFiles.add("jdk9_marlin.log");
+            testFiles.add("jdk10_marlin_curve_th_074.log");
+            testFiles.add("jdk10_marlin.log");
+            testFiles.add("jdk10_marlinD.log");
+            new ResultInterpreter("MARLIN_VAR", testFiles).showAndSavePlot();
+
+            USE_BAR = false;
+            CURRENT_REF_INDEX = 0;
+            new ResultInterpreter("MARLIN_VAR_RATIO", testFiles).showAndSavePlot();
+
+            USE_BAR = true;
+            testFiles.clear();
+            testFiles.add("jdk9_marlin_sp1.log");
+            testFiles.add("jdk9_marlin_sp2.log");
+            testFiles.add("jdk9_marlin.log");
+            testFiles.add("jdk9_marlin_sp4.log");
+            testFiles.add("jdk9_marlin_sp6.log");
+            new ResultInterpreter("MARLIN_VAR_SP", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 2; // 3x3
+            USE_BAR = false;
+            // ignore last 6
+            testFiles.remove(testFiles.size() - 1);
+            new ResultInterpreter("MARLIN_VAR_SP_RATIO", testFiles).showAndSavePlot();
+
+            // Tile
+            USE_BAR = true;
+            testFiles.clear();
+            testFiles.add("jdk10_buf_32.log");
+            testFiles.add("jdk10_buf_128x64.log");
+            testFiles.add("jdk10_volatile_64.log");
+            testFiles.add("jdk10_volatile_128.log");
+            testFiles.add("jdk10_volatile_256.log");
+            new ResultInterpreter("MARLIN_VAR_TILE", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0; // 32x32
+            USE_BAR = false;
+            new ResultInterpreter("MARLIN_VAR_TILE_RATIO", testFiles).showAndSavePlot();
+
+            USE_BAR = true;
+            testFiles.clear();
+            testFiles.add("jdk10_buf_32.log");
+            testFiles.add("jdk10_buf_128x64.log");
+            testFiles.add("jdk10_volatile_128x32.log");
+            testFiles.add("jdk10_volatile_128x64.log");
+            testFiles.add("jdk10_volatile_128.log");
+            new ResultInterpreter("MARLIN_VAR_TILE_BEST", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0; // 32x32
+            USE_BAR = false;
+            new ResultInterpreter("MARLIN_VAR_TILE_BEST_RATIO", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 2; // 0.7.4
+            USE_BAR = true;
+            testFiles.clear();
+            testFiles.add("jdk8_marlin_03.log");
+            testFiles.add("jdk8_marlin_056.log");
+            testFiles.add("jdk9_marlin.log");
+            testFiles.add("jdk8_marlin_0811.log");
+            new ResultInterpreter("MARLIN_VAR_HIST", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0; // 0.3
+            COL_1 = violet;
+            COL_2 = turquoise;
+            COL_3 = red;
+            new ResultInterpreter("MARLIN_VAR_HIST_RATIO", testFiles).showAndSavePlot();
+            COL_1 = green;
+            COL_2 = violet;
+            COL_3 = turquoise;
+
+            USE_BAR = true;
+            GAIN_SIGN = 1.0;
+            testFiles.clear();
+            testFiles.add("jdk8_marlin_no_render.log"); // stage1: preparing path
+            testFiles.add("jdk8_marlin_no_blending.log"); // stage1+2: preparing path + rendering
+            testFiles.add("jdk8_marlin_0811.log");      // stage1+2+3: preparing path + rendering + blending
+            new ResultInterpreter("MARLIN_VAR_PIPE", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 2;
+            new ResultInterpreter("MARLIN_VAR_PIPE_RATIO", testFiles).showAndSavePlot();
+
+            // Clipping 0.8.1:
+            USE_BAR = true;
+            GAIN_SIGN = -1.0;
+            COL_1 = green;
+            COL_2 = violet;
+            testFiles.clear();
+            testFiles.add("big_test_clip_off.log");
+            testFiles.add("big_test_clip_on.log");
+            new ResultInterpreter("MARLIN_VAR_CLIP", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0;
+            COL_1 = violet;
+            new ResultInterpreter("MARLIN_VAR_CLIP_RATIO", testFiles).showAndSavePlot();
+
+            COL_1 = red; // native pisces
+            COL_2 = blue; // java pisces
+            COL_3 = green; // marlin
+
+            testFiles.clear();
+            testFiles.add("fxdemo8_native-pisces.log");
+            testFiles.add("fxdemo8_java-pisces.log");
+            testFiles.add("fxdemo8_marlinD.log");
+            new ResultInterpreter("MARLIN_FX", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 2;
+            GAIN_SIGN = 1.0;
+            new ResultInterpreter("MARLIN_FX_RATIO", testFiles).showAndSavePlot();
+
+            testFiles.clear();
+            testFiles.add("fxdemo9_native-pisces.log");
+            testFiles.add("fxdemo9_java-pisces.log");
+            testFiles.add("fxdemo9_marlinD.log");
+            new ResultInterpreter("MARLIN_FX9", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 2;
+            GAIN_SIGN = 1.0;
+            new ResultInterpreter("MARLIN_FX9_RATIO", testFiles).showAndSavePlot();
+
+            // Clipping 0.8.1:
+            USE_BAR = true;
+            GAIN_SIGN = -1.0;
+            COL_1 = blue;
+            COL_2 = green;
+            testFiles.clear();
+            testFiles.add("marlin_082_clip_quality.log");
+            testFiles.add("marlin_091_clip_subd_xing_quality_opt_100_final.log");
+            new ResultInterpreter("MARLIN_091", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0;
+            COL_1 = green;
+            new ResultInterpreter("MARLIN_091_RATIO", testFiles).showAndSavePlot();
+
+            USE_BAR = true;
+            GAIN_SIGN = -1.0;
+            COL_1 = blue;
+            COL_2 = green;
+            COL_3 = violet;
+            testFiles.clear();
+            testFiles.add("marlin_082_4K_dashed_quality.log");
+            testFiles.add("marlin_091_4K_dashed_quality_subd_xing_last_opt_100_final.log");
+            testFiles.add("marlin_091_4K_dashed_quality_subd_xing_last_opt_100_disable.log");
+            new ResultInterpreter("MARLIN_091_4K", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0;
+            COL_1 = green;
+            COL_2 = violet;
+            new ResultInterpreter("MARLIN_091_4K_RATIO", testFiles).showAndSavePlot();
+        }
+
+        // Volatile
+        USE_BAR = true;
         GAIN_SIGN = -1.0;
-
-        testFiles.clear();
-        testFiles.add("jdk9_marlin.log");
-        testFiles.add("jdk10_marlin_curve_th_074.log");
-        testFiles.add("jdk10_marlin.log");
-        testFiles.add("jdk10_marlinD.log");
-        new ResultInterpreter("MARLIN_VAR", testFiles).showAndSavePlot();
-
-        USE_BAR = false;
-        CURRENT_REF_INDEX = 0;
-        new ResultInterpreter("MARLIN_VAR_RATIO", testFiles).showAndSavePlot();
-
-        USE_BAR = true;
-        testFiles.clear();
-        testFiles.add("jdk9_marlin_sp1.log");
-        testFiles.add("jdk9_marlin_sp2.log");
-        testFiles.add("jdk9_marlin.log");
-        testFiles.add("jdk9_marlin_sp4.log");
-        testFiles.add("jdk9_marlin_sp6.log");
-        new ResultInterpreter("MARLIN_VAR_SP", testFiles).showAndSavePlot();
-
-        CURRENT_REF_INDEX = 2; // 3x3
-        USE_BAR = false;
-        // ignore last 6
-        testFiles.remove(testFiles.size() - 1);
-        new ResultInterpreter("MARLIN_VAR_SP_RATIO", testFiles).showAndSavePlot();
-
-        // Tile
-        USE_BAR = true;
-        testFiles.clear();
-        testFiles.add("jdk10_buf_32.log");
-        testFiles.add("jdk10_buf_128x64.log");
-        testFiles.add("jdk10_volatile_64.log");
-        testFiles.add("jdk10_volatile_128.log");
-        testFiles.add("jdk10_volatile_256.log");
-        new ResultInterpreter("MARLIN_VAR_TILE", testFiles).showAndSavePlot();
-
-        CURRENT_REF_INDEX = 0; // 32x32
-        USE_BAR = false;
-        new ResultInterpreter("MARLIN_VAR_TILE_RATIO", testFiles).showAndSavePlot();
-
-        USE_BAR = true;
-        testFiles.clear();
-        testFiles.add("jdk10_buf_32.log");
-        testFiles.add("jdk10_buf_128x64.log");
-        testFiles.add("jdk10_volatile_128x32.log");
-        testFiles.add("jdk10_volatile_128x64.log");
-        testFiles.add("jdk10_volatile_128.log");
-        new ResultInterpreter("MARLIN_VAR_TILE_BEST", testFiles).showAndSavePlot();
-
-        CURRENT_REF_INDEX = 0; // 32x32
-        USE_BAR = false;
-        new ResultInterpreter("MARLIN_VAR_TILE_BEST_RATIO", testFiles).showAndSavePlot();
-
-        CURRENT_REF_INDEX = 2; // 0.7.4
-        USE_BAR = true;
-        testFiles.clear();
-        testFiles.add("jdk8_marlin_03.log");
-        testFiles.add("jdk8_marlin_056.log");
-        testFiles.add("jdk9_marlin.log");
-        testFiles.add("jdk8_marlin_0811.log");
-        new ResultInterpreter("MARLIN_VAR_HIST", testFiles).showAndSavePlot();
-
-        CURRENT_REF_INDEX = 0; // 0.3
-        COL_1 = violet;
-        COL_2 = turquoise;
-        COL_3 = red;
-        new ResultInterpreter("MARLIN_VAR_HIST_RATIO", testFiles).showAndSavePlot();
         COL_1 = green;
-        COL_2 = violet;
-        COL_3 = turquoise;
-
-        USE_BAR = true;
-        GAIN_SIGN = 1.0;
+        COL_2 = blue;
         testFiles.clear();
-        testFiles.add("jdk8_marlin_no_render.log"); // stage1: preparing path
-        testFiles.add("jdk8_marlin_no_blending.log"); // stage1+2: preparing path + rendering
-        testFiles.add("jdk8_marlin_0811.log");      // stage1+2+3: preparing path + rendering + blending
-        new ResultInterpreter("MARLIN_VAR_PIPE", testFiles).showAndSavePlot();
+        testFiles.add("marlin_082_4K_dashed_vol.log");
+        testFiles.add("marlin_091_4K_dashed_vol.log");
+        new ResultInterpreter("MARLIN_091_4K_VOL", testFiles).showAndSavePlot();
 
-        CURRENT_REF_INDEX = 2;
-        new ResultInterpreter("MARLIN_VAR_PIPE_RATIO", testFiles).showAndSavePlot();
+        CURRENT_REF_INDEX = 0;
+        COL_1 = blue;
+        new ResultInterpreter("MARLIN_091_4K_VOL_RATIO", testFiles).showAndSavePlot();        
 
-        // Clipping 0.8.1:
+        // JETBRAINS JDK8
         USE_BAR = true;
         GAIN_SIGN = -1.0;
         COL_1 = green;
-        COL_2 = violet;
+        COL_2 = blue;
         testFiles.clear();
-        testFiles.add("big_test_clip_off.log");
-        testFiles.add("big_test_clip_on.log");
-        new ResultInterpreter("MARLIN_VAR_CLIP", testFiles).showAndSavePlot();
+        testFiles.add("marlin_074_4K_dashed_vol_jb_origin.log");
+        testFiles.add("marlin_091_4K_dashed_vol_jb.log");
+        new ResultInterpreter("MARLIN_091_4K_VOL_JB", testFiles).showAndSavePlot();
 
         CURRENT_REF_INDEX = 0;
-        COL_1 = violet;
-        new ResultInterpreter("MARLIN_VAR_CLIP_RATIO", testFiles).showAndSavePlot();
-
-        COL_1 = red; // native pisces
-        COL_2 = blue; // java pisces
-        COL_3 = green; // marlin
-
-        testFiles.clear();
-        testFiles.add("fxdemo8_native-pisces.log");
-        testFiles.add("fxdemo8_java-pisces.log");
-        testFiles.add("fxdemo8_marlinD.log");
-        new ResultInterpreter("MARLIN_FX", testFiles).showAndSavePlot();
-
-        CURRENT_REF_INDEX = 2;
-        GAIN_SIGN = 1.0;
-        new ResultInterpreter("MARLIN_FX_RATIO", testFiles).showAndSavePlot();
-
-        testFiles.clear();
-        testFiles.add("fxdemo9_native-pisces.log");
-        testFiles.add("fxdemo9_java-pisces.log");
-        testFiles.add("fxdemo9_marlinD.log");
-        new ResultInterpreter("MARLIN_FX9", testFiles).showAndSavePlot();
-
-        CURRENT_REF_INDEX = 2;
-        GAIN_SIGN = 1.0;
-        new ResultInterpreter("MARLIN_FX9_RATIO", testFiles).showAndSavePlot();
+        COL_1 = blue;
+        new ResultInterpreter("MARLIN_091_4K_VOL_JB_RATIO", testFiles).showAndSavePlot();        
     }
 
     /** Show command arguments help */
@@ -637,8 +723,15 @@ public class ResultInterpreter {
     }
 
     private static JFreeChart createChart(CustomCategoryDataset dataset) {
-        final String title = null; // dataset.info.title;
-        final String xLabel = null; // dataset.info.xLabel
+        final String title;
+        final String xLabel;
+        if (USE_TITLE) {
+            title = dataset.info.title;
+            xLabel = dataset.info.xLabel;
+        } else {
+            title = null;
+            xLabel = null;
+        }
         JFreeChart chart;
         if (USE_BAR) {
             chart = ChartFactory.createBarChart(title, xLabel, dataset.info.yLabel,

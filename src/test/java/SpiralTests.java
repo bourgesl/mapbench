@@ -41,7 +41,9 @@ import javax.imageio.ImageIO;
  */
 public class SpiralTests {
 
-    final static boolean DO_FILL = true;
+    final static boolean DO_FILL = false;
+
+    final static boolean HIGH_PRECISION = true;
 
     public static void main(String[] args) {
         final boolean useDashes = false;
@@ -72,7 +74,8 @@ public class SpiralTests {
         g2d.setColor(Color.BLUE);
 
         ShapeDumpingGraphics2D dumper = new ShapeDumpingGraphics2D(g2d, size, size,
-                new File("SpiralTest-fill-" + DO_FILL + "-dash-" + useDashes + ".ser"));
+                new File("spiralTest-fill-" + DO_FILL + "-dash-" + useDashes + "-noCap"
+                        + (HIGH_PRECISION ? "-high" : "") + ".ser"));
 
         final long start = System.nanoTime();
 
@@ -85,7 +88,7 @@ public class SpiralTests {
         try {
             dumper.dispose();
 
-            final File file = new File("SpiralTests-" + renderer + "-fill-" + DO_FILL + "-dash-" + useDashes + ".png");
+            final File file = new File("SpiralTests-" + renderer + "-fill-" + DO_FILL + "-dash-" + useDashes + "-noCap.png");
 
             System.out.println("Writing file: " + file.getAbsolutePath());
             ImageIO.write(image, "PNG", file);
@@ -128,8 +131,12 @@ public class SpiralTests {
 
         while (r < maxRadius) {
             // circle
-            sa = twoPi / (2.0 * r);
-            sr = stepCircle / (twoPi / sa);
+            if (HIGH_PRECISION) {
+                sa = 0.1 / r;
+            } else {
+                sa = twoPi / (2.0 * r);
+            }
+            sr = (stepCircle * sa) / twoPi;
 
             for (angle = 0.0; angle <= twoPi; angle += sa) {
                 double cos = Math.cos(angle);
@@ -162,6 +169,8 @@ public class SpiralTests {
             dashes = null;
         }
 
-        return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, dashes, 0.0f);
+//        return new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10.0f, dashes, 0.0f);
+        return new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dashes, 0.0f);
+//        return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, dashes, 0.0f);
     }
 }

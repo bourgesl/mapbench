@@ -21,18 +21,14 @@ USE_SIMPLIFIER=false
 # 32x32 tiles (5)
 TILE_LOG2=5
 # enable logging
-LOG=false
+LOG=true
 
 # Marlin renderer in lib folder:
-#BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX.jar"
 BOOTCLASSPATH=
 
-# Optional Marlin java2d patch in lib folder:
-#BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX-sun-java2d.jar $BOOTCLASSPATH"
-
 # Rendering engine:
-RDR="sun.java2d.marlin.MarlinRenderingEngine"
-
+#RDR="sun.java2d.marlin.MarlinRenderingEngine"
+#RDR="sun.java2d.marlin.DMarlinRenderingEngine"
 
 # Pixel loops:
 #RLE="-Dsun.java2d.renderer.enableRLE=true -Dsun.java2d.renderer.forceRLE=false -Dsun.java2d.renderer.forceNoRLE=false -Dsun.java2d.renderer.useTileFlags=true -Dsun.java2d.renderer.useTileFlags.useHeuristics=true -Dsun.java2d.renderer.rleMinWidth=40 -Dsun.java2d.renderer.blockSize_log2=5"

@@ -37,9 +37,6 @@ public final class MapBench extends BenchTest {
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
 
-        // Prepare view transformation:
-        final AffineTransform viewAT = getViewTransform();
-
         startTests();
 
         final File[] dataFiles = getSortedFiles();
@@ -104,6 +101,9 @@ public final class MapBench extends BenchTest {
                 for (File file : dataFiles) {
                     System.out.println("Loading drawing commands from file: " + file.getAbsolutePath());
                     commands = DrawingCommands.load(file);
+
+                    // Prepare view transformation (scaling depends on image size):
+                    final AffineTransform viewAT = getViewTransform(commands);
 
                     // set view transform once:
                     commands.setAt(viewAT);
@@ -366,7 +366,7 @@ public final class MapBench extends BenchTest {
         final ThreadPoolExecutor _executor = getExecutor();
         final int _numThreads = numThreads;
 
-        commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
+        commands.prepareCommands(MapConst.doClip, MapConst.doUseWindingRule, MapConst.customWindingRule);
 
         final ArrayList<Callable<Image>> jobs = new ArrayList<Callable<Image>>(_numThreads);
         final ArrayList<Future<Image>> futures = new ArrayList<Future<Image>>(_numThreads);

@@ -72,13 +72,28 @@ public class BaseTest implements MapConst {
         return dataFiles;
     }
 
-    protected static AffineTransform getViewTransform() {
+    protected static AffineTransform getViewTransform(final DrawingCommands commands) {
         // reset:
         AffineTransform at = null;
 
-        if (MapConst.doTranslate) {
-            double translateX = MapConst.translate_X;
-            double translateY = MapConst.translate_Y;
+        if (MapConst.doImageScale) {
+            // dynamic scaling:
+            final double scaleX = MapConst.image_X / commands.width;
+            final double scaleY = MapConst.image_Y / commands.height;
+            // upper scale ratio:
+            final double scale = Math.max(scaleX, scaleY);
+            // Affine transform:
+            if (!((Math.abs(scale - 1d) < 1e-3d) && (Math.abs(scale - 1d) < 1e-3d))) {
+                final AffineTransform scaleAt = AffineTransform.getScaleInstance(scale, scale);
+                if (at != null) {
+                    scaleAt.concatenate(at);
+                }
+                at = scaleAt;
+                System.out.println("scaling[" + scale + "]");
+            }
+            // translate image center
+            final double translateX = 0.5 * (MapConst.image_X - commands.width * scale);
+            final double translateY = 0.5 * (MapConst.image_Y - commands.height * scale);
             // Affine transform:
             if (!((Math.abs(translateX) < 1e-3d) && (Math.abs(translateY) < 1e-3d))) {
                 final AffineTransform txAt = AffineTransform.getTranslateInstance(translateX, translateY);
@@ -88,23 +103,37 @@ public class BaseTest implements MapConst {
                 at = txAt;
                 System.out.println("translating[" + translateX + " x " + translateY + "]");
             }
-        }
-        if (MapConst.doScale) {
-            double scaleX = MapConst.scales_X;
-            double scaleY = MapConst.scales_Y;
-            // Affine transform:
-            if (!((Math.abs(scaleX - 1d) < 1e-3d) && (Math.abs(scaleY - 1d) < 1e-3d))) {
-                final AffineTransform scaleAt = AffineTransform.getScaleInstance(scaleX, scaleY);
-                if (at != null) {
-                    scaleAt.concatenate(at);
+        } else {
+            if (MapConst.doTranslate) {
+                final double translateX = MapConst.translate_X;
+                final double translateY = MapConst.translate_Y;
+                // Affine transform:
+                if (!((Math.abs(translateX) < 1e-3d) && (Math.abs(translateY) < 1e-3d))) {
+                    final AffineTransform txAt = AffineTransform.getTranslateInstance(translateX, translateY);
+                    if (at != null) {
+                        txAt.concatenate(at);
+                    }
+                    at = txAt;
+                    System.out.println("translating[" + translateX + " x " + translateY + "]");
                 }
-                at = scaleAt;
-                System.out.println("scaling[" + scaleX + " x " + scaleY + "]");
+            }
+            if (MapConst.doScale) {
+                final double scaleX = MapConst.scales_X;
+                final double scaleY = MapConst.scales_Y;
+                // Affine transform:
+                if (!((Math.abs(scaleX - 1d) < 1e-3d) && (Math.abs(scaleY - 1d) < 1e-3d))) {
+                    final AffineTransform scaleAt = AffineTransform.getScaleInstance(scaleX, scaleY);
+                    if (at != null) {
+                        scaleAt.concatenate(at);
+                    }
+                    at = scaleAt;
+                    System.out.println("scaling[" + scaleX + " x " + scaleY + "]");
+                }
             }
         }
         if (MapConst.doShear) {
-            double shearX = MapConst.shear_X;
-            double shearY = MapConst.shear_Y;
+            final double shearX = MapConst.shear_X;
+            final double shearY = MapConst.shear_Y;
             // Affine transform:
             if (!((Math.abs(shearX - 1d) < 1e-3d) && (Math.abs(shearY - 1d) < 1e-3d))) {
                 final AffineTransform shearAt = AffineTransform.getShearInstance(shearX, shearY);
@@ -116,7 +145,7 @@ public class BaseTest implements MapConst {
             }
         }
         if (MapConst.doRotate) {
-            double angle = MapConst.rotationAngle;
+            final double angle = MapConst.rotationAngle;
             // Affine transform:
             if (!(Math.abs(angle) < 1e-3d)) {
                 final AffineTransform rotateAt = AffineTransform.getRotateInstance(Math.toRadians(angle));

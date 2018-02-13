@@ -3,7 +3,7 @@
 source ./env.sh
 
 # get marlin settings and boot class path:
-source ./env_marlin_ojdk10.sh
+source ./env_marlin_jdk10_patch.sh
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"

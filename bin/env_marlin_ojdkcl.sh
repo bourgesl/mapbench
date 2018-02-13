@@ -25,7 +25,7 @@ TILE_W_LOG2=5 # 7 is better
 BLOCK_LOG2=5
 RLE_MIN=64
 # enable logging
-LOG=true
+LOG=false
 # enable path clipping
 CLIP=true
 

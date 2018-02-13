@@ -3,10 +3,10 @@
 source ./env.sh
 
 # get marlin settings and boot class path:
-source ./env_marlin_ojdk10.sh
+source ./env_marlin_jdk10.sh
 
 # Enable stats
-STATS=true
+STATS=false
 JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"
@@ -21,4 +21,3 @@ echo "Java version"
 java -version
 
 java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay
-

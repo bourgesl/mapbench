@@ -338,7 +338,7 @@ public final class MapDemo extends BenchTest {
         _rdrCallback.prepare(numThreads);
 
         commands.setAt(null);
-        commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
+        commands.prepareCommands(MapConst.doClip, MapConst.doUseWindingRule, MapConst.customWindingRule);
         commands.setAt(null);
 
         final ArrayList<Callable<Image>> jobs = new ArrayList<Callable<Image>>(_numThreads);

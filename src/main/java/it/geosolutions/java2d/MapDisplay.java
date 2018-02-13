@@ -7,7 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,9 +26,6 @@ public final class MapDisplay extends BaseTest {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Locale.setDefault(Locale.US);
-
-        // Prepare view transformation:
-        final AffineTransform viewAT = getViewTransform();
 
         if (!baseResultDirectory.exists()) {
             System.out.println("Invalid result directory = " + baseResultDirectory);
@@ -53,15 +49,16 @@ public final class MapDisplay extends BaseTest {
             System.out.println("Loading DrawingCommands: " + dataFile);
             DrawingCommands commands = DrawingCommands.load(dataFile);
 
+            // Prepare view transformation (scaling depends on image size):
+            final AffineTransform viewAT = getViewTransform(commands);
+
             // set view transform once:
             commands.setAt(viewAT);
 
             System.out.println("drawing[" + dataFile.getName() + "][width = " + commands.getWidth()
                     + ", height = " + commands.getHeight() + "] ...");
 
-// TODO: use property
-            commands.prepareCommands(MapConst.doClip, true, PathIterator.WIND_NON_ZERO);
-//            commands.prepareCommands(MapConst.doClip, MapConst.doUseWingRuleEvenOdd, PathIterator.WIND_EVEN_ODD);
+            commands.prepareCommands(MapConst.doClip, MapConst.doUseWindingRule, MapConst.customWindingRule);
 
             Image image = commands.prepareImage();
             Graphics2D graphics = commands.prepareGraphics(image);
@@ -115,11 +112,13 @@ public final class MapDisplay extends BaseTest {
             ImageUtils.saveImage(diffImage, resultDirectory, "diff_" + getImageFileName(dataFile));
         }
 
-        // TODO: make mode silent : do not show GUI or exit at end => regression tests...
-        final BigImageFrame frame = BigImageFrame.createAndShow(title, tstImage, refImage, diffImage, true, true);
-        frame.setInterpolation(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        if (!HEADLESS) {
+            // TODO: make mode silent : do not show GUI or exit at end => regression tests...
+            final BigImageFrame frame = BigImageFrame.createAndShow(title, tstImage, refImage, diffImage, true, true);
+            frame.setInterpolation(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        }
     }
 
     public static String getImageFileName(final File dataFile) {
@@ -142,6 +141,10 @@ public final class MapDisplay extends BaseTest {
 
         if (MapConst.useMarlinGraphics2D) {
             info.append("\nUsing MarlinGraphics2D ...");
+        }
+        
+        if (HEADLESS) {
+            info.append("\nHEADLESS: true");
         }
 
         logTestInfo(info.toString());

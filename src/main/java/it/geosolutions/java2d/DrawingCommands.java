@@ -23,13 +23,13 @@ public final class DrawingCommands implements Serializable {
     private static final long serialVersionUID = 4224204056540669349L;
 
     /* members */
-    int width;
-    int height;
-    ArrayList<DrawingCommand> commands;
+    final int width;
+    final int height;
+    final ArrayList<DrawingCommand> commands;
     // transient fields:
     transient String name = null;
     transient File file = null;
-    transient AffineTransform at;
+    transient AffineTransform at = null;
     transient boolean prepared = false;
     transient int imgWidth = 0;
     transient int imgHeight = 0;
@@ -67,11 +67,11 @@ public final class DrawingCommands implements Serializable {
     }
 
     public int getWidth() {
-        return (at != null) ? 1 + (int) (at.getScaleX() * width + 2d * at.getTranslateX()) : width;
+        return (at != null) ? (int) (at.getScaleX() * width + 2d * at.getTranslateX()) : width;
     }
 
     public int getHeight() {
-        return (at != null) ? 1 + (int) (at.getScaleY() * height + 2d * at.getTranslateY()) : height;
+        return (at != null) ? (int) (at.getScaleY() * height + 2d * at.getTranslateY()) : height;
     }
 
     public void prepareCommands(final boolean doClip, final boolean doOverrideWindingRule, final int windingRule) {
@@ -125,12 +125,17 @@ public final class DrawingCommands implements Serializable {
     }
 
     public Image prepareImage() {
-        return prepareImage(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        return prepareImage(MapConst.maxImageWidth, MapConst.maxImageHeight);
     }
 
     public Image prepareImage(int maxWidth, int maxHeight) {
         final int w = Math.min(maxWidth, getWidth());
         final int h = Math.min(maxHeight, getHeight());
+/*        
+        System.out.println("cmd: " + width + " x " + height);
+        System.out.println("max: " + maxWidth + " x " + maxHeight);
+        System.out.println("img: " + w + " x " + h);
+*/
         return ImageUtils.newFastImage(w, h);
     }
 
@@ -140,7 +145,7 @@ public final class DrawingCommands implements Serializable {
         if (MapConst.useMarlinGraphics2D && image instanceof BufferedImage) {
             try {
                 final Class mgClass = Class.forName("org.marlin.graphics.MarlinGraphics2D");
-                graphics = (Graphics2D)mgClass.getConstructor(BufferedImage.class).newInstance((BufferedImage) image);
+                graphics = (Graphics2D) mgClass.getConstructor(BufferedImage.class).newInstance((BufferedImage) image);
             } catch (Throwable th) {
                 // may fail if marlin-graphics dependency is missing
                 System.err.println("Unable to create MarlinGraphics2D (missing marlin-graphics library) !");

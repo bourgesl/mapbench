@@ -24,5 +24,8 @@ echo "Java tuning: $JAVA_TUNING"
 echo "Java version"
 $JIGSAW_HOME/bin/java -version
 
-$JIGSAW_HOME/bin/java @$JFX_XPATCH -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp ../lib/mapbench-fx-0.1.0.jar:$CLASSPATH it.geosolutions.java2d.MapDemoFX
+# FxDEMO window:
+FXDEMO="-Dfxdemo.width=600 -Dfxdemo.height=400"
+
+$JIGSAW_HOME/bin/java @$JFX_XPATCH $FXDEMO -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp ../lib/mapbench-fx-0.1.0.jar:$CLASSPATH it.geosolutions.java2d.MapDemoFX
 

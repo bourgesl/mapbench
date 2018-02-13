@@ -35,7 +35,13 @@ PROFILE=longer_shared.properties
 #PROFILE=addMargin.properties
 
 # use shared image but single thread only
-#PROFILE=shared_1T.properties
+PROFILE=shared_1T.properties
+#PROFILE=shared_1T_NZ.properties
+#PROFILE=shared_1T_dashed.properties
+#PROFILE=shared_1T_4K.properties
+PROFILE=shared_1T_4K_dashed.properties
+
+#PROFILE=shared_1T_5x_dashed.properties
 
 # JAM (shorter warmup):
 #PROFILE=shared_1T_jam.properties
@@ -109,6 +115,8 @@ JAVA_OPTS="-server"
 JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC"
 #JAVA_TUNING=" -Xms512m  -Xmx512m -XX:+UseConcMarkSweepGC"
 
+#JAVA_TUNING="$JAVA_TUNING -XX:+UnlockExperimentalVMOptions -XX:+TrustFinalNonStaticFields"
+
 # Large heap for regression tests:
 #JAVA_TUNING=" -Xms4g  -Xmx4g -XX:+UseConcMarkSweepGC"
 #JAVA_TUNING=" -Xms2048m  -Xmx2048m -XX:-TieredCompilation"
@@ -147,19 +155,20 @@ CLASSPATH=$MAP_BENCH_JAR
 #CLASSPATH=$MAP_BENCH_JAR:$MARLIN_GRAPHICS_JAR
 
 # MapBench Quality mode:
-QUALITY=false
+QUALITY=true
 CLIP=false
 SKIP_DRAW=false
+SKIP_FILL=false
 
 PRE=true
-ACCEL=false
-VOLATILE=false
+ACCEL=true
+VOLATILE=true
 FILTER=false
 
 # TRY AlphaPaint ie GradientPaint !!
 
 #JAVA_OPTS="-DMapBench.clip.small=false -DMapBench.qualityMode=$QUALITY -DMapBench.filter.size=$FILTER -DMapBench.filter.minWidth=64 $JAVA_OPTS"
-JAVA_OPTS="-DMapBench.skipDraw=$SKIP_DRAW -DMapBench.clip.small=$CLIP -DMapBench.qualityMode=$QUALITY -DMapBench.premultiplied=$PRE -DMapBench.acceleration=$ACCEL -DMapBench.volatile=$VOLATILE $JAVA_OPTS"
+JAVA_OPTS="-DMapBench.skipDraw=$SKIP_DRAW -DMapBench.skipFill=$SKIP_FILL -DMapBench.clip.small=$CLIP -DMapBench.qualityMode=$QUALITY -DMapBench.premultiplied=$PRE -DMapBench.acceleration=$ACCEL -DMapBench.volatile=$VOLATILE $JAVA_OPTS"
 
 # Reset Boot classpath:
 BOOTCLASSPATH=""

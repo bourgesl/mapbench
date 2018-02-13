@@ -2,9 +2,8 @@
 
 # This file defines the JAVA_HOME and PATH pointing to the proper JDK9:
 
-# OpenJDK9 local build
-export JAVA_HOME=/home/bourgesl/libs/graphics-rasterizer/client/build/linux-x86_64-normal-server-release/images/jdk/
-
+# Oracle JDK9 EA b181
+export JAVA_HOME=~/apps/jdk-9/
 
 echo "JAVA_HOME: $JAVA_HOME"
 

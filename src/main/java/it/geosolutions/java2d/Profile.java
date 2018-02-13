@@ -32,11 +32,17 @@ public final class Profile {
     /* create stroked shape instead of draw(shape) and then fill(strokedShape) */
     public final static String KEY_DO_CREATE_STROKED_SHAPE = "doCreateStrokedShape";
 
-    /* winding rule (even odd or non zero) */
+    /* winding rule (non zero) */
+    public final static String KEY_DO_WINDING_RULE_NON_ZERO = "doUseWingRuleNonZero";
+
+    /* winding rule (even odd) */
     public final static String KEY_DO_WINDING_RULE_EVEN_ODD = "doUseWingRuleEvenOdd";
 
     /* use dashed stroke instead of shape's stroke */
     public final static String KEY_DO_USE_DASHED_STROKE = "doUseDashedStroke";
+
+    /* dash length */
+    public final static String KEY_DASH_LENGTH = "dashLength";
 
     /* use gradient instead of shape's color */
     public final static String KEY_DO_USE_GRADIENT = "doUseGradient";
@@ -46,6 +52,10 @@ public final class Profile {
 
     /* do clipping before rendering ? */
     public final static String KEY_DO_CLIP = "doClip";
+
+    /* optional output image size (scaling up) */
+    public final static String KEY_IMAGE_X = "imageX";
+    public final static String KEY_IMAGE_Y = "imageY";
 
     /* translate affine transform */
     public final static String KEY_DO_TRANSLATE = "doTranslate";
@@ -91,11 +101,14 @@ public final class Profile {
  /* true to create stroked shape instead of draw(shape) and then fill(strokedShape) */
         defProps.setProperty(KEY_DO_CREATE_STROKED_SHAPE, "false");
 
+        /* true to use the non-zero winding rule */
+        defProps.setProperty(KEY_DO_WINDING_RULE_NON_ZERO, "false");
         /* true to use the even-odd winding rule */
         defProps.setProperty(KEY_DO_WINDING_RULE_EVEN_ODD, "false");
 
         /* true to use dashed stroke */
         defProps.setProperty(KEY_DO_USE_DASHED_STROKE, "false");
+        defProps.setProperty(KEY_DASH_LENGTH, "3.0");
 
         /* true to use gradient */
         defProps.setProperty(KEY_DO_USE_GRADIENT, "false");
@@ -105,6 +118,10 @@ public final class Profile {
 
         /* true to enable shape clipping before benchmark to render only visible (even partially) shapes */
         defProps.setProperty(KEY_DO_CLIP, "false");
+        
+        /* default image size (NaN) */
+        defProps.setProperty(KEY_IMAGE_X, "NaN");
+        defProps.setProperty(KEY_IMAGE_Y, "NaN");
 
         /* true to perform shape scaling */
         defProps.setProperty(KEY_DO_SCALE, "false");
@@ -155,6 +172,10 @@ public final class Profile {
 
     public static int getInteger(final String key) {
         return Integer.parseInt(get().getProperty(key));
+    }
+
+    public static float getFloat(final String key) {
+        return Float.parseFloat(get().getProperty(key));
     }
 
     public static double getDouble(final String key) {
@@ -248,6 +269,10 @@ public final class Profile {
         System.out.printf("# Quality mode: %s...\n", (MapConst.qualityMode) ? "QUALITY" : "DEFAULT");
         System.out.printf("# Filter shape on size: %s...\n", (MapConst.filterSize) ? "ENABLED" : "DISABLED");
 
+        System.out.printf("# skipDraw: %s \n", MapConst.skipDraw);
+        System.out.printf("# skipFill: %s \n", MapConst.skipFill);
+        System.out.printf("# useClipSmall: %s \n", MapConst.useClipSmall);
+        
         if (MapConst.filterSize) {
             System.out.printf("# Filter criteria: %s...\n", MapConst.sizeRanges.toString());
         }

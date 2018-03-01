@@ -67,7 +67,7 @@ PROFILE=shared_1T_4K_dashed.properties
 
 # set paths
 # MapBench jar:
-MAP_BENCH_JAR=../lib/mapbench-0.4.0.jar
+MAP_BENCH_JAR=../lib/mapbench-0.5.0.jar
 # Marlin Graphics jar:
 MARLIN_GRAPHICS_JAR=../lib/marlin-graphics-0.2.3.jar 
 

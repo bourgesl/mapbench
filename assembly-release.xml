@@ -20,7 +20,8 @@
       <includes>
         <include>README*</include>
         <include>License*</include>
-        <include>bin/*</include>
+        <include>bin/*.sh</include>
+        <include>bin/*.bat</include>
         <include>lib/*</include>
         <include>maps/README.txt</include>
         <include>profiles/*</include>

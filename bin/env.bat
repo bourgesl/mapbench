@@ -14,7 +14,7 @@ REM SET PROFILE=insane_1T.properties
 REM set paths
 
 REM MapBench jar:
-SET MAP_BENCH_JAR=..\lib\mapbench-0.3.jar
+SET MAP_BENCH_JAR=..\lib\mapbench-0.5.0.jar
 
 REM Marlin jar prefix
-SET MARLIN_JAR_PREFIX=..\lib\marlin-0.5A-Unsafe
+SET MARLIN_JAR_PREFIX=..\lib\marlin-0.9.1-Unsafe

@@ -19,5 +19,5 @@ BOOTCLASSPATH=""
 #SP=6
 #JAVA_OPTS="-Dsun.java2d.renderer.subPixel_log2_X=$SP -Dsun.java2d.renderer.subPixel_log2_Y=$SP $JAVA_OPTS"
 
-#JAVA_OPTS="-Dsun.java2d.renderer.log=true  $JAVA_OPTS"
+JAVA_OPTS="-Dsun.java2d.renderer.log=true  $JAVA_OPTS"
 

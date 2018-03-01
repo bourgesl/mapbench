@@ -11,7 +11,6 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +36,11 @@ import org.gui.ImageUtils;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class MapDemo extends BenchTest {
 
+    // 1800 x 900 for Full-HD
+    //  976 x 640 for XGA
+    final static int WIDTH = Integer.getInteger("demo.width", 1600);
+    final static int HEIGHT = Integer.getInteger("demo.height", 900);
+    
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
 
@@ -45,11 +49,7 @@ public final class MapDemo extends BenchTest {
             System.exit(1);
         }
 
-        final int winW = 3800;
-        final int winH = 1800;
-        // 1800 x 900 for Full-HD
-        //  976 x 640 for XGA
-        final RenderCallback rdrCallback = new RenderCallback(winW, winH);
+        final RenderCallback rdrCallback = new RenderCallback(WIDTH, HEIGHT);
 
         // Prepare view transformation:
         startTests();

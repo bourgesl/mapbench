@@ -17,10 +17,11 @@ echo "Boot CP:     %BOOTCLASSPATH%"
 echo "Java opts:   %JAVA_OPTS%"
 echo "Java tuning: %JAVA_TUNING%"
 
+
 echo "JVM path"
 REM which java
 
 echo "Java version"
 java -version
 
-java -Dmapbench.profile=%PROFILE% %BOOTCLASSPATH% %JAVA_OPTS% %JAVA_TUNING% -cp %CLASSPATH% it.geosolutions.java2d.MapBench
+java -Dmapbench.profile=%PROFILE% %BOOTCLASSPATH% %JAVA_OPTS% %JAVA_TUNING% -cp %CLASSPATH% it.geosolutions.java2d.MapDisplay

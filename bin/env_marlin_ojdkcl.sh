@@ -82,7 +82,7 @@ XR_SHM_NB=4
 XR_TILE=256
 
 #JAVA_PIPE="-Dsun.java2d.xr.deferred=$XR_DEF -Dsun.java2d.xr.tile=$XR_TILE -Dsun.java2d.xr.shm=$XR_SHM -Dsun.java2d.shmBuffers=$XR_SHM_NB" 
-JAVA_PIPE="-Dsun.java2d.opengl=true" 
+JAVA_PIPE="-Dsun.java2d.opengl=true -Dsun.java2d.opengl.bufferSize=4194304 -Dsun.java2d.opengl.flushDelay=20" 
 
 JAVA_OPTS="$JAVA_PIPE $RLE -Dsun.java2d.renderer.clip=$CLIP -Dsun.java2d.renderer.log=$LOG -Dsun.java2d.renderer.logCreateContext=false -Dsun.java2d.renderer.logUnsafeMalloc=false -Dsun.java2d.renderer.clip.curves=$CLIP_CURVES -Dsun.java2d.renderer.subPixel_log2_X=$SP_X -Dsun.java2d.renderer.subPixel_log2_Y=$SP_Y -Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.useSimplifier=$USE_SIMPLIFIER -Dsun.java2d.renderer.useRef=$REF_TYPE -Dsun.java2d.renderer.pixelWidth=$PIX_W -Dsun.java2d.renderer.pixelHeight=$PIX_H -Dsun.java2d.renderer.tileSize_log2=$TILE_H_LOG2 -Dsun.java2d.renderer.tileWidth_log2=$TILE_W_LOG2 -Dsun.java2d.renderer=$RDR $JAVA_OPTS"
 

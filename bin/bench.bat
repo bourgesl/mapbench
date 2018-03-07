@@ -3,7 +3,7 @@ CALL env.bat
 
 echo %MAP_BENCH_JAR%
 
-SET JAVA_OPTS=-server -XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal
+SET JAVA_OPTS=-server
 REM SET JAVA_OPTS=-XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal
 
 REM SET JAVA_TUNING= -Xms128m  -Xmx128m -XX:-TieredCompilation

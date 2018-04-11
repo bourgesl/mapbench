@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
@@ -40,6 +41,8 @@ public final class ImageUtils {
     private final static GraphicsConfiguration gc = (USE_GRAPHICS_ACCELERATION)
             ? GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration() : null;
 
+    private static final Toolkit DEF_TOOLKIT = Toolkit.getDefaultToolkit();
+
     private ImageUtils() {
     }
 
@@ -56,6 +59,13 @@ public final class ImageUtils {
         }
         return new BufferedImage(w, h,
                 (MapConst.premultiplied) ? BufferedImage.TYPE_INT_ARGB_PRE : BufferedImage.TYPE_INT_ARGB);
+    }
+
+    public static void sync() {
+        if (USE_GRAPHICS_ACCELERATION) {
+            // when should sync ?
+            DEF_TOOLKIT.sync();
+        }
     }
 
     public static Graphics2D createGraphics(final Image img) {

@@ -131,11 +131,11 @@ public final class DrawingCommands implements Serializable {
     public Image prepareImage(int maxWidth, int maxHeight) {
         final int w = Math.min(maxWidth, getWidth());
         final int h = Math.min(maxHeight, getHeight());
-/*        
+        /*        
         System.out.println("cmd: " + width + " x " + height);
         System.out.println("max: " + maxWidth + " x " + maxHeight);
         System.out.println("img: " + w + " x " + h);
-*/
+         */
         return ImageUtils.newFastImage(w, h);
     }
 
@@ -226,6 +226,8 @@ public final class DrawingCommands implements Serializable {
         for (int i = 0, len = _commands.size(); i < len; i++) {
             _commands.get(i).execute(graphics, _at, usePreparedTx);
         }
+
+        ImageUtils.sync();
     }
 
     public static DrawingCommands load(File input) throws IOException, ClassNotFoundException {

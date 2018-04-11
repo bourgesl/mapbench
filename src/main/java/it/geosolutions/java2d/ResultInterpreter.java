@@ -78,7 +78,7 @@ public class ResultInterpreter {
     private static int ONLY_TH = 0;
 
     private static boolean MEAN_ONLY = false;
-    
+
     private static boolean USE_TITLE = true;
 
     static {
@@ -183,7 +183,20 @@ public class ResultInterpreter {
                 "Test Name", "95% Time (ms)", 50));
         setups.put("MARLIN_091_4K_VOL_JB_RATIO", new PlotSetup("marlin-091-4K-vol-jb-gain.png", "Marlin 0.9.1 vs 0.7.3.4 - Rel Gain " + JVM,
                 "Test Name", "GAIN (%)", 5, -10, 80));
+
+        // 2018.3: 
+        JVM = "(jdk-8 b161)";
+        setups.put("MARLIN_091_HD_VOL_CMP", new PlotSetup("marlin-091-d3d-xr-time.png", "Marlin 0.9.1 with Direct3D / XRender java2D pipelines - 95% Time " + JVM,
+                "Test Name", "95% Time (ms)", 50));
+        setups.put("MARLIN_091_HD_VOL_CMP_RATIO", new PlotSetup("marlin-091-d3d-xr-gain.png", "Marlin 0.9.1 with Direct3D / XRender java2D pipelines - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 10, -250, 20));
         
+        JVM = "(jdk-11 ea)";
+        setups.put("MARLIN_092_4K_VOL_CMP", new PlotSetup("marlin-092-4k-ogl-time.png", "Marlin 0.9.2 with OpenGL / XRender java2D pipelines - 95% Time " + JVM,
+                "Test Name", "95% Time (ms)", 50));
+        setups.put("MARLIN_092_4K_VOL_CMP_RATIO", new PlotSetup("marlin-092-4k-ogl-gain.png", "Marlin 0.9.1 with OpenGL / XRender java2D pipelines - Rel Gain " + JVM,
+                "Test Name", "GAIN (%)", 10, -120, 40));
+
         CURRENT_SETUP = "MARLIN_VAR_RATIO";
     }
 
@@ -417,35 +430,78 @@ public class ResultInterpreter {
             COL_1 = green;
             COL_2 = violet;
             new ResultInterpreter("MARLIN_091_4K_RATIO", testFiles).showAndSavePlot();
+
+            // Volatile
+            USE_BAR = true;
+            GAIN_SIGN = -1.0;
+            COL_1 = green;
+            COL_2 = blue;
+            testFiles.clear();
+            testFiles.add("marlin_082_4K_dashed_vol.log");
+            testFiles.add("marlin_091_4K_dashed_vol.log");
+            new ResultInterpreter("MARLIN_091_4K_VOL", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0;
+            COL_1 = blue;
+            new ResultInterpreter("MARLIN_091_4K_VOL_RATIO", testFiles).showAndSavePlot();
+
+            // JETBRAINS JDK8
+            USE_BAR = true;
+            GAIN_SIGN = -1.0;
+            COL_1 = green;
+            COL_2 = blue;
+            testFiles.clear();
+            testFiles.add("marlin_074_4K_dashed_vol_jb_origin.log");
+            testFiles.add("marlin_091_4K_dashed_vol_jb.log");
+            new ResultInterpreter("MARLIN_091_4K_VOL_JB", testFiles).showAndSavePlot();
+
+            CURRENT_REF_INDEX = 0;
+            COL_1 = blue;
+            new ResultInterpreter("MARLIN_091_4K_VOL_JB_RATIO", testFiles).showAndSavePlot();
         }
 
-        // Volatile
         USE_BAR = true;
         GAIN_SIGN = -1.0;
-        COL_1 = green;
+        COL_1 = red;
         COL_2 = blue;
+        COL_3 = green;
+        COL_4 = violet;
+        COL_5 = turquoise;
         testFiles.clear();
-        testFiles.add("marlin_082_4K_dashed_vol.log");
-        testFiles.add("marlin_091_4K_dashed_vol.log");
-        new ResultInterpreter("MARLIN_091_4K_VOL", testFiles).showAndSavePlot();
+        testFiles.add("win_marlin_082_tile_32x32.log");
+        testFiles.add("win_marlin_091_tile_128x64.log");
+        testFiles.add("win_marlin_091_tile_32x32.log");
+        testFiles.add("win_092_4M_tile_32x32.log");
+//       testFiles.add("win_091_ogl_tile_128x64.log");
+        testFiles.add("linux_nv1070_xr_082_tile_32x32.log");
+        testFiles.add("linux_nv1070_xr_091_tile_128x64.log");
 
-        CURRENT_REF_INDEX = 0;
-        COL_1 = blue;
-        new ResultInterpreter("MARLIN_091_4K_VOL_RATIO", testFiles).showAndSavePlot();        
+        new ResultInterpreter("MARLIN_091_HD_VOL_CMP", testFiles).showAndSavePlot();
 
-        // JETBRAINS JDK8
-        USE_BAR = true;
+        CURRENT_REF_INDEX = 5;
+        new ResultInterpreter("MARLIN_091_HD_VOL_CMP_RATIO", testFiles).showAndSavePlot();
+
+        /*
+        marlin_091_4K_dashed_vol_ogl_32K.log
+        marlin_091_4K_dashed_vol_ogl_4M_20.log
+        marlin_091_4K_dashed_vol_ojdkcl_ogl_4M_20_tiles_128x64.log
+         */
+         USE_BAR = true;
         GAIN_SIGN = -1.0;
-        COL_1 = green;
+        COL_1 = red;
         COL_2 = blue;
-        testFiles.clear();
-        testFiles.add("marlin_074_4K_dashed_vol_jb_origin.log");
-        testFiles.add("marlin_091_4K_dashed_vol_jb.log");
-        new ResultInterpreter("MARLIN_091_4K_VOL_JB", testFiles).showAndSavePlot();
+        COL_3 = green;
+               testFiles.clear();
+        testFiles.add("marlin_091_4K_dashed_vol_ogl_32K.log");
+        testFiles.add("marlin_091_4K_dashed_vol_ogl_4M_20.log");
+        testFiles.add("marlin_091_4K_dashed_vol_ojdkcl_ogl_4M_20_tiles_128x64.log");
+    
+        testFiles.add("marlin_091_4K_dashed_vol_ojdkcl_xr_def_off.log");
 
-        CURRENT_REF_INDEX = 0;
-        COL_1 = blue;
-        new ResultInterpreter("MARLIN_091_4K_VOL_JB_RATIO", testFiles).showAndSavePlot();        
+        new ResultInterpreter("MARLIN_092_4K_VOL_CMP", testFiles).showAndSavePlot();
+
+        CURRENT_REF_INDEX = 3;
+        new ResultInterpreter("MARLIN_092_4K_VOL_CMP_RATIO", testFiles).showAndSavePlot();
     }
 
     /** Show command arguments help */
@@ -529,6 +585,10 @@ public class ResultInterpreter {
 
             final int idxTH = cols.get(COL_TH);
             final int idxVAL = cols.get(dataCol);
+            
+            if (refDatas != null && datas.size() != refDatas.size()) {
+                throw new IllegalStateException("incompatible test result vs ref result");
+            }
 
             final Map<Integer, Accumulator> statTH = new LinkedHashMap<Integer, Accumulator>();
 
@@ -592,6 +652,7 @@ public class ResultInterpreter {
             // Extract TSV part:
             final String dataTSV = extractTSVBlock(filepath);
             if (false) {
+                System.out.println("filepath: " + filepath);
                 System.out.println("TSV:\n" + dataTSV);
             }
 
@@ -610,7 +671,7 @@ public class ResultInterpreter {
 
             final int nCols = columns.size();
 //            System.out.println("nCols:\n" + nCols);
-            if (nCols < 1) {
+            if (nCols <= 3) {
                 throw new IllegalStateException("empty cols !");
             }
 

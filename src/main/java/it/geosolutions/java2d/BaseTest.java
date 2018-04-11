@@ -103,7 +103,13 @@ public class BaseTest implements MapConst {
                 at = txAt;
                 System.out.println("translating[" + translateX + " x " + translateY + "]");
             }
-        } else {
+        }
+        
+        return getProfileViewTransform(at);
+    }
+    
+    protected static AffineTransform getProfileViewTransform(AffineTransform at) {
+        if (!MapConst.doImageScale) {
             if (MapConst.doTranslate) {
                 final double translateX = MapConst.translate_X;
                 final double translateY = MapConst.translate_Y;
@@ -199,6 +205,7 @@ public class BaseTest implements MapConst {
     static void cleanup() {
         final long freeBefore = Runtime.getRuntime().freeMemory();
         // Perform GC:
+        System.runFinalization();
         System.gc();
         System.gc();
         System.gc();

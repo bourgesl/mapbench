@@ -40,7 +40,7 @@ public final class MapDemo extends BenchTest {
     //  976 x 640 for XGA
     final static int WIDTH = Integer.getInteger("demo.width", 1600);
     final static int HEIGHT = Integer.getInteger("demo.height", 900);
-    
+
     public static void main(String[] args) throws Exception {
         Locale.setDefault(Locale.US);
 
@@ -49,6 +49,8 @@ public final class MapDemo extends BenchTest {
             System.exit(1);
         }
 
+        System.out.println("# Window size = " + WIDTH + " x " + HEIGHT);
+        
         final RenderCallback rdrCallback = new RenderCallback(WIDTH, HEIGHT);
 
         // Prepare view transformation:
@@ -411,12 +413,17 @@ public final class MapDemo extends BenchTest {
             double average;
 
             // Prepare the animation affine transform:
+            AffineTransform animAt = getProfileViewTransform(null);
+            if (animAt == null) {
+                animAt = new AffineTransform();
+            }
+            // fix transform combinations:
             final double cx = (_commands.width / 2.0);
             final double cy = (_commands.height / 2.0);
-            final double hx = Math.max(0, cx - _rdrCallback.blockWidth / 2.0);
-            final double hy = Math.max(0, cy - _rdrCallback.blockHeight / 2.0);
 
-            final AffineTransform animAt = new AffineTransform();
+            final double hx = cx - _rdrCallback.blockWidth / (animAt.getScaleX() * 2.0);
+            final double hy = cy - _rdrCallback.blockHeight / (animAt.getScaleY() * 2.0);
+
             animAt.translate(-hx, -hy);
 
             /* benchmark loop */

@@ -63,7 +63,7 @@ public final class DrawingCommand implements Serializable {
 
             g.setPaint(Color.BLACK);
             g.setStroke(new BasicStroke(3f));
-            g.draw(new Line2D.Double(-3, -3, size+3, size+3));
+            g.draw(new Line2D.Double(-3, -3, size + 3, size + 3));
 
         } finally {
             g.dispose();

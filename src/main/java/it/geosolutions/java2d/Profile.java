@@ -84,7 +84,10 @@ public final class Profile {
     public final static String KEY_MIN_DURATION = "minDuration";
 
     public final static String KEY_WARMUP_LOOPS_MIN = "warmupLoopsMin";
+    public final static String KEY_WARMUP_LOOPS_MAX = "warmupLoopsMax";
 
+    public final static String KEY_WARMUP_LOOPS_MIN_TEST = "warmupLoopsMinTest";
+    
     public final static String KEY_ITERATION = "iteration";
 
     /** result directory */
@@ -160,6 +163,8 @@ public final class Profile {
         defProps.setProperty(KEY_MIN_DURATION, "5000.0");
 
         defProps.setProperty(KEY_WARMUP_LOOPS_MIN, "80");
+        defProps.setProperty(KEY_WARMUP_LOOPS_MAX, "160"); // 2x
+        defProps.setProperty(KEY_WARMUP_LOOPS_MIN_TEST, "10");
     }
 
     public static String getProfileName() {

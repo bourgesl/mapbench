@@ -33,10 +33,10 @@ public class BenchTest extends BaseTest {
 
     // before 200/200
     static final int WARMUP_LOOPS_MIN = Profile.getInteger(Profile.KEY_WARMUP_LOOPS_MIN);
-    static final int WARMUP_LOOPS_MAX = 2 * WARMUP_LOOPS_MIN;
+    static final int WARMUP_LOOPS_MAX = Math.max(2 * WARMUP_LOOPS_MIN, Profile.getInteger(Profile.KEY_WARMUP_LOOPS_MAX));
 
     static final int WARMUP_BEFORE_TEST_THREADS = 2;
-    static final int WARMUP_BEFORE_TEST_MIN_LOOPS = Math.min(10, WARMUP_LOOPS_MIN);
+    static final int WARMUP_BEFORE_TEST_MIN_LOOPS = Math.min(Profile.getInteger(Profile.KEY_WARMUP_LOOPS_MIN_TEST), WARMUP_LOOPS_MIN);
     static final int WARMUP_BEFORE_TEST_MIN_DURATION = 3000;
 
     static final int CALIBRATE_LOOPS = 3000;

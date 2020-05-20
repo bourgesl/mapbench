@@ -25,6 +25,9 @@ public interface MapConst {
     // TODO: use profile property ?
     /* flag indicating to use BufferedImage.TYPE_INT_ARGB_PRE or BufferedImage.TYPE_INT_ARGB */
     final static boolean premultiplied = Boolean.getBoolean("MapBench.premultiplied"); // false by default
+        
+    /* flag indicating to use BufferedImage.TYPE_4BYTE_ABGR_PRE or BufferedImage.TYPE_4BYTE_ABGR */
+    final static boolean useBytes = Boolean.getBoolean("MapBench.4bytes"); // false by default
 
     final static boolean useAcceleration = Boolean.getBoolean("MapBench.acceleration"); // false by default
 

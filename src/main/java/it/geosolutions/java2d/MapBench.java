@@ -185,8 +185,7 @@ public final class MapBench extends BenchTest {
                             System.out.println(threads + " threads and " + testLoops + " loops per thread, time: " + res.totalTime + " ms");
                             sRes = res.toString();
 
-                            // TODO: use scales to compute final score ie weighted mean !
-                            
+                            // use scales to compute final score ie weighted mean:
                             nTest++;
                             totalMed += res.getScaledNsPerOpMed();
                             totalPct95 += res.getScaledNsPerOpPct95();

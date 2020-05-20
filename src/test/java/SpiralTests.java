@@ -44,6 +44,7 @@ public class SpiralTests {
     final static boolean DO_FILL = false;
 
     final static boolean HIGH_PRECISION = true;
+    final static boolean SUBDIVIDE_PATH = false;
 
     public static void main(String[] args) {
         final boolean useDashes = false;
@@ -75,7 +76,9 @@ public class SpiralTests {
 
         ShapeDumpingGraphics2D dumper = new ShapeDumpingGraphics2D(g2d, size, size,
                 new File("spiralTest-fill-" + DO_FILL + "-dash-" + useDashes + "-noCap"
-                        + (HIGH_PRECISION ? "-high" : "") + ".ser"));
+                        + (HIGH_PRECISION ? "-high" : "") 
+                        + (SUBDIVIDE_PATH ? "-subd" : "") 
+                        + ".ser"));
 
         final long start = System.nanoTime();
 
@@ -139,13 +142,17 @@ public class SpiralTests {
             sr = (stepCircle * sa) / twoPi;
 
             for (angle = 0.0; angle <= twoPi; angle += sa) {
-                double cos = Math.cos(angle);
-                double sin = Math.sin(angle);
-
-                path.lineTo(r * cos, r * sin);
+                double px = r * Math.cos(angle);
+                double py = r * Math.sin(angle);
+                path.lineTo(px, py);
 
                 r += sr;
                 n++;
+                
+                if (SUBDIVIDE_PATH && (n % 10 == 0)) {
+                    // subdivide:
+                    path.moveTo(px, py);
+                }
             }
         }
 

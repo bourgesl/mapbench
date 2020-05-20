@@ -12,7 +12,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TreeSet;
 import org.gui.ImageUtils;
-import static org.marlin.pisces.MarlinUtils.logInfo;
 import sun.security.action.GetPropertyAction;
 
 /**
@@ -253,7 +252,9 @@ public final class Profile {
     public static double getScale(final String key) {
         if (scales != null) {
             final String scale = scales.getProperty(key);
-            if (scale != null) {
+            if (scale == null) {
+                System.out.println("No scaling factor found for test ["+key+"], use scale = 1.0");
+            } else {
                 // inverse scale to 100.0
                 return 100.0 / Double.parseDouble(scale);
             }
@@ -348,12 +349,12 @@ public final class Profile {
             try {
                 value = Double.parseDouble(property);
             } catch (NumberFormatException nfe) {
-                logInfo("Invalid value for " + key + " = " + property + " !");
+                System.out.println("Invalid value for " + key + " = " + property + " !");
             }
         }
         // check for invalid values
         if (value < min || value > max) {
-            logInfo("Invalid value for " + key + " = " + value
+            System.out.println("Invalid value for " + key + " = " + value
                     + "; expect value in range[" + min + ", " + max + "] !");
             value = def;
         }

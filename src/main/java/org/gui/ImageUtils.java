@@ -9,6 +9,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
@@ -38,17 +39,26 @@ public final class ImageUtils {
 
     public static boolean SHOW_DIFF_INFO = true;
 
+    private static Toolkit DEF_TOOLKIT = null;
+
     private final static GraphicsConfiguration gc = (USE_GRAPHICS_ACCELERATION)
             ? GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration() : null;
 
-    private static final Toolkit DEF_TOOLKIT = Toolkit.getDefaultToolkit();
+    static {
+        try {
+            DEF_TOOLKIT = Toolkit.getDefaultToolkit();
+        } catch (IllegalArgumentException iae) {
+            System.err.println("Unable to load awt toolkit");
+        }
+    }
 
     private ImageUtils() {
     }
 
     public static Image newFastImage(final int w, final int h) {
         if (USE_GRAPHICS_ACCELERATION) {
-            return (USE_VOLATILE) ? gc.createCompatibleVolatileImage(w, h) : gc.createCompatibleImage(w, h);
+            return (USE_VOLATILE) ? gc.createCompatibleVolatileImage(w, h, Transparency.TRANSLUCENT)
+                    : gc.createCompatibleImage(w, h, Transparency.TRANSLUCENT);
         }
         return newImage(w, h);
     }
@@ -58,11 +68,13 @@ public final class ImageUtils {
             return gc.createCompatibleImage(w, h);
         }
         return new BufferedImage(w, h,
-                (MapConst.premultiplied) ? BufferedImage.TYPE_INT_ARGB_PRE : BufferedImage.TYPE_INT_ARGB);
+                (MapConst.useBytes) ? ((MapConst.premultiplied) ? BufferedImage.TYPE_4BYTE_ABGR_PRE : BufferedImage.TYPE_4BYTE_ABGR)
+                        : ((MapConst.premultiplied) ? BufferedImage.TYPE_INT_ARGB_PRE : BufferedImage.TYPE_INT_ARGB)
+        );
     }
 
     public static void sync() {
-        if (USE_GRAPHICS_ACCELERATION) {
+        if (USE_GRAPHICS_ACCELERATION && DEF_TOOLKIT != null) {
             // when should sync ?
             DEF_TOOLKIT.sync();
         }
@@ -126,7 +138,7 @@ public final class ImageUtils {
             final File imgFile = new File(resDirectory, imageFileName);
 
             if (!imgFile.exists() || imgFile.canWrite()) {
-                System.out.println("saveImage: saving image as PNG [" + imgFile + "]...");
+                System.out.println("saving image as PNG [" + imgFile + "]...");
                 imgFile.delete();
 
                 // disable cache in temporary files:

@@ -190,12 +190,19 @@ public class ResultInterpreter {
                 "Test Name", "95% Time (ms)", 50));
         setups.put("MARLIN_091_HD_VOL_CMP_RATIO", new PlotSetup("marlin-091-d3d-xr-gain.png", "Marlin 0.9.1 with Direct3D / XRender java2D pipelines - Rel Gain " + JVM,
                 "Test Name", "GAIN (%)", 10, -250, 20));
-        
+
         JVM = "(jdk-11 ea)";
         setups.put("MARLIN_092_4K_VOL_CMP", new PlotSetup("marlin-092-4k-ogl-time.png", "Marlin 0.9.2 with OpenGL / XRender java2D pipelines - 95% Time " + JVM,
                 "Test Name", "95% Time (ms)", 50));
         setups.put("MARLIN_092_4K_VOL_CMP_RATIO", new PlotSetup("marlin-092-4k-ogl-gain.png", "Marlin 0.9.1 with OpenGL / XRender java2D pipelines - Rel Gain " + JVM,
                 "Test Name", "GAIN (%)", 10, -120, 40));
+
+        setups.put("M094", new PlotSetup("compare-marlin-094.png", "Marlin 0.9.3 vs 0.9.4 - Time " + JVM,
+                "Test Name - Number of threads", "95% Time (ms)", 100, 0, 2500));
+        setups.put("M094_SMALL", new PlotSetup("compare-marlin-094_small.png", "Marlin 0.9.3 vs 0.9.4 - Time " + JVM,
+                "Test Name - Number of threads", "95% Time (ms)", 25, 0, 500));
+        setups.put("M094_RATIO", new PlotSetup("diff-marlin-094-gain.png", "Marlin 0.9.3 vs 0.9.4 - Rel. Gain " + JVM,
+                "Test Name - Number of threads", "GAIN (%)", 5));
 
         CURRENT_SETUP = "MARLIN_VAR_RATIO";
     }
@@ -239,6 +246,27 @@ public class ResultInterpreter {
         final Color turquoise = new Color(99, 187, 238);
 
         final List<String> testFiles = new ArrayList<String>();
+
+        if (true) {
+            ONLY_TH = 0;
+            USE_BAR = true;
+            COL_1 = blue; // marlin 0.9.3
+            COL_2 = green; // marlin 0.9.4
+
+            testFiles.clear();
+            testFiles.add("mar093_polyLine.log");
+            testFiles.add("mar094_polyLine_v1905_final.log");
+            new ResultInterpreter("M094", testFiles).showAndSavePlot();
+            
+            new ResultInterpreter("M094_SMALL", testFiles).showAndSavePlot();
+
+            GAIN_SIGN = -1.0;
+
+            CURRENT_REF_INDEX = 0;
+            new ResultInterpreter("M094_RATIO", testFiles).showAndSavePlot();
+
+            return;
+        }
 
         if (false) {
 
@@ -486,16 +514,16 @@ public class ResultInterpreter {
         marlin_091_4K_dashed_vol_ogl_4M_20.log
         marlin_091_4K_dashed_vol_ojdkcl_ogl_4M_20_tiles_128x64.log
          */
-         USE_BAR = true;
+        USE_BAR = true;
         GAIN_SIGN = -1.0;
         COL_1 = red;
         COL_2 = blue;
         COL_3 = green;
-               testFiles.clear();
+        testFiles.clear();
         testFiles.add("marlin_091_4K_dashed_vol_ogl_32K.log");
         testFiles.add("marlin_091_4K_dashed_vol_ogl_4M_20.log");
         testFiles.add("marlin_091_4K_dashed_vol_ojdkcl_ogl_4M_20_tiles_128x64.log");
-    
+
         testFiles.add("marlin_091_4K_dashed_vol_ojdkcl_xr_def_off.log");
 
         new ResultInterpreter("MARLIN_092_4K_VOL_CMP", testFiles).showAndSavePlot();
@@ -585,7 +613,7 @@ public class ResultInterpreter {
 
             final int idxTH = cols.get(COL_TH);
             final int idxVAL = cols.get(dataCol);
-            
+
             if (refDatas != null && datas.size() != refDatas.size()) {
                 throw new IllegalStateException("incompatible test result vs ref result");
             }

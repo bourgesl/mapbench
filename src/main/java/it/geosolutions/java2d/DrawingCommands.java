@@ -136,7 +136,9 @@ public final class DrawingCommands implements Serializable {
         System.out.println("max: " + maxWidth + " x " + maxHeight);
         System.out.println("img: " + w + " x " + h);
          */
-        return ImageUtils.newFastImage(w, h);
+        final Image image = ImageUtils.newFastImage(w, h);
+        // System.out.println("Image:" + image);
+        return image;
     }
 
     @SuppressWarnings("unchecked")

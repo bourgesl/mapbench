@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -20,9 +21,12 @@ import javax.swing.JFrame;
 import org.gui.BigImageFrame;
 import org.gui.ImageUtils;
 import org.gui.ImageUtils.DiffContext;
+import org.jfree.svg.SVGGraphics2D;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class MapDisplay extends BaseTest {
+
+    private final static boolean EXPORT_SVG = true;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Locale.setDefault(Locale.US);
@@ -60,12 +64,14 @@ public final class MapDisplay extends BaseTest {
 
             commands.prepareCommands(MapConst.doClip, MapConst.doUseWindingRule, MapConst.customWindingRule);
 
-            Image image = commands.prepareImage();
-            Graphics2D graphics = commands.prepareGraphics(image);
+            final Image image = commands.prepareImage();
+            final Graphics2D graphics = commands.prepareGraphics(image);
 
             if (doGCBeforeTest) {
                 cleanup();
             }
+
+            String svgDocument = null;
 
             try {
                 time = System.nanoTime();
@@ -74,20 +80,55 @@ public final class MapDisplay extends BaseTest {
 
                 time = System.nanoTime() - time;
                 System.out.println("duration[" + dataFile.getName() + "] = " + (time / 1e6d) + " ms.");
+
+                if (EXPORT_SVG) {
+                    // Prepare SVG export:
+                    final int w = image.getWidth(null);
+                    final int h = image.getHeight(null);
+
+                    final SVGGraphics2D svg2d = new SVGGraphics2D(w, h);
+
+                    time = System.nanoTime();
+
+                    commands.execute(svg2d, null);
+
+                    time = System.nanoTime() - time;
+                    System.out.println("duration[" + dataFile.getName() + "] = " + (time / 1e6d) + " ms.");
+                    svgDocument = svg2d.getSVGDocument();
+                }
             } catch (Throwable th) {
                 System.out.println("Test failure :");
                 th.printStackTrace(System.out);
+            } finally {
+                graphics.dispose();
+                commands.dispose();
             }
-
-            graphics.dispose();
-            commands.dispose();
 
             // Marlin stats:
             dumpRendererStats();
 
+            final String imageFileName = getImageFileName(dataFile);
+
+            // Save SVG:
+            if (svgDocument != null) {
+                final File svgFile = new File(resultDirectory, imageFileName.replace("png", "svg"));
+                System.out.println("saving image as SVG [" + svgFile + "]...");
+
+                final Writer out = new BufferedWriter(new FileWriter(svgFile));
+                try {
+                    out.write(svgDocument);
+                } catch (IOException ioe) {
+                    System.out.println("IO failure :");
+                    ioe.printStackTrace(System.out);
+                } finally {
+                    out.close();
+                }
+            }
+
+            // Save PNG:
             final BufferedImage bImg = ImageUtils.convert(image);
 
-            ImageUtils.saveImage(bImg, resultDirectory, getImageFileName(dataFile));
+            ImageUtils.saveImage(bImg, resultDirectory, imageFileName);
 
             showImage(dataFile.getName(), dataFile, bImg, false, globalCtx);
         }
@@ -142,7 +183,7 @@ public final class MapDisplay extends BaseTest {
         if (MapConst.useMarlinGraphics2D) {
             info.append("\nUsing MarlinGraphics2D ...");
         }
-        
+
         if (HEADLESS) {
             info.append("\nHEADLESS: true");
         }

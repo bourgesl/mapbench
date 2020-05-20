@@ -2,7 +2,7 @@
 
 source env_openjdk9.sh
 
-PATCH="--patch-module java.desktop=../lib/marlin-0.9.1-Unsafe-OpenJDK9.jar"
+PATCH="--patch-module java.desktop=../lib/marlin-0.9.4-Unsafe-OpenJDK9.jar"
 
 # should use Marlin within open jdk 9:
 # Marlin jar prefix:
@@ -59,7 +59,7 @@ BOOTCLASSPATH=
 # 0.7.5 defaults: 1.0/0.4/0.5
 
 # New settings after 0.9.0:
-JAVA_OPTS="-Dsun.java2d.renderer.cubic_dec_d2=2.5 -Dsun.java2d.renderer.cubic_inc_d1=0.5 -Dsun.java2d.renderer.quad_dec_d2=1.0 $JAVA_OPTS"
+#JAVA_OPTS="-Dsun.java2d.renderer.cubic_dec_d2=2.5 -Dsun.java2d.renderer.cubic_inc_d1=0.5 -Dsun.java2d.renderer.quad_dec_d2=1.0 $JAVA_OPTS"
 #JAVA_OPTS="-Dsun.java2d.renderer.cubic_dec_d2=1.0 -Dsun.java2d.renderer.cubic_inc_d1=0.2 -Dsun.java2d.renderer.quad_dec_d2=0.5 $JAVA_OPTS"
 
 # highest quality (1px error):

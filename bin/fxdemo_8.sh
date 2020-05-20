@@ -2,12 +2,15 @@
 # get paths and jvm settings:
 source ./env.sh
 
-VERBOSE=false
+VERBOSE=true
 
 MARLIN_OPTS="-Dprism.marlin=true -Dprism.marlin.double=true -Dprism.marlin.log=true -Dprism.marlin.doChecks=false -Dprism.marlin.doStats=false"
 PRISM_OPTS="-Dprism.order=es2,sw -Dprism.nativepisces=false -Dprism.verbose=$VERBOSE -Djavafx.animation.fullspeed=true"
 
-BOOTCLASSPATH=-Xbootclasspath/p:../lib/marlinfx-0.8.0-Unsafe.jar
+BOOTCLASSPATH=-Xbootclasspath/p:../lib/marlinfx-0.9.3-Unsafe.jar
+
+#MARLIN_OPTS="-Dprism.marlin.clip.subdivider.minLength=0.01 $MARLIN_OPTS"
+MARLIN_OPTS="-Dprism.marlin.profile=speed $MARLIN_OPTS"
 
 # Enable stats
 CHECK=false
@@ -23,5 +26,8 @@ echo "Java tuning: $JAVA_TUNING"
 echo "Java version"
 java -version
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp ../lib/mapbench-fx-0.1.0.jar:$CLASSPATH it.geosolutions.java2d.MapDemoFX
+# FxDEMO window:
+FXDEMO="-Dfxdemo.width=800 -Dfxdemo.height=600"
+
+java $FXDEMO -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp ../lib/mapbench-fx-0.1.0.jar:$CLASSPATH it.geosolutions.java2d.MapDemoFX
 

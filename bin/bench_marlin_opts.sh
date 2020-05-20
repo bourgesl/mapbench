@@ -41,9 +41,9 @@ MARLIN_OPTS="-Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_1.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_2.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_3.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_1.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_2.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_3.log
 
 
 # Optional Marlin java2d patch in lib folder:
@@ -52,9 +52,9 @@ BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX-sun-java2d.jar -Xbootclasspa
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_1.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_2.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_3.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_1.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_2.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_3.log
 
 
 USE_SIMPLIFIER=true
@@ -65,9 +65,9 @@ MARLIN_OPTS="-Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_Simp_1.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_Simp_2.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_Simp_3.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_Simp_1.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_Simp_2.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_Simp_3.log
 
 USE_SIMPLIFIER=false
 
@@ -80,9 +80,9 @@ MARLIN_OPTS="-Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-#java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile6_1.log
-#java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile6_2.log
-#java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile6_3.log
+#taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile6_1.log
+#taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile6_2.log
+#taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile6_3.log
 
 TILE_LOG2=5
 
@@ -93,9 +93,9 @@ MARLIN_OPTS="-Dsun.java2d.renderer.useFastMath=false -Dsun.java2d.renderer.useTh
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_1.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_2.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_3.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_1.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_2.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_TL_Tile_noFM_3.log
 
 
 # ThreadLocal (TL) or ConcurrentLinkedQueue (CLQ) storage for renderer contexts:
@@ -110,12 +110,9 @@ MARLIN_OPTS="-Dsun.java2d.renderer.useThreadLocal=$USE_TL -Dsun.java2d.renderer.
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-echo "java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench"
-
-
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_1.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_2.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_3.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_1.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_2.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_3.log
 
 
 # Optional Marlin java2d patch in lib folder:
@@ -124,8 +121,8 @@ BOOTCLASSPATH="-Xbootclasspath/p:$MARLIN_JAR_PREFIX-sun-java2d.jar -Xbootclasspa
 echo "Boot CP:     $BOOTCLASSPATH"
 echo "Java opts:   $MARLIN_OPTS"
 
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_Tile_1.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_Tile_2.log
-java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_Tile_3.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_Tile_1.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_Tile_2.log
+taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $MARLIN_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> marlin_CLQ_Tile_3.log
 
 

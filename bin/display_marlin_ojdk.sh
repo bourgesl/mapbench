@@ -7,7 +7,7 @@ source ./env_marlin_ojdk.sh
 
 # Enable stats
 CHECK=false
-STATS=true
+STATS=false
 MONITOR=false
 JAVA_OPTS="-Dsun.java2d.renderer.doChecks=$CHECK -Dsun.java2d.renderer.doMonitors=$MONITOR -Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
 

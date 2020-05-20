@@ -6,7 +6,7 @@ source ./env.sh
 source ./env_marlin_ojdkcl.sh
 
 # Enable stats
-STATS=true
+STATS=false
 JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"

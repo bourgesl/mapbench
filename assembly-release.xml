@@ -25,11 +25,9 @@
         <include>lib/*</include>
         <include>maps/README.txt</include>
         <include>profiles/*</include>
-        <include>results/**</include>
       </includes>
       <excludes>
-        <exclude>results/ref/**</exclude>
-        <exclude>results/test/**</exclude>
+        <exclude>results/**</exclude>
       </excludes>
     </fileSet>
     <fileSet>

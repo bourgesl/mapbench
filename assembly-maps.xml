@@ -14,7 +14,10 @@
         <include>maps/discarded/*</include>
       </includes>
       <excludes>
-        <exclude>maps/discarded/dc*</exclude>
+        <exclude>maps/disabled/*</exclude>
+        <exclude>maps/insane/*</exclude>
+        <exclude>maps/skip/*</exclude>
+        <exclude>maps/tmp/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>

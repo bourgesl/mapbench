@@ -5,12 +5,13 @@ source ./env.sh
 # Oracle JDK9 b181
 source ~/test-jdk9.sh
 
-PATCH="--patch-module javafx.graphics=../lib/marlinfx-0.8.2-Unsafe-OpenJDK9.jar"
+#PATCH="--patch-module javafx.graphics=../lib/marlinfx-0.8.2-Unsafe-OpenJDK9.jar"
+PATCH="--patch-module javafx.graphics=../lib/marlinfx-0.9.2-Unsafe-OpenJDK9.jar --add-modules=jdk.unsupported,java.logging --add-reads=javafx.graphics=jdk.unsupported,java.logging"
 
 VERBOSE=true
 
 MARLIN_OPTS="-Dprism.marlinrasterizer=true -Dprism.marlin.double=true -Dprism.marlin.log=true -Dprism.marlin.doChecks=false -Dprism.marlin.doStats=false"
-PRISM_OPTS="-Dprism.order=es2,sw -Dprism.nativepisces=false -Dprism.verbose=$VERBOSE -Djavafx.animation.fullspeed=true"
+PRISM_OPTS="-Dprism.order=es2 -Dprism.verbose=$VERBOSE -Djavafx.animation.fullspeed=true"
 
 # Enable stats
 CHECK=false
@@ -27,7 +28,7 @@ echo "Java version"
 java -version
 
 # FxDEMO window:
-FXDEMO="-Dfxdemo.width=600 -Dfxdemo.height=400"
+FXDEMO="-Dfxdemo.width=1000 -Dfxdemo.height=800"
 
 java $PATCH $FXDEMO -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp ../lib/mapbench-fx-0.1.0.jar:$CLASSPATH it.geosolutions.java2d.MapDemoFX
 

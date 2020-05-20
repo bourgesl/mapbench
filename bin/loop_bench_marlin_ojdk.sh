@@ -34,10 +34,8 @@ for s in 512 1024 2048 4096; do
 
         echo "Bench: SIZE=$SIZE EDGES=$EDGES"
         OUT="marlin_ojdk_size-$SIZE-edges-$EDGES.log"
-	    java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> $OUT
+	taskset -c $CPU_CORE_IDS java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench &> $OUT
         tail -n 4 $OUT
-
-#        java -Dsun.java2d.renderer.log=true -Dsun.java2d.renderer.doStats=true -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDisplay
     done
 done
 

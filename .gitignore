@@ -6,6 +6,9 @@ nb*
 /tests/
 /maps/discarded/
 /maps/insane/
+/maps/disabled/
+/maps/skip/
+/maps/tmp/
 /results/ref/**
 /results/test/**
 /results/test/insane/

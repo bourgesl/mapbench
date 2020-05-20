@@ -36,12 +36,18 @@ PROFILE=longer_shared.properties
 
 # use shared image but single thread only
 PROFILE=shared_1T.properties
+
+# with gamma
+#PROFILE=shared_1T_gamma.properties
+
 #PROFILE=shared_1T_NZ.properties
 #PROFILE=shared_1T_dashed.properties
 #PROFILE=shared_1T_4K.properties
-PROFILE=shared_1T_4K_dashed.properties
+#PROFILE=shared_1T_4K_dashed.properties
 
+# zoom tests
 #PROFILE=shared_1T_5x_dashed.properties
+#PROFILE=shared_1T_zoom_out.properties
 
 # JAM (shorter warmup):
 #PROFILE=shared_1T_jam.properties
@@ -65,24 +71,36 @@ PROFILE=shared_1T_4K_dashed.properties
 # use shared image and only 1 thread for insane maps:
 #PROFILE=insane_1T.properties
 
+# Check profile / maps (very quick test)
+#PROFILE=check_shared_1T.properties
+
+
 # set paths
 # MapBench jar:
-MAP_BENCH_JAR=../lib/mapbench-0.5.0.jar
+MAP_BENCH_JAR=../lib/mapbench-0.5.0.jar:../lib/org.jfree.svg-4.1.jar
 # Marlin Graphics jar:
-MARLIN_GRAPHICS_JAR=../lib/marlin-graphics-0.2.3.jar 
+MARLIN_GRAPHICS_JAR=../lib/marlin-graphics-0.3.0.jar 
 
 
 # server jvm
 JAVA_OPTS="-server"
+#JAVA_OPTS="-server -Xbatch -XX:ObjectAlignmentInBytes=32"
+
 #JAVA_OPTS=""
 #JAVA_OPTS="-XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal"
 #JAVA_OPTS="-server -XX:FreqInlineSize=800" # -XX:+PrintCompilation"
 
 #JAVA_OPTS="-server -XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:StartFlightRecording=name=mapbench,filename=/home/marlin/mapbench/bin/mapbench.jfr,dumponexit=true -XX:FlightRecorderOptions=defaultrecording=true"
 
+# MaxInlineLevel: 
+#JAVA_OPTS="-server -XX:MaxInlineLevel=15"
+
 # GRAAL:
 #JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler"
-#-XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation"
+# -Dgraal.AlwaysInlineIntrinsics=true"
+# -XX:+PrintCompilation -XX:+JVMCIPrintProperties
+# -XX:+BootstrapJVMCI -XX:-TieredCompilation
+# -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation"
 
 
 # copyAARowNoRLE_WithTileFlags
@@ -106,53 +124,63 @@ JAVA_OPTS="-server"
 
 #JAVA_TUNING=" -Xms256m  -Xmx256m"
 #JAVA_TUNING=" -Xms256m  -Xmx256m -XX:-TieredCompilation"
-#JAVA_TUNING=" -Xms128m  -Xmx128m -XX:+AggressiveOpts -XX:CompileThreshold=1000"
 
 #JAVA_TUNING=" -Xms1g  -Xmx1g -XX:+UseConcMarkSweepGC"
 #JAVA_TUNING=" -Xms2g  -Xmx2g"
 
+
 # Normal settings:
-JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC"
-#JAVA_TUNING=" -Xms512m  -Xmx512m -XX:+UseConcMarkSweepGC"
+# previous default:
+#JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC"
+# better 2020:
+JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+#JAVA_TUNING=" -Xms512m  -Xmx512m -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+# -XX:+UseLargePages
+
+# TEST GC:
+#JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseParallelGC"
+
+# JDK14+ removed CMS GC so switch to ParallelGC ?
+#JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseParallelGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+#JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseParallelGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -Dgraal.AlwaysInlineIntrinsics=true -XX:+BootstrapJVMCI"
 
 #JAVA_TUNING="$JAVA_TUNING -XX:+UnlockExperimentalVMOptions -XX:+TrustFinalNonStaticFields"
 
+
 # Large heap for regression tests:
-#JAVA_TUNING=" -Xms4g  -Xmx4g -XX:+UseConcMarkSweepGC"
+#JAVA_TUNING=" -Xms4g  -Xmx16g -XX:+UseConcMarkSweepGC"
 #JAVA_TUNING=" -Xms2048m  -Xmx2048m -XX:-TieredCompilation"
 
-# -ea -XX:+AggressiveOpts"
-#JAVA_TUNING=" -Xms2048m  -Xmx2048m -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:InitiatingHeapOccupancyPercent=60"
-# -verbose:gc"
 
 #http://blog.mgm-tp.com/2014/04/controlling-gc-pauses-with-g1-collector/
-#JAVA_TUNING=" -Xms2g -Xmx2g -XX:+UseG1GC -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxGCPauseMillis=1000"
+JAVA_TUNING=" -Xms2g -Xmx2g -XX:+UseG1GC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+# -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxGCPauseMillis=100
 
-# "-XX:+UseParNewGC -XX:+CMSParallelRemarkEnabled"
-#JAVA_TUNING=" -Xms2048m  -Xmx2048m -ea -XX:+AggressiveOpts -XX:+UseConcMarkSweepGC"
-
-
-# From https://engineering.linkedin.com/garbage-collection/garbage-collection-optimization-high-throughput-and-low-latency-java-applications
-# // JVM sizing options
-# -server -Xms40g -Xmx40g -XX:MaxDirectMemorySize=4096m -XX:PermSize=256m -XX:MaxPermSize=256m   
-# // Young generation options
-# -XX:NewSize=6g -XX:MaxNewSize=6g -XX:+UseParNewGC -XX:MaxTenuringThreshold=2 -XX:SurvivorRatio=8 -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768
-# // Old generation  options
-# -XX:+UseConcMarkSweepGC -XX:CMSParallelRemarkEnabled -XX:+ParallelRefProcEnabled -XX:+CMSClassUnloadingEnabled  -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly   
-# // Other options
-# -XX:+AlwaysPreTouch -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime -XX:-OmitStackTraceInFastThrow
-
-#JAVA_TUNING="-Xms2g -Xmx2g -XX:MaxTenuringThreshold=2 -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+ParallelRefProcEnabled -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly"
-
-
-# JDK9 Shenandoah build:
+# Shenandoah:
 # -XX:+UseShenandoahGC -client -XX:-UseFastLocking -XX:-UseCRC32Intrinsics -XX:ParallelGCThreads=2 
-#JAVA_TUNING="-Xms2g -Xmx2g -XX:+UseShenandoahGC"
+#JAVA_TUNING="-Xms2g -Xmx2g -XX:+UnlockExperimentalVMOptions -XX:+UseShenandoahGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+#  -XX:+ShenandoahOptimizeStableFinals -XX:-ExplicitGCInvokesConcurrent"
+# -Xlog:gc+stats
+# -XX:ShenandoahGCHeuristics=passive
+
+# EpsilonGC (no GC):
+#JAVA_TUNING="-Xms2g -Xmx2g -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+
+
+# Try tuning max inline:
+# see http://cr.openjdk.java.net/~redestad/8234863/open.00/
+# Defaults in OpenJDK8:
+# JAVA_OPTS="-XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal"
+#     intx MaxInlineLevel                            = 9                                   {product}
+#     intx MaxNodeLimit                              = 75000                               {C2 product}
+#JAVA_TUNING="$JAVA_TUNING -XX:MaxInlineLevel=15 -XX:MaxNodeLimit=250000 -XX:NodeLimitFudgeFactor=99000"
+#JAVA_TUNING="$JAVA_TUNING -XX:MaxInlineLevel=15"
+#JAVA_TUNING="$JAVA_TUNING -XX:MaxInlineLevel=9"
+#JAVA_TUNING="$JAVA_TUNING -XX:FreqInlineSize=325" # 325 is default
 
 
 # MapBench jar file:
 CLASSPATH=$MAP_BENCH_JAR
-#CLASSPATH=$MAP_BENCH_JAR:$MARLIN_GRAPHICS_JAR
 
 # MapBench Quality mode:
 QUALITY=true
@@ -160,18 +188,33 @@ CLIP=false
 SKIP_DRAW=false
 SKIP_FILL=false
 
-PRE=true
-ACCEL=true
-VOLATILE=true
+PRE=false
+ACCEL=false
+VOLATILE=false
+USE_4BYTES=false
 FILTER=false
+USE_GAMMA=false
 
 # TRY AlphaPaint ie GradientPaint !!
 
 #JAVA_OPTS="-DMapBench.clip.small=false -DMapBench.qualityMode=$QUALITY -DMapBench.filter.size=$FILTER -DMapBench.filter.minWidth=64 $JAVA_OPTS"
-JAVA_OPTS="-DMapBench.skipDraw=$SKIP_DRAW -DMapBench.skipFill=$SKIP_FILL -DMapBench.clip.small=$CLIP -DMapBench.qualityMode=$QUALITY -DMapBench.premultiplied=$PRE -DMapBench.acceleration=$ACCEL -DMapBench.volatile=$VOLATILE $JAVA_OPTS"
+JAVA_OPTS="-DMapBench.skipDraw=$SKIP_DRAW -DMapBench.skipFill=$SKIP_FILL -DMapBench.clip.small=$CLIP -DMapBench.qualityMode=$QUALITY -DMapBench.premultiplied=$PRE -DMapBench.acceleration=$ACCEL -DMapBench.volatile=$VOLATILE $JAVA_OPTS -DMapBench.4bytes=$USE_4BYTES"
+
+if [ "$USE_GAMMA" == "true" ]
+then
+    JAVA_OPTS="$JAVA_OPTS -DMapBench.useMarlinGraphics2D=true -DMarlinGraphics.blendComposite=true"
+    CLASSPATH=$MAP_BENCH_JAR:$MARLIN_GRAPHICS_JAR
+fi
+
 
 # Reset Boot classpath:
 BOOTCLASSPATH=""
+
+# define CPU core to use
+# Note: use linux kernel GRUB_CMDLINE_LINUX="isolcpus=3" in /etc/default/grub
+export CPU_CORE_IDS=3
+
+echo "CPU_CORE_IDS: $CPU_CORE_IDS"
 
 # log date:
 echo "date:"

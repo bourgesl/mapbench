@@ -122,7 +122,7 @@ JAVA_OPTS="-Dsun.java2d.renderer.useDPQS=$USE_DPQS $JAVA_OPTS"
 JAVA_OPTS="-Dsun.java2d.renderer.betterCurves=$BETTER_CURVES $JAVA_OPTS"
 
 # Fix stroke & new compositor:
-JAVA_OPTS="-Dsun.java2d.renderer.compositor=true -Dsun.java2d.renderer.gamma=2.4 -Dsun.java2d.renderer.stroke.fix=false -Dsun.java2d.renderer.compositor.fill=true $JAVA_OPTS"
+JAVA_OPTS="-Dsun.java2d.renderer.compositor=true -Dsun.java2d.renderer.gamma=2.4 -Dsun.java2d.renderer.contrast=0.8 -Dsun.java2d.renderer.compositor.fill=true $JAVA_OPTS"
 
 #JAVA_OPTS="-Dfilter.type=TRIANGLE -Dfilter.blur=0.5 $JAVA_OPTS"
 

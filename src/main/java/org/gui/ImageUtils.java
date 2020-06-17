@@ -45,6 +45,9 @@ public final class ImageUtils {
             ? GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration() : null;
 
     static {
+        // disable cache in temporary files:
+        ImageIO.setUseCache(false);
+
         try {
             DEF_TOOLKIT = Toolkit.getDefaultToolkit();
         } catch (IllegalArgumentException iae) {
@@ -117,7 +120,10 @@ public final class ImageUtils {
     }
 
     public static BufferedImage loadImage(final File refDirectory, final String imageFileName) throws IOException {
-        final File imageFile = new File(refDirectory, imageFileName);
+        return loadImage(new File(refDirectory, imageFileName));
+    }
+
+    public static BufferedImage loadImage(final File imageFile) throws IOException {
         if (!imageFile.canRead()) {
             System.out.println("loadImage: missing image [" + imageFile + "].");
             return null;
@@ -128,6 +134,10 @@ public final class ImageUtils {
     }
 
     public static void saveImage(final BufferedImage image, final File resDirectory, final String imageFileName) throws IOException {
+        saveImage(image, new File(resDirectory, imageFileName));
+    }
+
+    public static void saveImage(final BufferedImage image, final File imgFile) throws IOException {
         final Iterator<ImageWriter> itWriters = ImageIO.getImageWritersByFormatName("PNG");
         if (itWriters.hasNext()) {
             final ImageWriter writer = itWriters.next();
@@ -135,14 +145,9 @@ public final class ImageUtils {
             final ImageWriteParam writerParams = writer.getDefaultWriteParam();
             writerParams.setProgressiveMode(ImageWriteParam.MODE_DISABLED);
 
-            final File imgFile = new File(resDirectory, imageFileName);
-
             if (!imgFile.exists() || imgFile.canWrite()) {
                 System.out.println("saving image as PNG [" + imgFile + "]...");
                 imgFile.delete();
-
-                // disable cache in temporary files:
-                ImageIO.setUseCache(false);
 
                 final long start = System.nanoTime();
 

@@ -21,21 +21,21 @@ public final class ImageDiffDisplay {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Locale.setDefault(Locale.US);
 
-        if (args.length < 2) {
-            System.err.println("Missing arguments: <ref.png> <other.png> <diff.png>");
+        if (args.length < 3) {
+            System.err.println("Missing arguments: <dir> <ref.png> <other.png> (<diff.png>)");
             System.exit(1);
         }
 
-        final File currentDir = new File(".");
-        System.out.println("Current directory = " + currentDir.getAbsolutePath());
+        final File currentDir = new File(args[0]);
+        System.out.println("Using directory = " + currentDir.getAbsolutePath());
 
-        final File imgRef = new File(currentDir, args[0]);
+        final File imgRef = new File(currentDir, args[1]);
         if (!imgRef.canRead() || !imgRef.getName().endsWith(".png")) {
             System.err.println("Invalid argument(1): " + imgRef);
             System.exit(1);
         }
 
-        final File imgOther = new File(currentDir, args[1]);
+        final File imgOther = new File(currentDir, args[2]);
         if (!imgOther.canRead() || !imgOther.getName().endsWith(".png")) {
             System.err.println("Invalid argument(2): " + imgOther);
             System.exit(1);
@@ -44,9 +44,6 @@ public final class ImageDiffDisplay {
         final DiffContext globalCtx = new DiffContext("all images");
 
         final File imgDiffFile = new File(currentDir, getImageFileName(imgRef, imgOther));
-        if (!imgDiffFile.canWrite()) {
-
-        }
 
         showImage(imgRef, imgOther, imgDiffFile, globalCtx);
 

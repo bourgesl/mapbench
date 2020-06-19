@@ -77,7 +77,7 @@ PROFILE=shared_1T.properties
 
 # set paths
 # MapBench jar:
-MAP_BENCH_JAR=../lib/mapbench-0.5.0.jar:../lib/org.jfree.svg-4.1.jar
+MAP_BENCH_JAR=../lib/mapbench-0.5.0.jar:../lib/org.jfree.svg-4.1-bourgesl-0.1.jar
 # Marlin Graphics jar:
 MARLIN_GRAPHICS_JAR=../lib/marlin-graphics-0.3.0.jar 
 

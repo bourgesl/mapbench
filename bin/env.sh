@@ -37,6 +37,9 @@ PROFILE=longer_shared.properties
 # use shared image but single thread only
 PROFILE=shared_1T.properties
 
+# faster:
+#PROFILE=shared_1T_short.properties
+
 # with gamma
 #PROFILE=shared_1T_gamma.properties
 
@@ -137,6 +140,12 @@ JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+Us
 #JAVA_TUNING=" -Xms512m  -Xmx512m -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
 # -XX:+UseLargePages
 
+
+# Disable background compilation to get stable results (no background compiler task):
+#JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseParallelGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+#JAVA_TUNING="$JAVA_TUNING -XX:-BackgroundCompilation"
+#JAVA_TUNING="$JAVA_TUNING -XX:+TieredCompilation -XX:-BackgroundCompilation"
+
 # TEST GC:
 #JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseParallelGC"
 
@@ -153,7 +162,7 @@ JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+Us
 
 
 #http://blog.mgm-tp.com/2014/04/controlling-gc-pauses-with-g1-collector/
-JAVA_TUNING=" -Xms2g -Xmx2g -XX:+UseG1GC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+#JAVA_TUNING=" -Xms2g -Xmx2g -XX:+UseG1GC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
 # -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxGCPauseMillis=100
 
 # Shenandoah:
@@ -198,7 +207,7 @@ USE_GAMMA=false
 # TRY AlphaPaint ie GradientPaint !!
 
 #JAVA_OPTS="-DMapBench.clip.small=false -DMapBench.qualityMode=$QUALITY -DMapBench.filter.size=$FILTER -DMapBench.filter.minWidth=64 $JAVA_OPTS"
-JAVA_OPTS="-DMapBench.skipDraw=$SKIP_DRAW -DMapBench.skipFill=$SKIP_FILL -DMapBench.clip.small=$CLIP -DMapBench.qualityMode=$QUALITY -DMapBench.premultiplied=$PRE -DMapBench.acceleration=$ACCEL -DMapBench.volatile=$VOLATILE $JAVA_OPTS -DMapBench.4bytes=$USE_4BYTES"
+JAVA_OPTS="-DMapBench.skipDraw=$SKIP_DRAW -DMapBench.skipFill=$SKIP_FILL -DMapBench.clip.small=$CLIP -DMapBench.qualityMode=$QUALITY -DMapBench.premultiplied=$PRE -DMapBench.acceleration=$ACCEL -DMapBench.volatile=$VOLATILE -DMapBench.4bytes=$USE_4BYTES $JAVA_OPTS"
 
 if [ "$USE_GAMMA" == "true" ]
 then

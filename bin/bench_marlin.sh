@@ -7,7 +7,7 @@ source ./env_marlin.sh
 
 # Enable stats
 STATS=false
-JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
+JAVA_OPTS="-Dsun.java2d.renderer.doStats=$STATS -Dsun.java2d.renderer.logUnsafeMalloc=false $JAVA_OPTS"
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"
@@ -21,6 +21,5 @@ echo "Java version"
 java -version
 
 # taskset -c $CPU_CORE_IDS 
-#taskset -c $CPU_CORE_IDS 
 java -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapBench
 

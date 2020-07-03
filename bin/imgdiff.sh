@@ -14,5 +14,5 @@ which java
 echo "Java version"
 java -version
 
-java $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.ImageDiffDisplay $1 $2
+java $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.ImageDiffDisplay $1 $2 $3
 

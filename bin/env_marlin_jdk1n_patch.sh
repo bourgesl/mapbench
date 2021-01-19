@@ -3,7 +3,7 @@
 source env_openjdkcl.sh
 #source env_jdk10.sh
 
-PATCH="--patch-module java.desktop=../lib/marlin-0.9.4.4-Unsafe-OpenJDK9.jar"
+PATCH="--patch-module java.desktop=../lib/marlin-0.9.4.5-Unsafe-OpenJDK9.jar"
 
 # should not use Marlin within open jdk 10+:
 MARLIN_JAR_PREFIX=

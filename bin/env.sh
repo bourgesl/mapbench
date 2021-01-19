@@ -10,13 +10,13 @@ PROFILE=default.properties
 #PROFILE=sharedImage.properties
 
 # longer (shared 4T) test:
-PROFILE=longer_shared.properties
+#PROFILE=longer_shared.properties
 
 # try gradient paint:
 #PROFILE=longer_shared_grad.properties
 
 # shorter (shared 4T) test:
-#PROFILE=shorter_shared.properties
+PROFILE=shorter_shared.properties
 
 #PROFILE=shared_nu-tx.properties
 
@@ -35,10 +35,10 @@ PROFILE=longer_shared.properties
 #PROFILE=addMargin.properties
 
 # use shared image but single thread only
-PROFILE=shared_1T.properties
+#PROFILE=shared_1T.properties
 
 # faster:
-#PROFILE=shared_1T_short.properties
+PROFILE=shared_1T_short.properties
 
 # with gamma
 #PROFILE=shared_1T_gamma.properties
@@ -136,13 +136,13 @@ JAVA_OPTS="-server"
 # previous default:
 #JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC"
 # better 2020:
-JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+#JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
 #JAVA_TUNING=" -Xms512m  -Xmx512m -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
 # -XX:+UseLargePages
 
 
 # Disable background compilation to get stable results (no background compiler task):
-#JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseParallelGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
+JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseParallelGC -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages"
 #JAVA_TUNING="$JAVA_TUNING -XX:-BackgroundCompilation"
 #JAVA_TUNING="$JAVA_TUNING -XX:+TieredCompilation -XX:-BackgroundCompilation"
 
@@ -188,6 +188,21 @@ JAVA_TUNING=" -Xms2g  -Xmx2g -XX:+UseConcMarkSweepGC -XX:+AlwaysPreTouch -XX:+Us
 #JAVA_TUNING="$JAVA_TUNING -XX:FreqInlineSize=325" # 325 is default
 
 
+# Enable class-data sharing"
+# 1 get class list
+#JAVA_OPTS="$JAVA_OPTS -Xshare:off -XX:DumpLoadedClassList=mapbench.lst"
+# 2 dump classes
+#JAVA_OPTS="$JAVA_OPTS -Xshare:dump -XX:SharedClassListFile=mapbench.lst -XX:SharedArchiveFile=mapbench.jsa"
+# 3 reuse classes
+#JAVA_OPTS="$JAVA_OPTS -Xshare:on -XX:SharedArchiveFile=mapbench.jsa"
+
+# old:
+#JAVA_OPTS="$JAVA_OPTS -Xshare:on"
+#JAVA_OPTS="$JAVA_OPTS -Xshare:off -XX:+UseAppCDS -XX:DumpLoadedClassList=mapbench.lst"
+
+#JAVA_OPTS="$JAVA_OPTS -XshowSettings:all"
+#JAVA_OPTS="$JAVA_OPTS -XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal"
+
 # MapBench jar file:
 CLASSPATH=$MAP_BENCH_JAR
 
@@ -197,9 +212,9 @@ CLIP=false
 SKIP_DRAW=false
 SKIP_FILL=false
 
-PRE=false
-ACCEL=false
-VOLATILE=false
+PRE=true
+ACCEL=true
+VOLATILE=true
 USE_4BYTES=false
 FILTER=false
 USE_GAMMA=false

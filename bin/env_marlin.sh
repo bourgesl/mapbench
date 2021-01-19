@@ -29,7 +29,7 @@ REF_TYPE=soft
 # Use Line simplifier [true,false]
 USE_SIMPLIFIER=false
 # 32x32 tiles (5)
-TILE_W_LOG2=6 # 7
+TILE_W_LOG2=7 # 7
 TILE_H_LOG2=6 # 6
 # block size:
 BLOCK_LOG2=5
@@ -122,7 +122,7 @@ JAVA_OPTS="-Dsun.java2d.renderer.useDPQS=$USE_DPQS $JAVA_OPTS"
 JAVA_OPTS="-Dsun.java2d.renderer.betterCurves=$BETTER_CURVES $JAVA_OPTS"
 
 # Fix stroke & new compositor:
-JAVA_OPTS="-Dsun.java2d.renderer.compositor=true -Dsun.java2d.renderer.compositor.fill=true -Dsun.java2d.renderer.compositor.quality=false -Dsun.java2d.renderer.compositor.speed=true -Dsun.java2d.renderer.compositor.speed.color=true -Dsun.java2d.renderer.gamma=2.4 -Dsun.java2d.renderer.compositor.fix=contrastL -Dsun.java2d.renderer.blend.gamma=3.0 -Dsun.java2d.renderer.contrast=1.0 $JAVA_OPTS"
+JAVA_OPTS="-Dsun.java2d.renderer.compositor=true -Dsun.java2d.renderer.compositor.mode=hybrid -Dsun.java2d.renderer.compositor.quality=false -Dsun.java2d.renderer.compositor.speed=true -Dsun.java2d.renderer.compositor.speed.color=true -Dsun.java2d.renderer.gamma=2.4 -Dsun.java2d.renderer.compositor.fix=contrast -Dsun.java2d.renderer.blend.gamma=2.4 -Dsun.java2d.renderer.contrast=1.0 $JAVA_OPTS"
 
 #JAVA_OPTS="-Dfilter.type=TRIANGLE -Dfilter.blur=0.5 $JAVA_OPTS"
 

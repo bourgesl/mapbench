@@ -9,7 +9,7 @@ source ./env_marlin.sh
 CHECK=false
 STATS=false
 MONITOR=false
-JAVA_OPTS="-Dsun.java2d.renderer.doChecks=$CHECK -Dsun.java2d.renderer.doMonitors=$MONITOR -Dsun.java2d.renderer.doStats=$STATS $JAVA_OPTS"
+JAVA_OPTS="$JAVA_OPTS -Dsun.java2d.renderer.doChecks=$CHECK -Dsun.java2d.renderer.doMonitors=$MONITOR -Dsun.java2d.renderer.doStats=$STATS -Dsun.java2d.renderer.compositor=false"
 
 echo "CLASSPATH:   $CLASSPATH"
 echo "Boot CP:     $BOOTCLASSPATH"
@@ -25,7 +25,10 @@ java -version
 #MARLIN_G2D="-DMarlinGraphics.blendComposite=true -DMapBench.useMarlinGraphics2D=true"
 
 # DEMO window:
-DEMO="-Ddemo.width=800 -Ddemo.height=600"
+# DEMO="-Ddemo.width=800 -Ddemo.height=600"
+
+# -Dsun.java2d.opengl.bufferSize=262144
+JAVA_OPTS="$JAVA_OPTS -Dsun.java2d.opengl=true -Dsun.java2d.opengl.bufferSize=262144 -Dsun.java2d.opengl.flushDelay=1"
 
 java $DEMO $MARLIN_G2D -Dmapbench.profile=$PROFILE $BOOTCLASSPATH $JAVA_OPTS $JAVA_TUNING -cp $CLASSPATH it.geosolutions.java2d.MapDemo
 

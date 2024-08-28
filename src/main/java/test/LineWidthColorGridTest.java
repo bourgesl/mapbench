@@ -120,7 +120,9 @@ public class LineWidthColorGridTest {
         }
 
         try {
-            dumper.dispose();
+            if (dumper != null) {
+                dumper.dispose();
+            }
 
             final File file = new File(FILE_NAME + ".png");
 

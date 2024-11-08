@@ -23,6 +23,7 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -43,7 +44,8 @@ TODO: wrap calls to draw(Shape) and fill(Shape)
 public class ShapeDumpingGraphics2D extends Graphics2D {
 
     private final static boolean DEBUG = false;
-
+    private final static boolean FORCE_USE_PATH2D = false;
+    
     Graphics2D delegate;
     ObjectOutputStream oos;
     int width;
@@ -80,14 +82,14 @@ public class ShapeDumpingGraphics2D extends Graphics2D {
     }
 
     private static Shape getShape(Shape src) {
-        if (src instanceof GeneralPath) {
-            return src;
-        } else if (src instanceof Line2D) {
-            return src;
-        } else if (src instanceof Rectangle2D) {
-            return src;
+        if (!FORCE_USE_PATH2D) {
+            if (src instanceof Line2D) {
+                return (Line2D)((Line2D) src).clone();
+            } else if (src instanceof Rectangle2D) {
+                return (Rectangle2D)((Rectangle2D) src).clone();
+            }
         }
-        return new GeneralPath(src);
+        return new Path2D.Double(src);
     }
 
     @Override
